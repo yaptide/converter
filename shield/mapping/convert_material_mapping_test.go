@@ -7,19 +7,19 @@ import (
 )
 
 func TestPredefinedMaterialsToShieldICRUMapping(t *testing.T) {
-	for _, predefinedMaterial := range setup.PredefinedMaterials() {
-		_, found := PredefinedMaterialsToShieldICRU[predefinedMaterial.Value]
+	for predefinedMaterial := range setup.PredefinedMaterials {
+		_, found := PredefinedMaterialsToShieldICRU[predefinedMaterial]
 		if !found {
-			t.Errorf("PredefinedMaterial mapping to Shield ICRU for \"%s\" not found", predefinedMaterial.Value)
+			t.Errorf("PredefinedMaterial mapping to Shield ICRU for \"%s\" not found", predefinedMaterial)
 		}
 	}
 }
 
 func TestIsotopeToShieldNUCLIDMapping(t *testing.T) {
-	for _, isotope := range setup.Isotopes() {
-		_, found := IsotopesToShieldNUCLID[isotope.Value]
+	for isotope := range setup.Isotopes {
+		_, found := IsotopesToShieldNUCLID[isotope]
 		if !found {
-			t.Errorf("Isotope mapping to Shield NUCLID for \"%s\" not found", isotope.Value)
+			t.Errorf("Isotope mapping to Shield NUCLID for \"%s\" not found", isotope)
 		}
 	}
 }
