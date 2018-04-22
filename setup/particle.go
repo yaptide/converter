@@ -33,7 +33,9 @@ var predefinedParticleTypes = map[string]bool{
 }
 
 // ParticleType ...
-type ParticleType interface{}
+type ParticleType interface {
+	Validate() error
+}
 
 // Particle is interface for particle scored in detectors.
 type Particle struct {
@@ -43,8 +45,22 @@ type Particle struct {
 // AllParticles ...
 type AllParticles string
 
+// Validate ...
+func (p AllParticles) Validate() error {
+	return nil
+}
+
 // PredefinedParticle ...
 type PredefinedParticle string
+
+// Validate ...
+func (p PredefinedParticle) Validate() error {
+	_, exists := predefinedParticleTypes[string(p)]
+	if !exists {
+		return fmt.Errorf("%v is not a predefined particle type", p)
+	}
+	return nil
+}
 
 // HeavyIon ...
 type HeavyIon struct {
@@ -52,17 +68,32 @@ type HeavyIon struct {
 	NucleonsCount int64 `json:"nucleonsCount"`
 }
 
+// Validate ...
+func (p HeavyIon) Validate() error {
+	result := E{}
+	if p.Charge <= 2 {
+		result["charge"] = fmt.Errorf("Number of protons must be larger than 2")
+	}
+	if p.Charge > p.NucleonsCount && p.NucleonsCount > 0 {
+		result["charge"] = fmt.Errorf("Number of protons can't be larger than number of nucleons")
+	}
+	if p.NucleonsCount <= 0 {
+		result["nucleonsCount"] = fmt.Errorf("Number of nucleons must be larger than 0")
+	}
+	return result
+}
+
 // MarshalJSON json.Marshaller implementation.
-func (g PredefinedParticle) MarshalJSON() ([]byte, error) {
+func (p PredefinedParticle) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		Type string `json:"type"`
 	}{
-		Type: string(g),
+		Type: string(p),
 	})
 }
 
 // MarshalJSON ...
-func (g AllParticles) MarshalJSON() ([]byte, error) {
+func (p AllParticles) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		Type string `json:"type"`
 	}{

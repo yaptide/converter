@@ -16,9 +16,9 @@ func (b Beam) Validate() error {
 	if err := b.Divergence.Validate(); err != nil {
 		result["divergence"] = err
 	}
-	//if err := b.ParticleType.Validate(); err != nil {
-	//		result["particleType"] = err
-	//	}
+	if err := b.Particle.Validate(); err != nil {
+		result["particleType"] = err
+	}
 
 	if b.InitialBaseEnergy < 0 {
 		result["initialBaseEnergy"] = fmt.Errorf("shuld be positive value")
@@ -35,19 +35,23 @@ func (b Beam) Validate() error {
 func (b BeamDirection) Validate() error {
 	result := E{}
 
-	if !validate.InRange2PI(b.Phi) {
-		result["phi"] = fmt.Errorf("should be between 0 and 2PI")
+	if err := validate.InRange2PI(b.Phi); err != nil {
+		result["phi"] = err
 	}
-	if !validate.InRangePI(b.Theta) {
-		result["theta"] = fmt.Errorf("should be between 0 and PI")
+	if err := validate.InRangePI(b.Theta); err != nil {
+		result["theta"] = err
 	}
 
-	return result
+	if len(result) > 0 {
+		return result
+	}
+	return nil
 }
 
 // Validate ...
 func (b BeamDivergence) Validate() error {
 	result := E{}
+
 	// TODO research this better;
 	return result
 }

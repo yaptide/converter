@@ -10,11 +10,11 @@ type StateOfMatter int
 
 const (
 
-	// NonDefined - only allowed for Predifined
-	NonDefined = iota
+	// UndefinedStateOfMatter ...
+	UndefinedStateOfMatter StateOfMatter = iota
 
 	// Solid state of matter.
-	Solid StateOfMatter = iota
+	Solid
 	// Gas state of matter.
 	Gas
 	// Liquid state of matter.
@@ -22,12 +22,14 @@ const (
 )
 
 var mapStateToJSON = map[StateOfMatter]string{
+	UndefinedStateOfMatter: "",
 	Solid:  "solid",
 	Gas:    "gas",
 	Liquid: "liquid",
 }
 
 var mapJSONToState = map[string]StateOfMatter{
+	"":       UndefinedStateOfMatter,
 	"solid":  Solid,
 	"gas":    Gas,
 	"liquid": Liquid,

@@ -1,11 +1,7 @@
-package setup
+package geometry
 
 import (
 	"github.com/yaptide/converter/errors"
 )
 
-// E ...
 type E = errors.E
-
-// A ...
-type A = errors.A

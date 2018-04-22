@@ -1,10 +1,13 @@
 package setup
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // DetectorZones ...
 type DetectorZones struct {
-	Zones []DetectorID `json:"zones"`
+	Zones []ZoneID `json:"zones"`
 }
 
 // MarshalJSON json.Marshaller implementation.
@@ -17,4 +20,12 @@ func (d DetectorZones) MarshalJSON() ([]byte, error) {
 		Type:  detectorGeometryType.zone,
 		Alias: Alias(d),
 	})
+}
+
+// Validate ...
+func (d DetectorZones) Validate() error {
+	if len(d.Zones) == 0 {
+		return fmt.Errorf("list of zones can't be empty")
+	}
+	return nil
 }

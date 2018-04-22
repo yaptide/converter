@@ -72,8 +72,8 @@ var materialTestCasses = test.MarshallingCases{
 			Density:       99.9,
 			StateOfMatter: Liquid,
 			Elements: []Element{
-				Element{Isotope: "Gd-*", RelativeStoichiometricFraction: 2, AtomicMass: 100.23},
-				Element{Isotope: "U-235", RelativeStoichiometricFraction: 123, IValue: 555.34},
+				Element{Isotope: "Gd-*", RelativeStoichiometricFraction: 2, AtomicMass: func() *int64 { i := int64(100); return &i }()},
+				Element{Isotope: "U-235", RelativeStoichiometricFraction: 123, IValue: func() *float64 { i := float64(555.34); return &i }()},
 			},
 			ExternalStoppingPowerFromPredefined: "Water",
 		}}},
@@ -88,7 +88,7 @@ var materialTestCasses = test.MarshallingCases{
 					{
 						"isotope": "Gd-*",
 						"relativeStoichiometricFraction": 2,
-						"atomicMass": 100.23
+						"atomicMass": 100
 					},
 					{
 						"isotope": "U-235",

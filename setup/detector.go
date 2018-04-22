@@ -41,7 +41,9 @@ type Detector struct {
 }
 
 // GeometryType ...
-type GeometryType interface{}
+type GeometryType interface {
+	Validate() error
+}
 
 // DetectorGeometry ...
 type DetectorGeometry struct {
@@ -59,6 +61,6 @@ func (d *DetectorGeometry) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	d.GeometryType = geometry
+	d.GeometryType = geometry.(GeometryType)
 	return nil
 }

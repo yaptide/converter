@@ -39,18 +39,40 @@ type DetectorScoring struct {
 // PredefinedScoring ...
 type PredefinedScoring string
 
+// Validate ...
+func (s PredefinedScoring) Validate() error {
+	_, exists := predefinedScoringTypes[(string(s))]
+	if !exists {
+		return E{"type": fmt.Errorf("%v is not predefined scoring type", s)}
+	}
+	return nil
+}
+
 // LetTypeScoring ...
 type LetTypeScoring struct {
 	Type     string     `json:"type"`
 	Material MaterialID `json:"material"`
 }
 
+// Validate ...
+func (s LetTypeScoring) Validate() error {
+	result := E{}
+	_, exists := letScoringTypes[s.Type]
+	if !exists {
+		result["type"] = fmt.Errorf("%v is not let scoring type", s.Type)
+	}
+	if err := s.Material.Validate(); err != nil {
+		result["material"] = err
+	}
+	return result
+}
+
 // MarshalJSON json.Marshaller implementation.
-func (g PredefinedScoring) MarshalJSON() ([]byte, error) {
+func (s PredefinedScoring) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
 		Type string `json:"type"`
 	}{
-		Type: string(g),
+		Type: string(s),
 	})
 }
 

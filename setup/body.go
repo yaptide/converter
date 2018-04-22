@@ -38,7 +38,9 @@ type BodyGeometry struct {
 }
 
 // BodyType ...
-type BodyType interface{}
+type BodyType interface {
+	Validate() error
+}
 
 // MarshalJSON ...
 func (g BodyGeometry) MarshalJSON() ([]byte, error) {
@@ -51,6 +53,6 @@ func (g *BodyGeometry) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	g.BodyType = body
+	g.BodyType = body.(BodyType)
 	return nil
 }

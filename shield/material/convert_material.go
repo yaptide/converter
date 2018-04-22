@@ -31,8 +31,8 @@ type PredefinedMaterial struct {
 type Element struct {
 	ID                             mapping.IsotopeNUCLID
 	RelativeStoichiometricFraction int64
-	AtomicMass                     float64
-	IValue                         float64
+	AtomicMass                     *int64
+	IValue                         *float64
 }
 
 // CompoundMaterial represent setup.Compound.
@@ -125,7 +125,7 @@ func ConvertSetupMaterials(
 
 // SerializeStateOfMatter return true, if StateOfMatter should be serialized.
 func (p *PredefinedMaterial) SerializeStateOfMatter() bool {
-	return p.StateOfMatter != mapping.StateOfMatterToShield[setup.NonDefined]
+	return p.StateOfMatter != mapping.StateOfMatterToShield[setup.UndefinedStateOfMatter]
 }
 
 // SerializeDensity return true, if Density should be serialized.
@@ -141,12 +141,12 @@ func (c *CompoundMaterial) SerializeExternalStoppingPower() bool {
 
 // SerializeAtomicMass return true, if AtomicMass should be serialized.
 func (e *Element) SerializeAtomicMass() bool {
-	return e.AtomicMass > 0.0
+	return e.AtomicMass != nil
 }
 
 // SerializeIValue return true, if IValue should be serialized.
 func (e *Element) SerializeIValue() bool {
-	return e.IValue > 0.0
+	return e.IValue != nil
 }
 
 func createPredefinedMaterial(
@@ -172,7 +172,7 @@ func createCompoundMaterial(
 ) (CompoundMaterial, error) {
 	const maxElementsNumber = 13
 
-	if compound.StateOfMatter == setup.NonDefined {
+	if compound.StateOfMatter == setup.UndefinedStateOfMatter {
 		return CompoundMaterial{}, converter.MaterialIDError(
 			id, "StateOfMatter must be defined for Compound material",
 		)

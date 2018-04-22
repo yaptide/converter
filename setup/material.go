@@ -2,6 +2,7 @@ package setup
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/yaptide/converter/utils"
 )
@@ -25,6 +26,14 @@ var materialTypeMapping = map[string]func() interface{}{
 // MaterialID ...
 type MaterialID int64
 
+// Validate ...
+func (m MaterialID) Validate() error {
+	if m < 0 {
+		return fmt.Errorf("Material id needs to be positive integer")
+	}
+	return nil
+}
+
 // Material defines the zone material that is used in the simulation.
 type Material struct {
 	ID    MaterialID    `json:"id"`
@@ -37,7 +46,9 @@ type MaterialSpecs struct {
 }
 
 // MaterialType ...
-type MaterialType interface{}
+type MaterialType interface {
+	Validate() error
+}
 
 // MarshalJSON ...
 func (m MaterialSpecs) MarshalJSON() ([]byte, error) {
@@ -51,6 +62,6 @@ func (m *MaterialSpecs) UnmarshalJSON(b []byte) error {
 	if err != nil {
 		return err
 	}
-	m.MaterialType = materialInfo
+	m.MaterialType = materialInfo.(MaterialType)
 	return nil
 }
