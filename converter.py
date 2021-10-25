@@ -48,7 +48,7 @@ class MatConfig:
     def get_materials(self) -> list[int]:
         return self.materials
 
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         material_strings = map((lambda mat, idx: """MEDIUM {idx}
         ICRU {mat}
         END
