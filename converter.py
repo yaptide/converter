@@ -15,7 +15,7 @@ class BeamConfig:
     def set_nstat(self, nstat: int) -> None:
         self.nstat = nstat
 
-    def to_string(self) -> str:
+    def __str__(self) -> str:
         return """
         RNDSEED      	89736501     ! Random seed
         JPART0       	2            ! Incident particle type
