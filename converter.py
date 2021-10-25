@@ -5,7 +5,7 @@ class BeamConfig:
     energy: float
     nstat: int
 
-    def __init__(self, energy: float, nstat: int):
+    def __init__(self, energy: float = 250., nstat: int = 10000):
         self.energy = energy
         self.nstat = nstat
 
