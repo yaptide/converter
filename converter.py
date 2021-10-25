@@ -65,7 +65,7 @@ ICRU {mat}
 END
 """
 
-    def __init__(self, materials: list[str] = [276]):
+    def __init__(self, materials: list[int] = [276]):
         self.materials: list[str] = materials
 
     def __str__(self) -> str:
