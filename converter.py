@@ -11,7 +11,8 @@ class Geometry(ABC):
 
 @dataclass(order=True, frozen=True)
 class Cylinder(Geometry):
-    '''Cylinder geometry dataclass used in DetectConfig'''
+    """Cylinder geometry dataclass used in DetectConfig"""
+
     sort_index: int = field(init=False)
 
     id: str
@@ -32,7 +33,8 @@ class Cylinder(Geometry):
 
 @dataclass(order=True, frozen=True)
 class Mesh(Geometry):
-    '''Mesh geometry dataclass used in DetectConfig'''
+    """Mesh geometry dataclass used in DetectConfig"""
+
     sort_index: int = field(init=False)
 
     id: str
@@ -137,18 +139,23 @@ class GeoConfig:
 
 
 class Parser(ABC):
-    '''Abstract parser, the template for implementing other parsers'''
+    """Abstract parser, the template for implementing other parsers"""
+
     @abstractmethod
     def parse_configs(json: dict):
+        """Convert the json dict to the 4 config dataclasses."""
+
         pass
 
     @abstractmethod
     def save_configs(target_dir_path: str):
+        """Save the configs as text files in the target_dir. The files are: beam.dat, mat.dat, detect.dat and geo.dat."""
+
         pass
 
 
 class DummmyParser(Parser):
-    '''A simple placeholder parser that ignores the json input and prints example (default) configs.'''
+    """A simple placeholder parser that ignores the json input and prints example (default) configs."""
 
     def __init__(self) -> None:
         self.beam_config = BeamConfig()
@@ -157,9 +164,13 @@ class DummmyParser(Parser):
         self.geo_config = GeoConfig()
 
     def parse_configs(self, json: dict):
+        """Basicaly do nothing since we work on defaults in this parser."""
+
         pass
 
     def save_configs(self, target_dir: str):
+        """Save the configs as text files in the target_dir. The files are: beam.dat, mat.dat, detect.dat and geo.dat."""
+
         with open(path.join(target_dir, 'beam.dat'), 'w') as beam_f:
             beam_f.write(self.beam_config)
 
@@ -174,7 +185,7 @@ class DummmyParser(Parser):
 
 
 class Runner:
-    '''Converts input data dict to files that will be saved in output_dir using the specified parser.'''
+    """Converts input data dict to files that will be saved in output_dir using the specified parser."""
 
     def __init__(self, parser: Parser, input_data: dict, output_dir: str) -> None:
         self.parser = parser
@@ -182,5 +193,7 @@ class Runner:
         self.output_dir = output_dir
 
     def run_parser(self):
+        """Convert the configs and save them in the output_dir directory."""
+
         self.parser.parse_configs(self.input_data)
         self.parser.save_configs(self.output_dir)
