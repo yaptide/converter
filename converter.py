@@ -51,8 +51,12 @@ class Mesh(Geometry):
         return self.template.format(mesh_nx=self.x, mesh_ny=self.y, mesh_nz=self.z)
 
 
+@dataclass
 class BeamConfig:
     """Class mapping of the beam.dat config file"""
+
+    energy: float = 250.
+    nstat: int = 10000
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
@@ -64,24 +68,20 @@ MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
 
-    def __init__(self, energy: float = 250., nstat: int = 10000) -> None:
-        self.energy = energy
-        self.nstat = nstat
-
     def __str__(self) -> str:
         return self.beam_template.format(energy=self.energy, nstat=self.nstat)
 
 
+@dataclass
 class MatConfig:
     """Class mapping of the mat.dat config file"""
 
-    material_template: str = """MEDIUM {idx}
-ICRU {mat}
+    materials: list[int] = [276]
+
+    material_template: str = """MEDIUM {idx:d}
+ICRU {mat:d}
 END
 """
-
-    def __init__(self, materials: list[int] = [276]) -> None:
-        self.materials: list[str] = materials
 
     def __str__(self) -> str:
         material_strings = [self.material_template.format(
@@ -89,16 +89,17 @@ END
         return "\n".join(material_strings)
 
 
+@dataclass
 class DetectConfig:
     """Class mapping of the detect.dat config file"""
+
+    geometries: list[Geometry] = [Cylinder(), Mesh()]
+
     detect_template = """Output
     Filename mesh.bdo
     Geo ScoringCylinder
     Quantity Dose
     """
-
-    def __init__(self, geometries: list[Geometry] = [Cylinder(), Mesh()]) -> None:
-        self.geometries: Geometry = geometries
 
     def __str__(self):
         detect_strings = [str(geo)
@@ -106,8 +107,8 @@ class DetectConfig:
         return "\n".join(detect_strings)
 
 
+@dataclass
 class GeoConfig:
-    # TODO: Parametrize this
     """Class mapping of the geo.dat config file"""
 
     geo_template: str = """
@@ -130,9 +131,6 @@ class GeoConfig:
     1 1000    0
 """
 
-    def __init__(self) -> None:
-        pass
-
     def __str__(self) -> str:
         return self.geo_template
 
@@ -143,7 +141,7 @@ class Parser(ABC):
         pass
 
     @abstractmethod
-    def print_configs(target_dir_path: str):
+    def save_configs(target_dir_path: str):
         pass
 
 
@@ -157,7 +155,7 @@ class DummmyParser(Parser):
     def parse_configs(self, json: dict):
         pass
 
-    def print_configs(self, target_dir: str):
+    def save_configs(self, target_dir: str):
         with open(path.join(target_dir, 'beam.dat'), 'w') as beam_f:
             beam_f.write(self.beam_config)
 
@@ -180,4 +178,4 @@ class Runner:
 
     def run_parser(self):
         self.parser.parse_configs(self.input_data)
-        self.parser.print_configs(self.output_dir)
+        self.parser.save_configs(self.output_dir)
