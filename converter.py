@@ -11,6 +11,7 @@ class Geometry(ABC):
 
 @dataclass(order=True, frozen=True)
 class Cylinder(Geometry):
+    '''Cylinder geometry dataclass used in DetectConfig'''
     sort_index: int = field(init=False)
 
     id: str
@@ -31,6 +32,7 @@ class Cylinder(Geometry):
 
 @dataclass(order=True, frozen=True)
 class Mesh(Geometry):
+    '''Mesh geometry dataclass used in DetectConfig'''
     sort_index: int = field(init=False)
 
     id: str
@@ -84,8 +86,7 @@ END
 """
 
     def __str__(self) -> str:
-        material_strings = [self.material_template.format(
-            idx=idx, mat=mat) for idx, mat in enumerate(self.materials)]
+        material_strings = [self.material_template.format(idx=idx, mat=mat) for idx, mat in enumerate(self.materials)]
         return "\n".join(material_strings)
 
 
@@ -136,6 +137,7 @@ class GeoConfig:
 
 
 class Parser(ABC):
+    '''Abstract parser, the template for implementing other parsers'''
     @abstractmethod
     def parse_configs(json: dict):
         pass
@@ -146,6 +148,8 @@ class Parser(ABC):
 
 
 class DummmyParser(Parser):
+    '''A simple placeholder parser that ignores the json input and prints example (default) configs.'''
+
     def __init__(self) -> None:
         self.beam_config = BeamConfig()
         self.mat_config = MatConfig()
@@ -170,6 +174,7 @@ class DummmyParser(Parser):
 
 
 class Runner:
+    '''Converts input data dict to files that will be saved in output_dir using the specified parser.'''
 
     def __init__(self, parser: Parser, input_data: dict, output_dir: str) -> None:
         self.parser = parser
