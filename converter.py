@@ -1,36 +1,51 @@
 from abc import ABC, abstractmethod, abstractproperty
 from functools import reduce
+from dataclasses import dataclass, field
+from os import path
 
 
+@dataclass
 class Geometry(ABC):
     pass
 
 
+@dataclass(order=True, frozen=True)
 class Cylinder(Geometry):
+    sort_index: int = field(init=False)
+
+    id: str
+    radius: int = 10
+    height: int = 10
+
     template: str = """Geometry Cyl
     Name ScoringCylinder
     R 0.0 10.0 {cyl_nr:d}
     Z 0.0 30.0 {cyl_nz:d}"""
 
-    def __init__(self, radius=10, height=10):
-        self.radius = radius
-        self.height = height
+    def __post_init__(self):
+        object.__setattr__(self, 'sort_index', self.id)
 
     def __str__(self) -> str:
         return self.template.format(cyl_nr=self.radius, cyl_nz=self.height)
 
 
+@dataclass(order=True, frozen=True)
 class Mesh(Geometry):
+    sort_index: int = field(init=False)
+
+    id: str
+    x: int = 10
+    y: int = 10
+    z: int = 10
+
     template: str = """Geometry Mesh
     Name MyMesh_YZ
     X -5.0  5.0    {mesh_nx:d}
     Y -5.0  5.0    {mesh_ny:d}
     Z  0.0  30.0   {mesh_nz:d}"""
 
-    def __init__(self, x=10, y=10, z=10):
-        self.x = x
-        self.y = y
-        self.z = z
+    def __post_init__(self):
+        object.__setattr__(self, 'sort_index', self.id)
 
     def __str__(self) -> str:
         return self.template.format(mesh_nx=self.x, mesh_ny=self.y, mesh_nz=self.z)
@@ -49,7 +64,7 @@ MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
 
-    def __init__(self, energy: float = 250., nstat: int = 10000):
+    def __init__(self, energy: float = 250., nstat: int = 10000) -> None:
         self.energy = energy
         self.nstat = nstat
 
@@ -65,7 +80,7 @@ ICRU {mat}
 END
 """
 
-    def __init__(self, materials: list[int] = [276]):
+    def __init__(self, materials: list[int] = [276]) -> None:
         self.materials: list[str] = materials
 
     def __str__(self) -> str:
@@ -82,7 +97,7 @@ class DetectConfig:
     Quantity Dose
     """
 
-    def __init__(self, geometries: list[Geometry] = [Cylinder(), Mesh()]):
+    def __init__(self, geometries: list[Geometry] = [Cylinder(), Mesh()]) -> None:
         self.geometries: Geometry = geometries
 
     def __str__(self):
@@ -115,8 +130,54 @@ class GeoConfig:
     1 1000    0
 """
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     def __str__(self) -> str:
         return self.geo_template
+
+
+class Parser(ABC):
+    @abstractmethod
+    def parse_configs(json: dict):
+        pass
+
+    @abstractmethod
+    def print_configs(target_dir_path: str):
+        pass
+
+
+class DummmyParser(Parser):
+    def __init__(self) -> None:
+        self.beam_config = BeamConfig()
+        self.mat_config = MatConfig()
+        self.detect_config = DetectConfig()
+        self.geo_config = GeoConfig()
+
+    def parse_configs(self, json: dict):
+        pass
+
+    def print_configs(self, target_dir: str):
+        with open(path.join(target_dir, 'beam.dat'), 'w') as beam_f:
+            beam_f.write(self.beam_config)
+
+        with open(path.join(target_dir, 'mat.dat'), 'w') as mat_f:
+            mat_f.write(self.mat_config)
+
+        with open(path.join(target_dir, 'detect.dat'), 'w') as detect_f:
+            detect_f.write(self.detect_config)
+
+        with open(path.join(target_dir, 'geo.dat'), 'w') as geo_f:
+            beam_f.write(self.geo_config)
+
+
+class Runner:
+
+    def __init__(self, parser: Parser, input_data: dict, output_dir: str) -> None:
+        self.parser = parser
+        self.input_data = input_data
+        self.output_dir = output_dir
+
+    def run_parser(self):
+        self.parser.parse_configs(self.input_data)
+        self.parser.print_configs(self.output_dir)
