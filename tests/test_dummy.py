@@ -2,4 +2,5 @@ import pytest
 
 
 def test_test():
-    pass
+    """A test test to test if tests work :P"""
+    assert True
