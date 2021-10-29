@@ -6,12 +6,14 @@ from os import path
 
 @dataclass
 class Geometry(ABC):
+    """Abstract geometry dataclass for DetectConfig."""
+
     pass
 
 
 @dataclass(order=True, frozen=True)
 class Cylinder(Geometry):
-    """Cylinder geometry dataclass used in DetectConfig"""
+    """Cylinder geometry dataclass used in DetectConfig."""
 
     sort_index: int = field(init=False)
 
@@ -33,7 +35,7 @@ class Cylinder(Geometry):
 
 @dataclass(order=True, frozen=True)
 class Mesh(Geometry):
-    """Mesh geometry dataclass used in DetectConfig"""
+    """Mesh geometry dataclass used in DetectConfig."""
 
     sort_index: int = field(init=False)
 
@@ -57,7 +59,7 @@ class Mesh(Geometry):
 
 @dataclass
 class BeamConfig:
-    """Class mapping of the beam.dat config file"""
+    """Class mapping of the beam.dat config file."""
 
     energy: float = 250.
     nstat: int = 10000
@@ -78,7 +80,7 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 
 @dataclass
 class MatConfig:
-    """Class mapping of the mat.dat config file"""
+    """Class mapping of the mat.dat config file."""
 
     materials: list[int] = [276]
 
@@ -94,7 +96,7 @@ END
 
 @dataclass
 class DetectConfig:
-    """Class mapping of the detect.dat config file"""
+    """Class mapping of the detect.dat config file."""
 
     geometries: list[Geometry] = [Cylinder(), Mesh()]
 
@@ -112,7 +114,7 @@ class DetectConfig:
 
 @dataclass
 class GeoConfig:
-    """Class mapping of the geo.dat config file"""
+    """Class mapping of the geo.dat config file."""
 
     geo_template: str = """
 *---><---><--------><------------------------------------------------>
@@ -139,18 +141,19 @@ class GeoConfig:
 
 
 class Parser(ABC):
-    """Abstract parser, the template for implementing other parsers"""
+    """Abstract parser, the template for implementing other parsers."""
 
     @abstractmethod
     def parse_configs(json: dict):
         """Convert the json dict to the 4 config dataclasses."""
-
         pass
 
     @abstractmethod
     def save_configs(target_dir_path: str):
-        """Save the configs as text files in the target_dir. The files are: beam.dat, mat.dat, detect.dat and geo.dat."""
-
+        """
+        Save the configs as text files in the target_dir.
+        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
+        """
         pass
 
 
@@ -165,12 +168,13 @@ class DummmyParser(Parser):
 
     def parse_configs(self, json: dict):
         """Basicaly do nothing since we work on defaults in this parser."""
-
         pass
 
     def save_configs(self, target_dir: str):
-        """Save the configs as text files in the target_dir. The files are: beam.dat, mat.dat, detect.dat and geo.dat."""
-
+        """
+        Save the configs as text files in the target_dir.
+        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
+        """
         with open(path.join(target_dir, 'beam.dat'), 'w') as beam_f:
             beam_f.write(self.beam_config)
 
@@ -194,6 +198,5 @@ class Runner:
 
     def run_parser(self):
         """Convert the configs and save them in the output_dir directory."""
-
         self.parser.parse_configs(self.input_data)
         self.parser.save_configs(self.output_dir)
