@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from os import path
 
 
-@dataclass
+@dataclass(frozen=True)
 class Geometry(ABC):
     """Abstract geometry dataclass for DetectConfig."""
 
