@@ -82,7 +82,7 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 class MatConfig:
     """Class mapping of the mat.dat config file."""
 
-    materials: list[int] = [276]
+    materials: list[int] = field(default_factory=lambda: [276])
 
     material_template: str = """MEDIUM {idx:d}
 ICRU {mat:d}
@@ -98,7 +98,7 @@ END
 class DetectConfig:
     """Class mapping of the detect.dat config file."""
 
-    geometries: list[Geometry] = [Cylinder(), Mesh()]
+    geometries: list[Geometry] = field(default_factory=lambda: [Cylinder(id=0), Mesh(id=0)])
 
     detect_template = """Output
     Filename mesh.bdo
@@ -112,7 +112,7 @@ class DetectConfig:
         return "\n".join(detect_strings)
 
 
-@dataclass
+@ dataclass
 class GeoConfig:
     """Class mapping of the geo.dat config file."""
 
@@ -143,12 +143,12 @@ class GeoConfig:
 class Parser(ABC):
     """Abstract parser, the template for implementing other parsers."""
 
-    @abstractmethod
+    @ abstractmethod
     def parse_configs(json: dict):
         """Convert the json dict to the 4 config dataclasses."""
         pass
 
-    @abstractmethod
+    @ abstractmethod
     def save_configs(target_dir_path: str):
         """
         Save the configs as text files in the target_dir.

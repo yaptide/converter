@@ -4,10 +4,10 @@ from converter.converter import BeamConfig, MatConfig
 
 def test_default_beam_config_str() -> None:
     """Test if the default BeamConfig str representation is correct."""
-    assert BeamConfig() == """
+    assert str(BeamConfig()) == """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
-TMAX0      	250   0.0  ! Incident energy; (MeV/nucl)
+TMAX0      	250.000000   0.0  ! Incident energy; (MeV/nucl)
 NSTAT       10000    -1 ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
@@ -16,8 +16,8 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 
 
 def test_default_mat_config_str() -> None:
-    """Test if the default BeamConfig str representation is correct."""
-    assert BeamConfig() == """MEDIUM 0
+    """Test if the default MatConfig str representation is correct."""
+    assert str(MatConfig()) == """MEDIUM 0
 ICRU 276
 END
 """
