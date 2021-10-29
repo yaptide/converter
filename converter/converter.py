@@ -112,7 +112,7 @@ class DetectConfig:
         return "\n".join(detect_strings)
 
 
-@ dataclass
+@dataclass
 class GeoConfig:
     """Class mapping of the geo.dat config file."""
 
@@ -143,12 +143,12 @@ class GeoConfig:
 class Parser(ABC):
     """Abstract parser, the template for implementing other parsers."""
 
-    @ abstractmethod
+    @abstractmethod
     def parse_configs(json: dict):
         """Convert the json dict to the 4 config dataclasses."""
         pass
 
-    @ abstractmethod
+    @abstractmethod
     def save_configs(target_dir_path: str):
         """
         Save the configs as text files in the target_dir.
@@ -196,7 +196,7 @@ class Runner:
         self.input_data = input_data
         self.output_dir = output_dir
 
-    def run_parser(self):
+    def run_parser(self) -> None:
         """Convert the configs and save them in the output_dir directory."""
         self.parser.parse_configs(self.input_data)
         self.parser.save_configs(self.output_dir)
