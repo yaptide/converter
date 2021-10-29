@@ -1,10 +1,10 @@
 import pytest
-from converter import converter
+from converter.converter import BeamConfig, MatConfig
 
 
 def test_default_beam_config_str() -> None:
     """Test if the default BeamConfig str representation is correct."""
-    assert converter.BeamConfig() == """
+    assert BeamConfig() == """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 TMAX0      	250   0.0  ! Incident energy; (MeV/nucl)
@@ -17,7 +17,7 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 
 def test_default_mat_config_str() -> None:
     """Test if the default BeamConfig str representation is correct."""
-    assert converter.BeamConfig() == """MEDIUM 0
+    assert BeamConfig() == """MEDIUM 0
 ICRU 276
 END
 """
