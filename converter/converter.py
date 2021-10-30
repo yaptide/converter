@@ -157,7 +157,7 @@ class Parser(ABC):
         pass
 
 
-class DummmyParser(Parser):
+class JustParser(Parser):
     """A simple placeholder parser that ignores the json input and prints example (default) configs."""
 
     def __init__(self) -> None:
@@ -188,6 +188,10 @@ class DummmyParser(Parser):
 
         with open(path.join(target_dir, 'geo.dat'), 'x') as geo_f:
             geo_f.write(str(self.geo_config))
+
+
+class JustParser(Parser):
+    """A parser :)"""
 
 
 class Runner:
