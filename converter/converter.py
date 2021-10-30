@@ -175,17 +175,19 @@ class DummmyParser(Parser):
         Save the configs as text files in the target_dir.
         The files are: beam.dat, mat.dat, detect.dat and geo.dat.
         """
-        with open(path.join(target_dir, 'beam.dat'), 'w') as beam_f:
-            beam_f.write(self.beam_config)
+        target_dir = path.abspath(target_dir)
 
-        with open(path.join(target_dir, 'mat.dat'), 'w') as mat_f:
-            mat_f.write(self.mat_config)
+        with open(path.join(target_dir, 'beam.dat'), 'x') as beam_f:
+            beam_f.write(str(self.beam_config))
 
-        with open(path.join(target_dir, 'detect.dat'), 'w') as detect_f:
-            detect_f.write(self.detect_config)
+        with open(path.join(target_dir, 'mat.dat'), 'x') as mat_f:
+            mat_f.write(str(self.mat_config))
 
-        with open(path.join(target_dir, 'geo.dat'), 'w') as geo_f:
-            beam_f.write(self.geo_config)
+        with open(path.join(target_dir, 'detect.dat'), 'x') as detect_f:
+            detect_f.write(str(self.detect_config))
+
+        with open(path.join(target_dir, 'geo.dat'), 'x') as geo_f:
+            geo_f.write(str(self.geo_config))
 
 
 class Runner:
