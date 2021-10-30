@@ -55,7 +55,7 @@ _Geo_str = """
 _Test_dir = './test_runs'
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def converter_output_dir(tmp_path_factory):
     output_dir = tmp_path_factory.mktemp(_Test_dir)
     dummy_runner = Runner(DummmyParser(), {}, output_dir)
