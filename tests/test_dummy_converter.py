@@ -57,6 +57,7 @@ _Test_dir = './test_runs'
 
 @pytest.fixture(scope="session")
 def converter_output_dir(tmp_path_factory):
+    """Fixture that creates a temporary dir and runs the converter there"""
     output_dir = tmp_path_factory.mktemp(_Test_dir)
     dummy_runner = Runner(DummmyParser(), {}, output_dir)
     dummy_runner.run_parser()
