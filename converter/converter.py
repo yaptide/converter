@@ -197,21 +197,21 @@ class JustParser(DummmyParser):
         super().__init__()
 
     def parse_configs(self, json: dict) -> None:
-        self._parse_beam()
-        self._parse_mat()
-        self._parse_detect()
-        self._parse_geo()
+        self._parse_beam(json)
+        self._parse_mat(json)
+        self._parse_detect(json)
+        self._parse_geo(json)
 
-    def _parse_beam(self) -> None:
+    def _parse_beam(self, json) -> None:
+        self.beam_config.energy = json["beam"]["energy"]
+
+    def _parse_mat(self, json) -> None:
         pass
 
-    def _parse_mat(self) -> None:
+    def _parse_detect(self, json) -> None:
         pass
 
-    def _parse_detect(self) -> None:
-        pass
-
-    def _parse_geo(self) -> None:
+    def _parse_geo(self, json) -> None:
         pass
 
     def save_configs(self, target_dir: str):

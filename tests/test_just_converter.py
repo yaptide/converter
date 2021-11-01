@@ -81,7 +81,7 @@ def test_beam_energy(converter) -> None:
     """Check if converter parsed energy"""
     energy = 312.
     json = {"beam": {"energy": energy}}
-    converter.json = json
+    converter.input_data = json
     converter.run_parser()
     with open(path.join(converter.output_dir, 'beam.dat')) as f:
         assert f.read() == _Beam_template.format(energy=energy, nstat=1000)
