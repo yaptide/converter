@@ -18,8 +18,8 @@ class Cylinder(Geometry):
     sort_index: int = field(init=False)
 
     id: str
-    radius: int = 10
-    height: int = 10
+    radius: int = 1
+    height: int = 100
 
     template: str = """Geometry Cyl
     Name ScoringCylinder
@@ -40,9 +40,9 @@ class Mesh(Geometry):
     sort_index: int = field(init=False)
 
     id: str
-    x: int = 10
-    y: int = 10
-    z: int = 10
+    x: int = 1
+    y: int = 1
+    z: int = 100
 
     template: str = """Geometry Mesh
     Name MyMesh_YZ
@@ -61,7 +61,7 @@ class Mesh(Geometry):
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 250.
+    energy: float = 150.
     nstat: int = 10000
 
     beam_template: str = """
@@ -202,3 +202,8 @@ class Runner:
         """Convert the configs and save them in the output_dir directory."""
         self.parser.parse_configs(self.input_data)
         self.parser.save_configs(self.output_dir)
+
+if __name__ == '__main__':
+    r = Runner(DummmyParser(), {}, '.')
+    r.run_parser()
+
