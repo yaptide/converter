@@ -204,19 +204,19 @@ class JustParser(DummmyParser):
         self._parse_geo(json)
 
     def _parse_beam(self, json) -> None:
-        """"Parses data from the input json into the beam_config property"""
+        """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
 
     def _parse_mat(self, json) -> None:
-        """"Parses data from the input json into the beam_config property"""
+        """Parses data from the input json into the beam_config property"""
         pass
 
     def _parse_detect(self, json) -> None:
-        """"Parses data from the input json into the detect_config property"""
+        """Parses data from the input json into the detect_config property"""
         pass
 
     def _parse_geo(self, json) -> None:
-        """"Parses data from the input json into the geo_config property"""
+        """Parses data from the input json into the geo_config property"""
         pass
 
     def save_configs(self, target_dir: str):

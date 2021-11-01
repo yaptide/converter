@@ -67,6 +67,7 @@ def converter_output_dir(tmp_path_factory) -> str:
 def converter(converter_output_dir) -> Runner:
     """Create a converter that outputs to the temporary directory"""
     converter = Runner(JustParser(), {}, converter_output_dir)
+    converter.input_data = {"beam": {"energy": 150.}}
     return converter
 
 
