@@ -18,8 +18,8 @@ class Cylinder(Geometry):
     sort_index: int = field(init=False)
 
     id: str
-    radius: int = 10
-    height: int = 10
+    radius: int = 1
+    height: int = 400
 
     template: str = """Geometry Cyl
     Name ScoringCylinder
@@ -40,9 +40,9 @@ class Mesh(Geometry):
     sort_index: int = field(init=False)
 
     id: str
-    x: int = 10
-    y: int = 10
-    z: int = 10
+    x: int = 1
+    y: int = 100
+    z: int = 300
 
     template: str = """Geometry Mesh
     Name MyMesh_YZ
@@ -61,8 +61,8 @@ class Mesh(Geometry):
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 250.
-    nstat: int = 10000
+    energy: float = 150.
+    nstat: int = 1000
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
@@ -188,6 +188,43 @@ class DummmyParser(Parser):
 
         with open(path.join(target_dir, 'geo.dat'), 'x') as geo_f:
             geo_f.write(str(self.geo_config))
+
+
+class JustParser(DummmyParser):
+    """A parser :)"""
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def parse_configs(self, json: dict) -> None:
+        """Wrapper for all parse functions"""
+        self._parse_beam(json)
+        self._parse_mat(json)
+        self._parse_detect(json)
+        self._parse_geo(json)
+
+    def _parse_beam(self, json) -> None:
+        """Parses data from the input json into the beam_config property"""
+        self.beam_config.energy = json["beam"]["energy"]
+
+    def _parse_mat(self, json) -> None:
+        """Parses data from the input json into the beam_config property"""
+        pass
+
+    def _parse_detect(self, json) -> None:
+        """Parses data from the input json into the detect_config property"""
+        pass
+
+    def _parse_geo(self, json) -> None:
+        """Parses data from the input json into the geo_config property"""
+        pass
+
+    def save_configs(self, target_dir: str):
+        """
+        Save the configs as text files in the target_dir.
+        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
+        """
+        return super().save_configs(target_dir)
 
 
 class Runner:
