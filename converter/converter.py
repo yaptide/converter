@@ -190,8 +190,32 @@ class DummmyParser(Parser):
             geo_f.write(str(self.geo_config))
 
 
-class JustParser(Parser):
+class JustParser(DummmyParser):
     """A parser :)"""
+
+    def __init__(self) -> None:
+        super().__init__()
+
+    def parse_configs(self, json: dict) -> None:
+        self._parse_beam()
+        self._parse_mat()
+        self._parse_detect()
+        self._parse_geo()
+
+    def _parse_beam() -> None:
+        pass
+
+    def _parse_mat() -> None:
+        pass
+
+    def _parse_detect() -> None:
+        pass
+
+    def _parse_geo() -> None:
+        pass
+
+    def save_configs(self, target_dir: str):
+        return super().save_configs(target_dir)
 
 
 class Runner:

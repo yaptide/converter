@@ -1,8 +1,8 @@
 import pytest
 from os import path
-from converter.converter import DummmyParser, Runner
+from converter.converter import BeamConfig, MatConfig, DetectConfig, GeoConfig, DummmyParser, Runner
 
-_Beam_str = """
+_Beam_template = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 TMAX0      	250.000000   0.0  ! Incident energy; (MeV/nucl)
@@ -11,12 +11,12 @@ STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
-_Mat_str = """MEDIUM 0
+_Mat_template = """MEDIUM 0
 ICRU 276
 END
 """
 
-_Detect_str = """Geometry Cyl
+_Detect_template = """Geometry Cyl
     Name ScoringCylinder
     R 0.0 10.0 10
     Z 0.0 30.0 10
@@ -31,7 +31,7 @@ Output
     Quantity Dose
     """
 
-_Geo_str = """
+_Geo_template = """
 *---><---><--------><------------------------------------------------>
     0    0           protons, H2O 30 cm cylinder, r=10, 1 zone
 *---><---><--------><--------><--------><--------><--------><-------->
@@ -66,22 +66,22 @@ def converter_output_dir(tmp_path_factory):
 def test_if_beam_created(converter_output_dir) -> None:
     """Check if beam.dat file created"""
     with open(path.join(converter_output_dir, 'beam.dat')) as f:
-        assert f.read() == _Beam_str
+        assert f.read() == _Beam_template
 
 
 def test_if_mat_created(converter_output_dir) -> None:
     """Check if mat.dat file created"""
     with open(path.join(converter_output_dir, 'mat.dat')) as f:
-        assert f.read() == _Mat_str
+        assert f.read() == _Mat_template
 
 
 def test_if_detect_created(converter_output_dir) -> None:
     """Check if detect.dat file created"""
     with open(path.join(converter_output_dir, 'detect.dat')) as f:
-        assert f.read() == _Detect_str
+        assert f.read() == _Detect_template
 
 
 def test_if_geo_created(converter_output_dir) -> None:
     """Check if geo.dat file created"""
     with open(path.join(converter_output_dir, 'geo.dat')) as f:
-        assert f.read() == _Geo_str
+        assert f.read() == _Geo_template
