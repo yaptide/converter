@@ -18,8 +18,8 @@ class Cylinder(Geometry):
     sort_index: int = field(init=False)
 
     id: str
-    radius: int = 10
-    height: int = 10
+    radius: int = 1
+    height: int = 400
 
     template: str = """Geometry Cyl
     Name ScoringCylinder
@@ -40,9 +40,9 @@ class Mesh(Geometry):
     sort_index: int = field(init=False)
 
     id: str
-    x: int = 10
-    y: int = 10
-    z: int = 10
+    x: int = 1
+    y: int = 100
+    z: int = 300
 
     template: str = """Geometry Mesh
     Name MyMesh_YZ
@@ -61,8 +61,8 @@ class Mesh(Geometry):
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 250.
-    nstat: int = 10000
+    energy: float = 150.
+    nstat: int = 1000
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
@@ -157,7 +157,7 @@ class Parser(ABC):
         pass
 
 
-class JustParser(Parser):
+class DummmyParser(Parser):
     """A simple placeholder parser that ignores the json input and prints example (default) configs."""
 
     def __init__(self) -> None:
