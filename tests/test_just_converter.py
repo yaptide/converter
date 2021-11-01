@@ -65,7 +65,7 @@ def converter_output_dir(tmp_path_factory) -> str:
 
 @pytest.fixture
 def converter(converter_output_dir) -> Runner:
-    """Create a converter in """
+    """Create a converter that outputs to the temporary directory"""
     converter = Runner(JustParser(), {}, converter_output_dir)
     return converter
 

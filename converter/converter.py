@@ -197,24 +197,33 @@ class JustParser(DummmyParser):
         super().__init__()
 
     def parse_configs(self, json: dict) -> None:
+        """Wrapper for all parse functions"""
         self._parse_beam(json)
         self._parse_mat(json)
         self._parse_detect(json)
         self._parse_geo(json)
 
     def _parse_beam(self, json) -> None:
+        """"Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
 
     def _parse_mat(self, json) -> None:
+        """"Parses data from the input json into the beam_config property"""
         pass
 
     def _parse_detect(self, json) -> None:
+        """"Parses data from the input json into the detect_config property"""
         pass
 
     def _parse_geo(self, json) -> None:
+        """"Parses data from the input json into the geo_config property"""
         pass
 
     def save_configs(self, target_dir: str):
+        """
+        Save the configs as text files in the target_dir.
+        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
+        """
         return super().save_configs(target_dir)
 
 
