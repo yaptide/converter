@@ -5,12 +5,13 @@ from converter.converter import DummmyParser, Runner
 _Beam_str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
-TMAX0      	250.000000   0.0  ! Incident energy; (MeV/nucl)
-NSTAT       10000    -1 ! NSTAT, Step of saving
+TMAX0      	150.000000   0.0  ! Incident energy; (MeV/nucl)
+NSTAT       1000    -1 ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
+
 _Mat_str = """MEDIUM 0
 ICRU 276
 END
@@ -18,13 +19,13 @@ END
 
 _Detect_str = """Geometry Cyl
     Name ScoringCylinder
-    R 0.0 10.0 10
-    Z 0.0 30.0 10
+    R 0.0 10.0 1
+    Z 0.0 30.0 400
 Geometry Mesh
     Name MyMesh_YZ
-    X -5.0  5.0    10
-    Y -5.0  5.0    10
-    Z  0.0  30.0   10
+    X -5.0  5.0    1
+    Y -5.0  5.0    100
+    Z  0.0  30.0   300
 Output
     Filename mesh.bdo
     Geo ScoringCylinder
@@ -54,8 +55,8 @@ _Geo_str = """
 _Test_dir = './test_runs'
 
 
-@pytest.fixture(scope="session")
-def converter_output_dir(tmp_path_factory):
+@pytest.fixture(scope="module")
+def converter_output_dir(tmp_path_factory) -> str:
     """Fixture that creates a temporary dir and runs the converter there"""
     output_dir = tmp_path_factory.mktemp(_Test_dir)
     dummy_runner = Runner(DummmyParser(), {}, output_dir)

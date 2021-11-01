@@ -202,16 +202,16 @@ class JustParser(DummmyParser):
         self._parse_detect()
         self._parse_geo()
 
-    def _parse_beam() -> None:
+    def _parse_beam(self) -> None:
         pass
 
-    def _parse_mat() -> None:
+    def _parse_mat(self) -> None:
         pass
 
-    def _parse_detect() -> None:
+    def _parse_detect(self) -> None:
         pass
 
-    def _parse_geo() -> None:
+    def _parse_geo(self) -> None:
         pass
 
     def save_configs(self, target_dir: str):

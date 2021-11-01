@@ -20,13 +20,13 @@ END
 
 _Detect_template_default = """Geometry Cyl
     Name ScoringCylinder
-    R 0.0 10.0 10
-    Z 0.0 30.0 10
+    R 0.0 10.0 1
+    Z 0.0 30.0 400
 Geometry Mesh
     Name MyMesh_YZ
-    X -5.0  5.0    10
-    Y -5.0  5.0    10
-    Z  0.0  30.0   10
+    X -5.0  5.0    1
+    Y -5.0  5.0    100
+    Z  0.0  30.0   300
 Output
     Filename mesh.bdo
     Geo ScoringCylinder
