@@ -29,6 +29,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
+          pip3 install -r test_requirements.txt
       #run pytest unit tests
       - name: Run main tests
         run: pytest tests/
