@@ -190,8 +190,8 @@ class DummmyParser(Parser):
             geo_f.write(str(self.geo_config))
 
 
-class JustParser(DummmyParser):
-    """A parser :)"""
+class ShieldhitParser(DummmyParser):
+    """A regular shieldhit parser"""
 
     def __init__(self) -> None:
         super().__init__()
@@ -227,15 +227,3 @@ class JustParser(DummmyParser):
         return super().save_configs(target_dir)
 
 
-class Runner:
-    """Converts input data dict to files that will be saved in output_dir using the specified parser."""
-
-    def __init__(self, parser: Parser, input_data: dict, output_dir: str) -> None:
-        self.parser = parser
-        self.input_data = input_data
-        self.output_dir = output_dir
-
-    def run_parser(self) -> None:
-        """Convert the configs and save them in the output_dir directory."""
-        self.parser.parse_configs(self.input_data)
-        self.parser.save_configs(self.output_dir)

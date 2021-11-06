@@ -1,6 +1,7 @@
 import pytest
 from os import path
-from converter.converter import BeamConfig, JustParser, MatConfig, DetectConfig, GeoConfig, DummmyParser, Runner
+from converter.shieldhit.parser import Parser
+from converter.api import get_parser_from_str, run_parser
 
 _Beam_template = """
 RNDSEED      	89736501     ! Random seed
@@ -57,53 +58,56 @@ _Test_dir = './test_runs'
 
 
 @pytest.fixture
-def converter_output_dir(tmp_path_factory) -> str:
-    """Fixture that creates a temporary dir and runs the converter there"""
+def output_dir(tmp_path_factory) -> str:
+    """Fixture that creates a temporary dir for testing converter output."""
     output_dir = tmp_path_factory.mktemp(_Test_dir)
     return output_dir
 
 
 @pytest.fixture
-def converter(converter_output_dir) -> Runner:
-    """Create a converter that outputs to the temporary directory"""
-    converter = Runner(JustParser(), {}, converter_output_dir)
-    converter.input_data = {"beam": {"energy": 150.}}
-    return converter
+def parser() -> Parser:
+    """Just a praser fixture."""
+    return get_parser_from_str('shieldhit')
 
 
-def test_if_beam_created(converter) -> None:
+@pytest.fixture
+def default_json() -> dict:
+    """Creates default json."""
+    return {"beam": {"energy": 150.}}
+
+
+def test_if_beam_created(parser, default_json, output_dir) -> None:
     """Check if beam.dat file created"""
-    converter.run_parser()
-    with open(path.join(converter.output_dir, 'beam.dat')) as f:
+    run_parser(parser, default_json, output_dir)
+    with open(path.join(output_dir, 'beam.dat')) as f:
         assert f.read() == _Beam_template.format(energy=150., nstat=1000)
 
 
-def test_beam_energy(converter) -> None:
+def test_beam_energy(parser, default_json, output_dir) -> None:
     """Check if converter parsed energy"""
     energy = 312.
-    json = {"beam": {"energy": energy}}
-    converter.input_data = json
-    converter.run_parser()
-    with open(path.join(converter.output_dir, 'beam.dat')) as f:
+    default_json["beam"]["energy"] = energy
+    run_parser(parser, default_json, output_dir)
+    with open(path.join(output_dir, 'beam.dat')) as f:
         assert f.read() == _Beam_template.format(energy=energy, nstat=1000)
 
 
-def test_if_mat_created(converter) -> None:
+def test_if_mat_created(parser, default_json, output_dir) -> None:
     """Check if mat.dat file created"""
-    converter.run_parser()
-    with open(path.join(converter.output_dir, 'mat.dat')) as f:
+    run_parser(parser, default_json, output_dir)
+    with open(path.join(output_dir, 'mat.dat')) as f:
         assert f.read() == _Mat_template
 
 
-def test_if_detect_created(converter) -> None:
+def test_if_detect_created(parser, default_json, output_dir) -> None:
     """Check if detect.dat file created"""
-    converter.run_parser()
-    with open(path.join(converter.output_dir, 'detect.dat')) as f:
+    run_parser(parser, default_json, output_dir)
+    with open(path.join(output_dir, 'detect.dat')) as f:
         assert f.read() == _Detect_template
 
 
-def test_if_geo_created(converter) -> None:
+def test_if_geo_created(parser, default_json, output_dir) -> None:
     """Check if geo.dat file created"""
-    converter.run_parser()
-    with open(path.join(converter.output_dir, 'geo.dat')) as f:
+    run_parser(parser, default_json, output_dir)
+    with open(path.join(output_dir, 'geo.dat')) as f:
         assert f.read() == _Geo_template
