@@ -6,13 +6,14 @@ from api import get_parser_from_str, run_parser
 
 
 def dir_path(string):
+    """Hleper function that helps argparse check if a given string is a valid directory."""
     if os.path.isdir(string):
         return string
     raise NotADirectoryError(string)
 
 
 def main(args):
-
+    """Function for running parser as a script."""
     arg_parser = argparse.ArgumentParser(
         description='Parse a json file and return input files for a particle simulator.')
     arg_parser.add_argument('script_path', type=argparse.FileType())

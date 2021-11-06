@@ -7,10 +7,8 @@ class DummmyParser(Parser):
     def __init__(self) -> None:
         pass
 
-    def parse_configs(self, json: dict):
+    def parse_configs(self, json: dict) -> None:
         """Basicaly do nothing since we work on defaults in this parser."""
 
-    def save_configs(self, target_dir: str):
-        """
-        Does nothing, not implemented yet.
-        """
+    def save_configs(self, target_dir: str) -> None:
+        """Does nothing, not implemented yet."""
