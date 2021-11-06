@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC
 from functools import reduce
 from dataclasses import dataclass, field
 from os import path
+from converter.common import Parser
 
 
 @dataclass(frozen=True)
@@ -140,23 +141,6 @@ class GeoConfig:
         return self.geo_template
 
 
-class Parser(ABC):
-    """Abstract parser, the template for implementing other parsers."""
-
-    @abstractmethod
-    def parse_configs(json: dict):
-        """Convert the json dict to the 4 config dataclasses."""
-        pass
-
-    @abstractmethod
-    def save_configs(target_dir_path: str):
-        """
-        Save the configs as text files in the target_dir.
-        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
-        """
-        pass
-
-
 class DummmyParser(Parser):
     """A simple placeholder parser that ignores the json input and prints example (default) configs."""
 
@@ -190,8 +174,8 @@ class DummmyParser(Parser):
             geo_f.write(str(self.geo_config))
 
 
-class JustParser(DummmyParser):
-    """A parser :)"""
+class ShieldhitParser(DummmyParser):
+    """A regular shieldhit parser"""
 
     def __init__(self) -> None:
         super().__init__()
@@ -225,17 +209,3 @@ class JustParser(DummmyParser):
         The files are: beam.dat, mat.dat, detect.dat and geo.dat.
         """
         return super().save_configs(target_dir)
-
-
-class Runner:
-    """Converts input data dict to files that will be saved in output_dir using the specified parser."""
-
-    def __init__(self, parser: Parser, input_data: dict, output_dir: str) -> None:
-        self.parser = parser
-        self.input_data = input_data
-        self.output_dir = output_dir
-
-    def run_parser(self) -> None:
-        """Convert the configs and save them in the output_dir directory."""
-        self.parser.parse_configs(self.input_data)
-        self.parser.save_configs(self.output_dir)
