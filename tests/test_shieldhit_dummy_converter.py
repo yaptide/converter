@@ -59,7 +59,7 @@ _Test_dir = './test_runs'
 @pytest.fixture
 def parser() -> Parser:
     """Just a praser fixture."""
-    return get_parser_from_str('shieldhit')
+    return get_parser_from_str('dummy')
 
 
 @pytest.fixture

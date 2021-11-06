@@ -1,6 +1,6 @@
-import shieldhit
-import topas
-from common import Parser
+from converter import shieldhit
+from converter import topas
+from converter.common import Parser
 
 
 def get_parser_from_str(parser_type: str) -> Parser:
