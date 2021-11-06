@@ -5,7 +5,7 @@ class DummmyParser(Parser):
     """A simple placeholder parser that does nothing."""
 
     def __init__(self) -> None:
-        pass
+        raise NotImplementedError("Don't use me, i don't work yet :(")
 
     def parse_configs(self, json: dict) -> None:
         """Basicaly do nothing since we work on defaults in this parser."""
