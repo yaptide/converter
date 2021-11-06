@@ -2,7 +2,7 @@ from abc import ABC
 from functools import reduce
 from dataclasses import dataclass, field
 from os import path
-from common import Parser
+from converter.common import Parser
 
 
 @dataclass(frozen=True)
