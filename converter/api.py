@@ -8,6 +8,8 @@ def get_parser_from_str(parser_type: str):
         return DummmyParser()
     elif parser_type.lower() == 'shieldhit':
         return ShieldhitParser()
+    elif parser_type.lower() == 'topas':
+        return
     else:
         print(f"Invalid parser type \"{parser_type}\".")
         raise

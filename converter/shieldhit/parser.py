@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC
 from functools import reduce
 from dataclasses import dataclass, field
 from os import path
+from common import Parser
 
 
 @dataclass(frozen=True)
@@ -140,23 +141,6 @@ class GeoConfig:
         return self.geo_template
 
 
-class Parser(ABC):
-    """Abstract parser, the template for implementing other parsers."""
-
-    @abstractmethod
-    def parse_configs(json: dict):
-        """Convert the json dict to the 4 config dataclasses."""
-        pass
-
-    @abstractmethod
-    def save_configs(target_dir_path: str):
-        """
-        Save the configs as text files in the target_dir.
-        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
-        """
-        pass
-
-
 class DummmyParser(Parser):
     """A simple placeholder parser that ignores the json input and prints example (default) configs."""
 
@@ -225,5 +209,3 @@ class ShieldhitParser(DummmyParser):
         The files are: beam.dat, mat.dat, detect.dat and geo.dat.
         """
         return super().save_configs(target_dir)
-
-

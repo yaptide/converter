@@ -1,12 +1,30 @@
 import sys
 import json
+import argparse
+import os
 from api import get_parser_from_str, run_parser
 
 
-def main(json: dict, output_dir: str = '.', output_format: str = 'shieldhit', **kwargs):
-    parser = get_parser_from_str(output_format)
-    run_parser(parser, json, output_dir)
+def dir_path(string):
+    if os.path.isdir(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
+
+
+def main(args):
+
+    arg_parser = argparse.ArgumentParser(
+        description='Parse a json file and return input files for a particle simulator.')
+    arg_parser.add_argument('script_path', type=argparse.FileType())
+    arg_parser.add_argument('input_json', type=argparse.FileType('r'))
+    arg_parser.add_argument('output_dir', nargs='?', default=os.path.curdir, type=dir_path)
+    arg_parser.add_argument('output_format', nargs='?', default='shieldhit', type=str)
+    parsed_args = arg_parser.parse_args(args)
+
+    json_parser = get_parser_from_str(parsed_args.output_format)
+    run_parser(json_parser, json.load(parsed_args.input_json), parsed_args.output_dir)
 
 
 if __name__ == '__main__':
-    main(json.loads(sys.argv[1]), **dict(arg.split('=') for arg in sys.argv[2:]))
+    main(sys.argv)
