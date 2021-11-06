@@ -8,8 +8,7 @@ from api import get_parser_from_str, run_parser
 def dir_path(string):
     if os.path.isdir(string):
         return string
-    else:
-        raise NotADirectoryError(string)
+    raise NotADirectoryError(string)
 
 
 def main(args):
