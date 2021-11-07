@@ -17,7 +17,10 @@ class Body(ABC):
 
 @dataclass(frozen=True)
 class SphereBody(Body):
-    """A sphere body. It's defined by its radius, offset from the point (0, 0, 0) xyz and its rotation along each axis."""
+    """
+    A sphere body. It's defined by its radius, offset from the point (0, 0, 0) xyz
+    and its rotation along each axis.
+    """
 
     radius: float
 
@@ -37,17 +40,20 @@ class CylinderBody(Body):
 @dataclass(frozen=True)
 class BoxBody(Body):
     """
-    A box body. It's defined by size in the 3 dimensions (z - height, x - width and y - depth), 
+    A box body. It's defined by size in the 3 dimensions (z - height, x - width and y - depth),
     its offset from the point (0, 0, 0) xyz and its rotation along each axis.
     """
+
     height: float
     width: float
     depth: float
 
 
 def parse_body(body_dict: dict) -> Body:
-    type = body_dict["userData"]["geometryType"]
-    if type == "CylinderGeometry":
+    """Parse json containing information about body to Body."""
+
+    body_type = body_dict["userData"]["geometryType"]
+    if body_type == "CylinderGeometry":
         return CylinderBody(uuid=body_dict["uuid"],
                             x_offset=body_dict["userData"]["position"][0],
                             y_offset=body_dict["userData"]["position"][1],
@@ -59,7 +65,7 @@ def parse_body(body_dict: dict) -> Body:
                             radius_bottom=body_dict["userData"]['parameters']["radiusBottom"],
                             height=body_dict["userData"]['parameters']["height"],
                             )
-    if type == "BoxGeometry":
+    if body_type == "BoxGeometry":
         return BoxBody(uuid=body_dict["uuid"],
                        x_offset=body_dict["userData"]["position"][0],
                        y_offset=body_dict["userData"]["position"][1],
@@ -71,7 +77,7 @@ def parse_body(body_dict: dict) -> Body:
                        width=body_dict["userData"]['parameters']["width"],
                        depth=body_dict["userData"]['parameters']["depth"],
                        )
-    if type == "SphereGeometry":
+    if body_type == "SphereGeometry":
         return SphereBody(uuid=body_dict["uuid"],
                           x_offset=body_dict["userData"]["position"][0],
                           y_offset=body_dict["userData"]["position"][1],
@@ -82,5 +88,5 @@ def parse_body(body_dict: dict) -> Body:
                           radius=body_dict["userData"]['parameters']["radius"],
                           )
 
-    print(f"Invalid body type \"{type}\".")
+    print(f"Invalid body type \"{body_type}\".")
     raise ValueError("Parser type must be either 'CylinderGeometry', 'BoxGeometry' or 'SphereGeometry'")

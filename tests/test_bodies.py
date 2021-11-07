@@ -56,6 +56,8 @@ _Sphere_json = _Json_with_bodies["object"]["children"][2]
 
 @pytest.fixture
 def body(request):
+    """Fixture that provides a Body based on a json that contains body information."""
+
     return bodies.parse_body(request.param)
 
 
@@ -65,7 +67,9 @@ def body(request):
     (_Sphere_json, bodies.SphereBody)
 ], indirect=["body"])
 def test_type(body, expected):
-    assert expected == type(body)
+    """Test if parser returns correct Body object type"""
+
+    assert type(body) is expected
 
 
 @pytest.mark.parametrize("body,expected", [
@@ -74,7 +78,9 @@ def test_type(body, expected):
     (_Sphere_json, _Sphere_json)
 ], indirect=["body"])
 def test_uuid(body, expected):
-    assert expected['uuid'] == body.uuid
+    """Test if body_parser parses uuid correctly"""
+
+    assert body.uuid == expected['uuid']
 
 
 @pytest.mark.parametrize("body,expected", [
@@ -83,7 +89,9 @@ def test_uuid(body, expected):
     (_Sphere_json, _Sphere_json)
 ], indirect=["body"])
 def test_offset(body, expected):
-    assert expected['userData']['position'] == [body.x_offset, body.y_offset, body.z_offset]
+    """Test if body_parser parses offset(position) correctly"""
+
+    assert [body.x_offset, body.y_offset, body.z_offset] == expected['userData']['position']
 
 
 @pytest.mark.parametrize("body,expected", [
@@ -92,4 +100,6 @@ def test_offset(body, expected):
     (_Sphere_json, _Sphere_json)
 ], indirect=["body"])
 def test_rotation(body, expected):
-    assert expected['userData']['rotation'] == [body.x_rotation, body.y_rotation, body.z_rotation]
+    """Test if body_parser parses rotation correctly"""
+
+    assert [body.x_rotation, body.y_rotation, body.z_rotation] == expected['userData']['rotation']
