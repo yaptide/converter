@@ -51,7 +51,6 @@ class BoxBody(Body):
 
 def parse_body(body_dict: dict) -> Body:
     """Parse json containing information about body to Body."""
-
     body_type = body_dict["userData"]["geometryType"]
     if body_type == "CylinderGeometry":
         return CylinderBody(uuid=body_dict["uuid"],
