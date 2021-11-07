@@ -74,7 +74,7 @@ def test_type(body, expected):
     (_Sphere_json, _Sphere_json)
 ], indirect=["body"])
 def test_uuid(body, expected):
-    assert expected['userData']['uuid'] == body.uuid
+    assert expected['uuid'] == body.uuid
 
 
 @pytest.mark.parametrize("body,expected", [

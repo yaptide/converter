@@ -10,6 +10,9 @@ class Body(ABC):
     x_offset: float
     y_offset: float
     z_offset: float
+    x_rotation: float
+    y_rotation: float
+    z_rotation: float
 
 
 @dataclass(frozen=True)
@@ -43,4 +46,41 @@ class BoxBody(Body):
 
 
 def parse_body(body_dict: dict) -> Body:
-    pass
+    type = body_dict["userData"]["geometryType"]
+    if type == "CylinderGeometry":
+        return CylinderBody(uuid=body_dict["uuid"],
+                            x_offset=body_dict["userData"]["position"][0],
+                            y_offset=body_dict["userData"]["position"][1],
+                            z_offset=body_dict["userData"]["position"][2],
+                            x_rotation=body_dict["userData"]["rotation"][0],
+                            y_rotation=body_dict["userData"]["rotation"][1],
+                            z_rotation=body_dict["userData"]["rotation"][2],
+                            radius_top=body_dict["userData"]['parameters']["radiusTop"],
+                            radius_bottom=body_dict["userData"]['parameters']["radiusBottom"],
+                            height=body_dict["userData"]['parameters']["height"],
+                            )
+    if type == "BoxGeometry":
+        return BoxBody(uuid=body_dict["uuid"],
+                       x_offset=body_dict["userData"]["position"][0],
+                       y_offset=body_dict["userData"]["position"][1],
+                       z_offset=body_dict["userData"]["position"][2],
+                       x_rotation=body_dict["userData"]["rotation"][0],
+                       y_rotation=body_dict["userData"]["rotation"][1],
+                       z_rotation=body_dict["userData"]["rotation"][2],
+                       height=body_dict["userData"]['parameters']["height"],
+                       width=body_dict["userData"]['parameters']["width"],
+                       depth=body_dict["userData"]['parameters']["depth"],
+                       )
+    if type == "SphereGeometry":
+        return SphereBody(uuid=body_dict["uuid"],
+                          x_offset=body_dict["userData"]["position"][0],
+                          y_offset=body_dict["userData"]["position"][1],
+                          z_offset=body_dict["userData"]["position"][2],
+                          x_rotation=body_dict["userData"]["rotation"][0],
+                          y_rotation=body_dict["userData"]["rotation"][1],
+                          z_rotation=body_dict["userData"]["rotation"][2],
+                          radius=body_dict["userData"]['parameters']["radius"],
+                          )
+
+    print(f"Invalid body type \"{type}\".")
+    raise ValueError("Parser type must be either 'CylinderGeometry', 'BoxGeometry' or 'SphereGeometry'")
