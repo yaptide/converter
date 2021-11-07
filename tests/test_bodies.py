@@ -57,7 +57,6 @@ _Sphere_json = _Json_with_bodies["object"]["children"][2]
 @pytest.fixture
 def body(request):
     """Fixture that provides a Body based on a json that contains body information."""
-
     return bodies.parse_body(request.param)
 
 
@@ -68,7 +67,6 @@ def body(request):
 ], indirect=["body"])
 def test_type(body, expected):
     """Test if parser returns correct Body object type"""
-
     assert type(body) is expected
 
 
@@ -79,7 +77,6 @@ def test_type(body, expected):
 ], indirect=["body"])
 def test_uuid(body, expected):
     """Test if body_parser parses uuid correctly"""
-
     assert body.uuid == expected['uuid']
 
 
@@ -90,7 +87,6 @@ def test_uuid(body, expected):
 ], indirect=["body"])
 def test_offset(body, expected):
     """Test if body_parser parses offset(position) correctly"""
-
     assert [body.x_offset, body.y_offset, body.z_offset] == expected['userData']['position']
 
 
@@ -101,5 +97,4 @@ def test_offset(body, expected):
 ], indirect=["body"])
 def test_rotation(body, expected):
     """Test if body_parser parses rotation correctly"""
-
     assert [body.x_rotation, body.y_rotation, body.z_rotation] == expected['userData']['rotation']
