@@ -1,5 +1,5 @@
-from converter import shieldhit
-from converter import topas
+from converter.shieldhit.parser import DummmyParser as SHDummyParser, ShieldhitParser
+from converter.topas.parser import DummmyParser as TopasDummyParser
 from converter.common import Parser
 
 
@@ -7,11 +7,11 @@ def get_parser_from_str(parser_type: str) -> Parser:
     """Get a converter object based on the provided type."""
     # This is temporary, suggestions on how to do this better appreciated.
     if parser_type.lower() == 'dummy':
-        return shieldhit.parser.DummmyParser()
+        return SHDummyParser()
     if parser_type.lower() == 'shieldhit':
-        return shieldhit.parser.ShieldhitParser()
+        return ShieldhitParser()
     if parser_type.lower() == 'topas':
-        return topas.parser.DummyParser()
+        return TopasDummyParser()
 
     print(f"Invalid parser type \"{parser_type}\".")
     raise ValueError("Parser type must be either 'dummy', 'shieldhit' or 'topas'")
