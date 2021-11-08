@@ -1,8 +1,8 @@
 import pytest
-from converter import bodies
+from converter import solid_figures
 
 
-_Json_with_bodies = {
+_Json_with_figures = {
     "object": {
         "children": [
             {
@@ -49,52 +49,52 @@ _Json_with_bodies = {
     }
 }
 
-_Cylinder_json = _Json_with_bodies["object"]["children"][0]
-_Box_json = _Json_with_bodies["object"]["children"][1]
-_Sphere_json = _Json_with_bodies["object"]["children"][2]
+_Cylinder_json = _Json_with_figures["object"]["children"][0]
+_Box_json = _Json_with_figures["object"]["children"][1]
+_Sphere_json = _Json_with_figures["object"]["children"][2]
 
 
 @pytest.fixture
-def body(request):
-    """Fixture that provides a Body based on a json that contains body information."""
-    return bodies.parse_body(request.param)
+def figure(request):
+    """Fixture that provides a figure based on a json that contains figure information."""
+    return solid_figures.parse_figure(request.param)
 
 
-@pytest.mark.parametrize("body,expected", [
-    (_Cylinder_json, bodies.CylinderBody),
-    (_Box_json, bodies.BoxBody),
-    (_Sphere_json, bodies.SphereBody)
-], indirect=["body"])
-def test_type(body, expected):
-    """Test if parser returns correct Body object type"""
-    assert type(body) is expected
+@pytest.mark.parametrize("figure,expected", [
+    (_Cylinder_json, solid_figures.CylinderFigure),
+    (_Box_json, solid_figures.BoxFigure),
+    (_Sphere_json, solid_figures.SphereFigure)
+], indirect=["figure"])
+def test_type(figure, expected):
+    """Test if parser returns correct figure object type"""
+    assert type(figure) is expected
 
 
-@pytest.mark.parametrize("body,expected", [
+@pytest.mark.parametrize("figure,expected", [
     (_Cylinder_json, _Cylinder_json),
     (_Box_json, _Box_json),
     (_Sphere_json, _Sphere_json)
-], indirect=["body"])
-def test_uuid(body, expected):
-    """Test if body_parser parses uuid correctly"""
-    assert body.uuid == expected['uuid']
+], indirect=["figure"])
+def test_uuid(figure, expected):
+    """Test if figure_parser parses uuid correctly"""
+    assert figure.uuid == expected['uuid']
 
 
-@pytest.mark.parametrize("body,expected", [
+@pytest.mark.parametrize("figure,expected", [
     (_Cylinder_json, _Cylinder_json),
     (_Box_json, _Box_json),
     (_Sphere_json, _Sphere_json)
-], indirect=["body"])
-def test_offset(body, expected):
-    """Test if body_parser parses offset(position) correctly"""
-    assert [body.x_offset, body.y_offset, body.z_offset] == expected['userData']['position']
+], indirect=["figure"])
+def test_offset(figure, expected):
+    """Test if figure_parser parses offset(position) correctly"""
+    assert figure.offset == expected['userData']['position']
 
 
-@pytest.mark.parametrize("body,expected", [
+@pytest.mark.parametrize("figure,expected", [
     (_Cylinder_json, _Cylinder_json),
     (_Box_json, _Box_json),
     (_Sphere_json, _Sphere_json)
-], indirect=["body"])
-def test_rotation(body, expected):
-    """Test if body_parser parses rotation correctly"""
-    assert [body.x_rotation, body.y_rotation, body.z_rotation] == expected['userData']['rotation']
+], indirect=["figure"])
+def test_rotation(figure, expected):
+    """Test if figure_parser parses rotation correctly"""
+    assert figure.rotation == expected['userData']['rotation']
