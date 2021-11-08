@@ -1,5 +1,5 @@
-from converter.shieldhit.parser import  DummmyParser as SHDummyParser, ShieldhitParser
-from converter.topas.parser import  DummmyParser as TopasDummyParser
+from converter.shieldhit.parser import DummmyParser as SHDummyParser, ShieldhitParser
+from converter.topas.parser import DummmyParser as TopasDummyParser
 from converter.common import Parser
 
 
