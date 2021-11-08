@@ -13,10 +13,7 @@ class SolidFigure(ABC):
 
 @dataclass(frozen=True)
 class SphereFigure(SolidFigure):
-    """
-    A sphere figure. It's defined by its radius, offset from the point (0, 0, 0) xyz
-    and its rotation along each axis.
-    """
+    """A sphere. Its size is defined by its radius."""
 
     radius: float
 
@@ -24,8 +21,9 @@ class SphereFigure(SolidFigure):
 @dataclass(frozen=True)
 class CylinderFigure(SolidFigure):
     """
-    A cylinder figure. It's defined by the radii of both of its bases(top and bottom),
-    its height, its offset from the point (0, 0, 0) xyz and its rotation along each axis.
+    A cylinder, a cone or a truncated cone. It's defined by the radii of both of 
+    its bases(top and bottom) and height. A cone can be created by setting one 
+    of the radii to zero.
     """
 
     radius_top: float
@@ -36,8 +34,10 @@ class CylinderFigure(SolidFigure):
 @dataclass(frozen=True)
 class BoxFigure(SolidFigure):
     """
-    A box figure. It's defined by size in the 3 dimensions (z - height, x - width and y - depth),
-    its offset from the point (0, 0, 0) xyz and its rotation along each axis.
+    A rectangular box (cuboid). The figure can be rotated (meaning its walls don't have 
+    to be aligned with the axes of the coordinate system). Its size is defined by height, width and
+    depth (which would represent Z, Y and X if not rotated) and the values represent full length of 
+    each edge (not half-length).
     """
 
     height: float
