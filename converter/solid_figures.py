@@ -34,15 +34,15 @@ class CylinderFigure(SolidFigure):
 @dataclass(frozen=True)
 class BoxFigure(SolidFigure):
     """
-    A rectangular box (cuboid). The figure can be rotated (meaning its walls don't have 
-    to be aligned with the axes of the coordinate system). Its size is defined by height,
-    width and depth (which would represent Z, Y and X if not rotated) and the values
-    represent the full length of each edge (not half-length).
+    A rectangular box (cuboid). The figure can be rotated (meaning its walls don't have
+    to be aligned with the axes of the coordinate system). The edge lengths are the final lengths of
+    each edge, not the distance from the center of the figure (meaning they are full-size not half-size,
+    for example: the edge lengths 1, 1, 1 will result in a 1 by 1 by 1 cube).
     """
 
-    height: float
-    width: float
-    depth: float
+    x_edge_length: float
+    y_edge_length: float
+    z_edge_length: float
 
 
 def parse_figure(figure_dict: dict) -> SolidFigure:
@@ -60,9 +60,9 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
         return BoxFigure(uuid=figure_dict["uuid"],
                          offset=tuple(figure_dict["userData"]["position"]),
                          rotation=tuple(figure_dict["userData"]["rotation"]),
-                         height=figure_dict["userData"]['parameters']["height"],
-                         width=figure_dict["userData"]['parameters']["width"],
-                         depth=figure_dict["userData"]['parameters']["depth"],
+                         y_edge_length=figure_dict["userData"]['parameters']["height"],
+                         x_edge_length=figure_dict["userData"]['parameters']["width"],
+                         z_edge_length=figure_dict["userData"]['parameters']["depth"],
                          )
     if figure_type == "SphereGeometry":
         return SphereFigure(uuid=figure_dict["uuid"],
