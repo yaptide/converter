@@ -7,8 +7,8 @@ class SolidFigure(ABC):
     """Abstract figure, bodies are used to define geometries."""
 
     uuid: str
-    offset: list[float]
-    rotation: list[float]
+    offset: tuple[float, float, float]
+    rotation: tuple[float, float, float]
 
 
 @dataclass(frozen=True)
@@ -50,24 +50,24 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
     figure_type = figure_dict["userData"]["geometryType"]
     if figure_type == "CylinderGeometry":
         return CylinderFigure(uuid=figure_dict["uuid"],
-                              offset=figure_dict["userData"]["position"],
-                              rotation=figure_dict["userData"]["rotation"],
+                              offset=tuple(figure_dict["userData"]["position"]),
+                              rotation=tuple(figure_dict["userData"]["rotation"]),
                               radius_top=figure_dict["userData"]['parameters']["radiusTop"],
                               radius_bottom=figure_dict["userData"]['parameters']["radiusBottom"],
                               height=figure_dict["userData"]['parameters']["height"],
                               )
     if figure_type == "BoxGeometry":
         return BoxFigure(uuid=figure_dict["uuid"],
-                         offset=figure_dict["userData"]["position"],
-                         rotation=figure_dict["userData"]["rotation"],
+                         offset=tuple(figure_dict["userData"]["position"]),
+                         rotation=tuple(figure_dict["userData"]["rotation"]),
                          height=figure_dict["userData"]['parameters']["height"],
                          width=figure_dict["userData"]['parameters']["width"],
                          depth=figure_dict["userData"]['parameters']["depth"],
                          )
     if figure_type == "SphereGeometry":
         return SphereFigure(uuid=figure_dict["uuid"],
-                            offset=figure_dict["userData"]["position"],
-                            rotation=figure_dict["userData"]["rotation"],
+                            offset=tuple(figure_dict["userData"]["position"]),
+                            rotation=tuple(figure_dict["userData"]["rotation"]),
                             radius=figure_dict["userData"]['parameters']["radius"],
                             )
 

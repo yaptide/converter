@@ -87,7 +87,7 @@ def test_uuid(figure, expected):
 ], indirect=["figure"])
 def test_offset(figure, expected):
     """Test if figure_parser parses offset(position) correctly"""
-    assert figure.offset == expected['userData']['position']
+    assert figure.offset == tuple(expected['userData']['position'])
 
 
 @pytest.mark.parametrize("figure,expected", [
@@ -97,4 +97,4 @@ def test_offset(figure, expected):
 ], indirect=["figure"])
 def test_rotation(figure, expected):
     """Test if figure_parser parses rotation correctly"""
-    assert figure.rotation == expected['userData']['rotation']
+    assert figure.rotation == tuple(expected['userData']['rotation'])
