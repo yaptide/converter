@@ -36,8 +36,8 @@ class BoxFigure(SolidFigure):
     """
     A rectangular box (cuboid). The figure can be rotated (meaning its walls don't have 
     to be aligned with the axes of the coordinate system). Its size is defined by height, width and
-    depth (which would represent Z, Y and X if not rotated) and the values represent full length of 
-    each edge (not half-length).
+    depth (which would represent Z, Y and X if not rotated) and the values represent the full 
+    length of each edge (not half-length).
     """
 
     height: float
