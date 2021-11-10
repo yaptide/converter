@@ -4,7 +4,11 @@ from abc import ABC
 
 @dataclass(frozen=True)
 class SolidFigure(ABC):
-    """Abstract solid figure in 3D space. It is characterised by position in space and rotation along X,Y,Z axis in its own reference frame. Size of the figure (its extend in space) is defined in its subclasses."""
+    """
+    Abstract solid figure in 3D space. It is characterised by position in
+    space and rotation along X,Y,Z axis in its own reference frame. Size of
+    the figure (its extend in space) is defined in its subclasses.
+    """
 
     uuid: str
     offset: tuple[float, float, float]
