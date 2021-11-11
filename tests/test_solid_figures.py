@@ -85,9 +85,9 @@ def test_uuid(figure, expected):
     (_Box_json, _Box_json),
     (_Sphere_json, _Sphere_json)
 ], indirect=["figure"])
-def test_offset(figure, expected):
-    """Test if figure_parser parses offset(position) correctly"""
-    assert figure.offset == tuple(expected['userData']['position'])
+def test_position(figure, expected):
+    """Test if figure_parser parses position(position) correctly"""
+    assert figure.position == tuple(expected['userData']['position'])
 
 
 @pytest.mark.parametrize("figure,expected", [

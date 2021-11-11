@@ -54,7 +54,7 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
     figure_type = figure_dict["userData"]["geometryType"]
     if figure_type == "CylinderGeometry":
         return CylinderFigure(uuid=figure_dict["uuid"],
-                              offset=tuple(figure_dict["userData"]["position"]),
+                              position=tuple(figure_dict["userData"]["position"]),
                               rotation=tuple(figure_dict["userData"]["rotation"]),
                               radius_top=figure_dict["userData"]['parameters']["radiusTop"],
                               radius_bottom=figure_dict["userData"]['parameters']["radiusBottom"],
@@ -62,7 +62,7 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
                               )
     if figure_type == "BoxGeometry":
         return BoxFigure(uuid=figure_dict["uuid"],
-                         offset=tuple(figure_dict["userData"]["position"]),
+                         position=tuple(figure_dict["userData"]["position"]),
                          rotation=tuple(figure_dict["userData"]["rotation"]),
                          y_edge_length=figure_dict["userData"]['parameters']["height"],
                          x_edge_length=figure_dict["userData"]['parameters']["width"],
@@ -70,7 +70,7 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
                          )
     if figure_type == "SphereGeometry":
         return SphereFigure(uuid=figure_dict["uuid"],
-                            offset=tuple(figure_dict["userData"]["position"]),
+                            position=tuple(figure_dict["userData"]["position"]),
                             rotation=tuple(figure_dict["userData"]["rotation"]),
                             radius=figure_dict["userData"]['parameters']["radius"],
                             )
