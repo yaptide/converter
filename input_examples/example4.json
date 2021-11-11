@@ -22,7 +22,24 @@
 			"type": "PerspectiveCamera",
 			"name": "Camera",
 			"layers": 1,
-			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,5,10,1],
+			"matrix": [
+				1,
+				0,
+				0,
+				0,
+				0,
+				1,
+				0,
+				0,
+				0,
+				0,
+				1,
+				0,
+				0,
+				5,
+				10,
+				1
+			],
 			"fov": 50,
 			"zoom": 1,
 			"near": 0.01,
@@ -61,7 +78,8 @@
 				"widthSegments": 1,
 				"heightSegments": 1,
 				"depthSegments": 1
-			}],
+			}
+		],
 		"materials": [
 			{
 				"uuid": "8AF3F995-6E03-434A-ABAA-1FC9BE17235C",
@@ -114,13 +132,31 @@
 				"stencilZFail": 7680,
 				"stencilZPass": 7680,
 				"wireframe": true
-			}],
+			}
+		],
 		"object": {
 			"uuid": "3C87FB43-7A69-4BCE-A73C-2CD9216D2787",
 			"type": "Scene",
 			"name": "Scene",
 			"layers": 1,
-			"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+			"matrix": [
+				1,
+				0,
+				0,
+				0,
+				0,
+				1,
+				0,
+				0,
+				0,
+				0,
+				1,
+				0,
+				0,
+				0,
+				0,
+				1
+			],
 			"children": [
 				{
 					"uuid": "3A594908-17F2-4858-A16E-EE20BD387C26",
@@ -129,15 +165,40 @@
 					"userData": {
 						"id": 940,
 						"geometryType": "CylinderGeometry",
-						"position": [0,0,0],
-						"rotation": [0,0,0],
+						"position": [
+							0,
+							0,
+							0
+						],
+						"rotation": [
+							0,
+							0,
+							0
+						],
 						"parameters": {
 							"radiusTop": 1,
 							"height": 1
 						}
 					},
 					"layers": 1,
-					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+					"matrix": [
+						1,
+						0,
+						0,
+						0,
+						0,
+						1,
+						0,
+						0,
+						0,
+						0,
+						1,
+						0,
+						0,
+						0,
+						0,
+						1
+					],
 					"geometry": "44E6DA29-4E48-4C1E-9E54-7E389C98DC68",
 					"material": "8AF3F995-6E03-434A-ABAA-1FC9BE17235C"
 				},
@@ -148,17 +209,43 @@
 					"userData": {
 						"id": 941,
 						"geometryType": "BoxGeometry",
-						"position": [0,0,0],
-						"rotation": [0,0,0],
+						"position": [
+							0,
+							0,
+							0
+						],
+						"rotation": [
+							0,
+							0,
+							0
+						],
 						"parameters": {
 							"width": 1
 						}
 					},
 					"layers": 1,
-					"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+					"matrix": [
+						1,
+						0,
+						0,
+						0,
+						0,
+						1,
+						0,
+						0,
+						0,
+						0,
+						1,
+						0,
+						0,
+						0,
+						0,
+						1
+					],
 					"geometry": "F5E0887D-E36F-4AAA-AA7B-D1425E655247",
 					"material": "49E383A0-C9C6-4882-9168-1A1C0F85C200"
-				}]
+				}
+			]
 		}
 	},
 	"scripts": {},
@@ -171,7 +258,8 @@
 			{
 				"uuid": "4EAA1D63-FE2C-4E76-9341-C09F986D1B25",
 				"name": "CSGZone",
-				"unionOperations": [[
+				"unionOperations": [
+					[
 						{
 							"mode": "union",
 							"objectUuid": "3A594908-17F2-4858-A16E-EE20BD387C26"
@@ -179,10 +267,13 @@
 						{
 							"mode": "left-subtraction",
 							"objectUuid": "CBE326F9-48BB-4E5D-83CC-4F85B057AE00"
-						}]],
+						}
+					]
+				],
 				"subscribedObjectsUuid": [
 					"3A594908-17F2-4858-A16E-EE20BD387C26",
-					"CBE326F9-48BB-4E5D-83CC-4F85B057AE00"],
+					"CBE326F9-48BB-4E5D-83CC-4F85B057AE00"
+				],
 				"materialName": "LITHIUM",
 				"materialData": {
 					"id": "3",
@@ -199,7 +290,8 @@
 					"id": "1",
 					"name": "HYDROGEN"
 				}
-			}],
+			}
+		],
 		"uuid": "E11E2B91-BAC0-4BC3-8D74-31754BB0FD93",
 		"name": "",
 		"boundingZone": {
@@ -222,8 +314,16 @@
 	},
 	"beam": {
 		"type": "Beam",
-		"position": [0,0,0],
-		"direction": [0,0,-1],
+		"position": [
+			0,
+			0,
+			0
+		],
+		"direction": [
+			0,
+			0,
+			-1
+		],
 		"energy": 150
 	},
 	"materialsManager": [
@@ -246,5 +346,6 @@
 			"flatShading": true,
 			"opacity": 1,
 			"transparent": true
-		}]
+		}
+	]
 }
