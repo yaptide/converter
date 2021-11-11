@@ -11,7 +11,7 @@ class SolidFigure(ABC):
     """
 
     uuid: str
-    offset: tuple[float, float, float]
+    position: tuple[float, float, float]
     rotation: tuple[float, float, float]
 
 
