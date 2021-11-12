@@ -10,7 +10,6 @@ def format_float(number: float, n: int) -> float:
     as possible (in descending priority). so for example given 12.333 for n=5 you will
     get 12.33, n=7 will be 12.333
     """
-
     if(number == 0):
         return 0.0
 
@@ -83,7 +82,7 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 
 @dataclass
 class Zone():
-
+    """Dataclass mapping for SH12A zones."""
     id: str
     figures_operators: list[tuple[str, str]]
     material: str

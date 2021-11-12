@@ -65,22 +65,23 @@ def figure(request):
 
 @pytest.mark.parametrize("figure,expected", _Box_test_cases, indirect=["figure"])
 def test_box_parser(figure, expected):
+    """Test if boxes are parsed corectly."""
     assert parse_figure(figure, 1) == expected
 
 
 @pytest.mark.parametrize("figure,expected", _Cylinder_test_cases, indirect=["figure"])
 def test_cylinder_parser(figure, expected):
+    """Test if cylinders are parsed corectly."""
     assert parse_figure(figure, 1) == expected
 
 
 @pytest.mark.parametrize("figure,expected", _Sphere_test_cases, indirect=["figure"])
 def test_sphere_parser(figure, expected):
-    print(parse_figure(figure, 1))
-    print(expected)
+    """Test if spheres are parsed corectly."""
     assert parse_figure(figure, 1) == expected
 
 
-@pytest.fixture
-def zone(request):
-    """Fixture that provides a zone based on a json that contains zone information"""
-    pass
+# @pytest.fixture
+# def zone(request):
+#     """Fixture that provides a zone based on a json that contains zone information"""
+#     pass
