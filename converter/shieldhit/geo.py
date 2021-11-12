@@ -83,6 +83,7 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 @dataclass
 class Zone():
     """Dataclass mapping for SH12A zones."""
+
     id: str
     figures_operators: list[tuple[str, str]]
     material: str
