@@ -158,14 +158,14 @@ class ShieldhitParser(DummmyParser):
         self._parse_beam(json)
         self._parse_mat(json)
         self._parse_detect(json)
-        self._parse_geo(json)
+        self.geo_config.parse_dict(json)
 
     def _parse_beam(self, json) -> None:
         """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
 
     def _parse_mat(self, json) -> None:
-        """Parses data from the input json into the beam_config property"""
+        """Parses data from the input json into the mat_config property"""
         pass
 
     def _parse_detect(self, json) -> None:
@@ -174,6 +174,7 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_geo(self, json) -> None:
         """Parses data from the input json into the geo_config property"""
+
         pass
 
     def save_configs(self, target_dir: str):

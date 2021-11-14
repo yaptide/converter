@@ -84,20 +84,41 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 class Zone():
     """Dataclass mapping for SH12A zones."""
 
-    id: str
-    figures_operators: list[tuple[str, str]]
-    material: str
+    id: int = 1
+    figures_operators: list[tuple[int, str]] = [(1, '')]
+    material: str = "1"
+
+    zone_template: str = """
+  {id:03d}       {operators:>63}
+"""
+
+    def __str__(self) -> str:
+        return self.zone_template.format(
+            id=self.id,
+            operators=''.join(['{0:+5}{1:>2}'.format(id, operation)
+                               for id, operation in self.figures_operators]),
+        )
 
 
 @dataclass
 class GeoConfig:
     """Class mapping of the geo.dat config file."""
 
-    # figures: list[SolidFigure]
-    # zones: list[Zone]
+    figures: list[SolidFigure] = [SphereFigure()]
+    zones: list[Zone] = [Zone()]
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
+
+#     geo_template: str = """
+# *---><---><--------><------------------------------------------------>
+# {jdbg1:>5}{jdbg1:>5}          {title:>60}
+# *---><---><--------><--------><--------><--------><--------><-------->{figures}
+# END
+# {zones}
+# END
+# {materials}
+# """
 
     geo_template: str = """
 *---><---><--------><------------------------------------------------>
