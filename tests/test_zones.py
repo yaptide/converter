@@ -81,10 +81,10 @@ def test_sphere_parser(figure, expected):
     assert parse_figure(figure, 1) == expected
 
 
-@pytest.fixture
-def zone(request):
-    """
-    Fixture that provides a zone based on a list containing csg information, id
-    and material that the zone is made out of.
-    """
-    pass
+# @pytest.fixture
+# def zone(request):
+#     """
+#     Fixture that provides a zone based on a list containing csg information, id
+#     and material that the zone is made out of.
+#     """
+#     pass

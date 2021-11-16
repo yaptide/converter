@@ -157,8 +157,10 @@ END
 """
 
     def get_geo_string(self) -> str:
+        """Generate geo.dat config."""
         return self.geo_template
 
     def get_mat_string(self) -> str:
+        """Generate mat.dat config."""
         material_strings = [self.material_template.format(idx=idx, mat=mat) for idx, mat in enumerate(self.materials)]
         return "\n".join(material_strings)

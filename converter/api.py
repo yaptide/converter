@@ -21,12 +21,3 @@ def run_parser(parser: Parser, input_data: dict, output_dir: str) -> None:
     """Convert the configs and save them in the output_dir directory."""
     parser.parse_configs(input_data)
     parser.save_configs(output_dir)
-
-
-def negate_csg(csg: list[list[int]]):
-    negated_csg = [[-val] for val in csg[0]]
-    for sum in csg[1:]:
-        next_negated_csg = []
-        for elem in sum:
-            next_negated_csg += [val + [-elem] for val in negated_csg]
-        negated_csg = next_negated_csg
