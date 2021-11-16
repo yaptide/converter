@@ -144,4 +144,5 @@ def zone(request):
 
 @pytest.mark.parametrize("zone,expected", _Zone_test_cases, indirect=["zone"])
 def test_zones(zone, expected):
+    """Test if zone string representation is correct"""
     assert str(zone) == expected
