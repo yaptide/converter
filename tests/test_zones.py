@@ -81,10 +81,67 @@ def test_sphere_parser(figure, expected):
     assert parse_figure(figure, 1) == expected
 
 
-# @pytest.fixture
-# def zone(request):
-#     """
-#     Fixture that provides a zone based on a list containing csg information, id
-#     and material that the zone is made out of.
-#     """
-#     pass
+_Zone_test_cases = [
+    (
+        {
+            "id": 1,
+            "figures_operators": [{1}],
+        },
+        """
+  001          +1                                                        """
+    ),
+    (
+        {
+            "id": 11,
+            "figures_operators": [{-2}],
+        },
+        """
+  011          -2                                                        """
+    ),
+    (
+        {
+            "id": 111,
+            "figures_operators": [{1, -2}],
+        },
+        """
+  111          +1     -2                                                 """
+    ),
+    (
+        {
+            "id": 2,
+            "figures_operators": [{1}, {-2}],
+        },
+        """
+  002          +1OR   -2                                                 """
+    ),
+    (
+        {
+            "id": 3,
+            "figures_operators": [{1, -2}, {11, -12, 13}],
+        },
+        """
+  003          +1     -2OR  +11    -12    +13                            """
+    ),
+    (
+        {
+            "id": 4,
+            "figures_operators": [{4, -2}, {2}, {3, 4}],
+        },
+        """
+  004          +4     -2OR   +2OR   +3     +4                            """
+    )
+]
+
+
+@pytest.fixture
+def zone(request):
+    """
+    Fixture that provides a zone based on a list containing csg information, id
+    and material that the zone is made out of.
+    """
+    return Zone(**request.param)
+
+
+@pytest.mark.parametrize("zone,expected", _Zone_test_cases, indirect=["zone"])
+def test_zones(zone, expected):
+    assert str(zone) == expected

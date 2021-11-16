@@ -95,18 +95,18 @@ class Zone():
     """Dataclass mapping for SH12A zones."""
 
     id: int = 1
-    figures_operators: list[set[int]] = field(default_factory=lambda: [[1]])
+    figures_operators: list[set[int]] = field(default_factory=lambda: [{1}])
     material: str = "1"
 
     zone_template: str = """
-  {id:03d}       {operators:>63}
-"""
+  {id:03d}       {operators:<61}"""
 
     def __str__(self) -> str:
         return self.zone_template.format(
             id=self.id,
-            operators=''.join(['{0:+5}{1:>2}'.format(id, operation)
-                               for id, operation in self.figures_operators]),
+            operators='OR'.join(['  '.join(['{0:+5}'.format(id)
+                                 for id in set])
+                                 for set in self.figures_operators]),
         )
 
 
