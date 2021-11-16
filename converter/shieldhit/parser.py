@@ -152,7 +152,6 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_geo_mat(self, json) -> None:
         """Parses data from the input json into the geo_mat_config property"""
-
         pass
 
     def save_configs(self, target_dir: str):
