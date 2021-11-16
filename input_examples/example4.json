@@ -265,7 +265,7 @@
 							"objectUuid": "3A594908-17F2-4858-A16E-EE20BD387C26"
 						},
 						{
-							"mode": "left-subtraction",
+							"mode": "subtraction",
 							"objectUuid": "CBE326F9-48BB-4E5D-83CC-4F85B057AE00"
 						}
 					]

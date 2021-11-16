@@ -1,6 +1,6 @@
 import pytest
-from converter.shieldhit.parser import BeamConfig, MatConfig, DetectConfig
-from converter.shieldhit.geo import GeoConfig
+from converter.shieldhit.parser import BeamConfig, DetectConfig
+from converter.shieldhit.geo import GeoMatConfig
 
 _Beam_template = """
 RNDSEED      	89736501     ! Random seed
@@ -62,7 +62,7 @@ def test_default_beam_config_str() -> None:
 
 def test_default_mat_config_str() -> None:
     """Test if the default MatConfig str representation is correct."""
-    assert str(MatConfig()) == _Mat_template_default
+    assert GeoMatConfig().get_mat_string() == _Mat_template_default
 
 
 def test_default_detect_config_str() -> None:
@@ -72,4 +72,4 @@ def test_default_detect_config_str() -> None:
 
 def test_default_geo_config_str() -> None:
     """Test if the default MatConfig str representation is correct."""
-    assert str(GeoConfig()) == _Geo_template_default
+    assert GeoMatConfig().get_geo_string() == _Geo_template_default

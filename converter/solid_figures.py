@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from abc import ABC
 
 
@@ -12,8 +12,8 @@ class SolidFigure(ABC):
 
     uuid: str = "AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
 
-    position: tuple[float, float, float] = [0., 0., 0.]
-    rotation: tuple[float, float, float] = [0., 0., 0.]
+    position: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
+    rotation: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
 
 
 @dataclass(frozen=True)

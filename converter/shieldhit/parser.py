@@ -3,7 +3,7 @@ from functools import reduce
 from dataclasses import dataclass, field
 from os import path
 from converter.common import Parser
-from converter.shieldhit.geo import GeoConfig
+from converter.shieldhit.geo import GeoMatConfig
 
 
 @dataclass(frozen=True)
@@ -81,22 +81,6 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 
 
 @dataclass
-class MatConfig:
-    """Class mapping of the mat.dat config file."""
-
-    materials: list[int] = field(default_factory=lambda: [276])
-
-    material_template: str = """MEDIUM {idx:d}
-ICRU {mat:d}
-END
-"""
-
-    def __str__(self) -> str:
-        material_strings = [self.material_template.format(idx=idx, mat=mat) for idx, mat in enumerate(self.materials)]
-        return "\n".join(material_strings)
-
-
-@dataclass
 class DetectConfig:
     """Class mapping of the detect.dat config file."""
 
@@ -119,9 +103,8 @@ class DummmyParser(Parser):
 
     def __init__(self) -> None:
         self.beam_config = BeamConfig()
-        self.mat_config = MatConfig()
         self.detect_config = DetectConfig()
-        self.geo_config = GeoConfig()
+        self.geo_mat_config = GeoMatConfig()
 
     def parse_configs(self, json: dict):
         """Basicaly do nothing since we work on defaults in this parser."""
@@ -138,13 +121,13 @@ class DummmyParser(Parser):
             beam_f.write(str(self.beam_config))
 
         with open(path.join(target_dir, 'mat.dat'), 'x') as mat_f:
-            mat_f.write(str(self.mat_config))
+            mat_f.write(self.geo_mat_config.get_mat_string())
 
         with open(path.join(target_dir, 'detect.dat'), 'x') as detect_f:
             detect_f.write(str(self.detect_config))
 
         with open(path.join(target_dir, 'geo.dat'), 'x') as geo_f:
-            geo_f.write(str(self.geo_config))
+            geo_f.write(self.geo_mat_config.get_geo_string())
 
 
 class ShieldhitParser(DummmyParser):
@@ -156,24 +139,19 @@ class ShieldhitParser(DummmyParser):
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
         self._parse_beam(json)
-        self._parse_mat(json)
+        self._parse_geo_mat(json)
         self._parse_detect(json)
-        self.geo_config.parse_dict(json)
 
     def _parse_beam(self, json) -> None:
         """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
 
-    def _parse_mat(self, json) -> None:
-        """Parses data from the input json into the mat_config property"""
-        pass
-
     def _parse_detect(self, json) -> None:
         """Parses data from the input json into the detect_config property"""
         pass
 
-    def _parse_geo(self, json) -> None:
-        """Parses data from the input json into the geo_config property"""
+    def _parse_geo_mat(self, json) -> None:
+        """Parses data from the input json into the geo_mat_config property"""
 
         pass
 
