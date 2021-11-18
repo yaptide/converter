@@ -63,7 +63,7 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
     """Parse a CylinderFigure into a str representation of SH12A input file."""
     return """
   TRC {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
-          {p7:>10}{p8:>10}{padding:>40}""".format(
+          {p7:>10}{p8:>10}""".format(
         number=number,
         p1=format_float(cylinder.position[0], 10),
         p2=format_float(cylinder.position[1]-cylinder.height/2, 10),
@@ -80,7 +80,7 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
 def _parse_sphere(sphere: SphereFigure, number: int) -> str:
     """Parse a SphereFigure into a str representation of SH12A input file."""
     return """
-  SPH {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{padding:>20}""".format(
+  SPH {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}""".format(
         number=number,
         p1=format_float(sphere.position[0], 10),
         p2=format_float(sphere.position[1], 10),
@@ -99,7 +99,7 @@ class Zone():
     material: str = "1"
 
     zone_template: str = """
-  {id:03d}       {operators:<61}"""
+  {id:03d}       {operators}"""
 
     def __str__(self) -> str:
         return self.zone_template.format(
@@ -137,28 +137,30 @@ END
 """
 
     geo_template: str = """
-*---><---><--------><------------------------------------------------>
-    0    0           protons, H2O 30 cm cylinder, r=10, 1 zone
-*---><---><--------><--------><--------><--------><--------><-------->
-  RCC    1       0.0       0.0       0.0       0.0       0.0      30.0
-                10.0
-  RCC    2       0.0       0.0      -5.0       0.0       0.0      35.0
-                15.0
-  RCC    3       0.0       0.0     -10.0       0.0       0.0      40.0
-                20.0
+{jdbg1:>5}{jdbg1:>5}          {title}
+{figures}
   END
-  001          +1
-  002          +2     -1
-  003          +3     -2
+{zones_geometries}
   END
-* material codes: 1 - liquid water (ICRU material no 276), 1000 - vacuum, 0 - black body
-    1    2    3
-    1 1000    0
+{zones_materials}
 """
+
+    def _get_zone_material_string(self) -> str:
+        """Generate material_id, zone_id pairs string (for geo.dat)."""
+        zone_ids = "".join(['{0:>5}'.format(zone.id) for zone in self.zones])
+        material_ids = "".join(['{0:>5}'.format(zone.material) for zone in self.zones])
+        return "\n".join([zone_ids, material_ids])
 
     def get_geo_string(self) -> str:
         """Generate geo.dat config."""
-        return self.geo_template
+        return self.geo_template.format(
+            jdbg1=self.jdbg1,
+            jdbg2=self.jdbg2,
+            title=self.title,
+            figures="".join([parse_figure(figure, idx) for idx, figure in enumerate(self.figures)])[1:],
+            zones_geometries="".join([str(zone) for zone in self.zones])[1:],
+            zones_materials=self._get_zone_material_string(),
+        )
 
     def get_mat_string(self) -> str:
         """Generate mat.dat config."""

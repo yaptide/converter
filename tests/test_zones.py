@@ -37,7 +37,7 @@ _Cylinder_test_cases = [
                 },
     }, """
   TRC    1       1.0       1.5       3.0       0.0       1.0       0.0
-                 1.0       1.0                                        """)
+                 1.0       1.0""")
 ]
 
 _Sphere_test_cases = [
@@ -53,7 +53,7 @@ _Sphere_test_cases = [
                     }
                 },
     }, """
-  SPH    1       1.0       2.0       3.0       1.0                    """),
+  SPH    1       1.0       2.0       3.0       1.0"""),
 ]
 
 
@@ -88,7 +88,7 @@ _Zone_test_cases = [
             "figures_operators": [{1}],
         },
         """
-  001          +1                                                        """
+  001          +1"""
     ),
     (
         {
@@ -96,7 +96,7 @@ _Zone_test_cases = [
             "figures_operators": [{-2}],
         },
         """
-  011          -2                                                        """
+  011          -2"""
     ),
     (
         {
@@ -104,7 +104,7 @@ _Zone_test_cases = [
             "figures_operators": [{1, -2}],
         },
         """
-  111          +1     -2                                                 """
+  111          +1     -2"""
     ),
     (
         {
@@ -112,7 +112,7 @@ _Zone_test_cases = [
             "figures_operators": [{1}, {-2}],
         },
         """
-  002          +1OR   -2                                                 """
+  002          +1OR   -2"""
     ),
     (
         {
@@ -120,7 +120,7 @@ _Zone_test_cases = [
             "figures_operators": [{1, -2}, {11, -12, 13}],
         },
         """
-  003          +1     -2OR  +11    -12    +13                            """
+  003          +1     -2OR  +11    -12    +13"""
     ),
     (
         {
@@ -128,7 +128,7 @@ _Zone_test_cases = [
             "figures_operators": [{4, -2}, {2}, {3, 4}],
         },
         """
-  004          +4     -2OR   +2OR   +3     +4                            """
+  004          +4     -2OR   +2OR   +3     +4"""
     )
 ]
 
@@ -143,6 +143,6 @@ def zone(request):
 
 
 @pytest.mark.parametrize("zone,expected", _Zone_test_cases, indirect=["zone"])
-def test_zones(zone, expected):
-    """Test if zone string representation is correct"""
+def test_zone_geometries(zone, expected):
+    """Test if zone geometry string representation is correct."""
     assert str(zone) == expected
