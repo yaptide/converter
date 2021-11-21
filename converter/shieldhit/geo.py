@@ -31,12 +31,12 @@ def parse_figure(figure: SolidFigure, number: int) -> str:
     """Parse a SolidFigure into a str representation of SH12A input file."""
     if type(figure) is BoxFigure:
         return _parse_box(figure, number)
-    elif type(figure) is CylinderFigure:
+    if type(figure) is CylinderFigure:
         return _parse_cylinder(figure, number)
-    elif type(figure) is SphereFigure:
+    if type(figure) is SphereFigure:
         return _parse_sphere(figure, number)
-    else:
-        raise ValueError("Unexpected solid figure type: {}".format(type(figure)))
+
+    raise ValueError("Unexpected solid figure type: {}".format(type(figure)))
 
 
 def _parse_box(box: BoxFigure, number: int) -> str:
@@ -74,7 +74,6 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
         p6=format_float(0, 10),
         p7=format_float(cylinder.radius_bottom, 10),
         p8=format_float(cylinder.radius_top, 10),
-        padding='',
     )
 
 
@@ -87,7 +86,6 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
         p2=format_float(sphere.position[1], 10),
         p3=format_float(sphere.position[2], 10),
         p4=format_float(sphere.radius, 10),
-        padding='',
     )
 
 

@@ -11,8 +11,6 @@ import converter.solid_figures as solid_figures
 class Geometry(ABC):
     """Abstract geometry dataclass for DetectConfig."""
 
-    pass
-
 
 @dataclass(order=True, frozen=True)
 class Cylinder(Geometry):
@@ -109,7 +107,6 @@ class DummmyParser(Parser):
 
     def parse_configs(self, json: dict):
         """Basicaly do nothing since we work on defaults in this parser."""
-        pass
 
     def save_configs(self, target_dir: str):
         """
@@ -134,9 +131,6 @@ class DummmyParser(Parser):
 class ShieldhitParser(DummmyParser):
     """A regular shieldhit parser"""
 
-    def __init__(self) -> None:
-        super().__init__()
-
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
         self._parse_beam(json)
@@ -149,7 +143,6 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
-        pass
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
@@ -177,12 +170,13 @@ class ShieldhitParser(DummmyParser):
         ]
 
     def _parse_csg_operations(self, operations: list[list[dict]]) -> list[set[int]]:
+        """Parse dict of csg operations to a list of sets. Sets contain a list of intersecting geometries. The list contains a union of geometries from sets."""
         operations = [item for ops in operations for item in ops]
         parsed_operations = []
         for operation in operations:
             figure_id = self._get_figure_index_by_uuid(operation["objectUuid"])
             if operation["mode"] == "union":
-                parsed_operations.append(set([figure_id]))
+                parsed_operations.append({figure_id})
             elif operation["mode"] == "subtraction":
                 parsed_operations[-1].add(-figure_id)
             elif operation["mode"] == "intersection":
@@ -193,12 +187,6 @@ class ShieldhitParser(DummmyParser):
         return parsed_operations
 
     def _get_figure_index_by_uuid(self, uuid: str) -> int:
+        """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
         figure = [figure for figure in self.geo_mat_config.figures if figure.uuid == uuid][0]
         return self.geo_mat_config.figures.index(figure)
-
-    def save_configs(self, target_dir: str):
-        """
-        Save the configs as text files in the target_dir.
-        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
-        """
-        return super().save_configs(target_dir)
