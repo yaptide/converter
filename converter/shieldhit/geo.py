@@ -17,11 +17,12 @@ def format_float(number: float, n: int) -> float:
     # Sign messes up the log10 we use do determine how long the number is (we fix that with abs).
     # Since there is no sign function in python we use `if else`
     sign = -1 if number < 0 else 1
-    result = float(sign*round(abs(number), n-ceil(log10(number))-1))
+    number = abs(number)
+    result = float(sign*round(number, n-ceil(log10(number))-1))
 
     # Check if the round function truncated the number, warn the user if it did.
-    if result != number:
-        print(f'WARN: number was truncated when converting: {number} -> {result}')
+    if result != sign*number:
+        print(f'WARN: number was truncated when converting: {sign*number} -> {result}')
 
     return result
 
@@ -96,7 +97,7 @@ class Zone():
 
     id: int = 1
     figures_operators: list[set[int]] = field(default_factory=lambda: [{1}])
-    material: str = "1"
+    material: str = "0"
 
     zone_template: str = """
   {id:03d}       {operators}"""
@@ -116,7 +117,7 @@ class GeoMatConfig:
 
     figures: list[SolidFigure] = field(default_factory=lambda: [SphereFigure()])
     zones: list[Zone] = field(default_factory=lambda: [Zone()])
-    materials: list[int] = field(default_factory=lambda: [276])
+    materials: list[str] = field(default_factory=lambda: [276])
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
@@ -132,7 +133,7 @@ class GeoMatConfig:
 # """
 
     material_template: str = """MEDIUM {idx:d}
-ICRU {mat:d}
+ICRU {mat}
 END
 """
 
@@ -165,4 +166,4 @@ END
     def get_mat_string(self) -> str:
         """Generate mat.dat config."""
         material_strings = [self.material_template.format(idx=idx, mat=mat) for idx, mat in enumerate(self.materials)]
-        return "\n".join(material_strings)
+        return "".join(material_strings)

@@ -2,6 +2,7 @@ import pytest
 from os import path
 from converter.shieldhit.parser import Parser
 from converter.api import get_parser_from_str, run_parser
+import json
 
 _Beam_template = """
 RNDSEED      	89736501     ! Random seed
@@ -15,7 +16,16 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 
 
 _Mat_template = """MEDIUM 0
-ICRU 276
+ICRU 98
+END
+MEDIUM 1
+ICRU 3
+END
+MEDIUM 2
+ICRU 1
+END
+MEDIUM 3
+ICRU 906
 END
 """
 
@@ -36,12 +46,16 @@ Output
 
 _Geo_template = """
     0    0          Unnamed geometry
-  SPH    0       0.0       0.0       0.0       1.0
+  SPH    0       0.0       0.0       0.3       1.0
+  SPH    1       0.3       0.0       0.0       1.0
+  SPH    2       0.0       0.0      -0.3       1.0
+  SPH    3      -0.3       0.0       0.0       1.0
   END
-  001          +1
+  001          +0     -1
+  002          +2     +3     -1
   END
-    1
-    1
+    1    2
+    3    2
 """
 
 _Test_dir = './test_runs'
@@ -63,7 +77,8 @@ def parser() -> Parser:
 @pytest.fixture
 def default_json() -> dict:
     """Creates default json."""
-    return {"beam": {"energy": 150.}}
+    with open(path.join(path.abspath("./input_examples"), 'example6.json'), 'r') as json_f:
+        return json.load(json_f)
 
 
 def test_if_beam_created(parser, default_json, output_dir) -> None:

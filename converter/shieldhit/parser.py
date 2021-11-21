@@ -3,7 +3,8 @@ from functools import reduce
 from dataclasses import dataclass, field
 from os import path
 from converter.common import Parser
-from converter.shieldhit.geo import GeoMatConfig
+from converter.shieldhit.geo import GeoMatConfig, Zone
+import converter.solid_figures as solid_figures
 
 
 @dataclass(frozen=True)
@@ -142,17 +143,58 @@ class ShieldhitParser(DummmyParser):
         self._parse_geo_mat(json)
         self._parse_detect(json)
 
-    def _parse_beam(self, json) -> None:
+    def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
 
-    def _parse_detect(self, json) -> None:
+    def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
         pass
 
-    def _parse_geo_mat(self, json) -> None:
+    def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
-        pass
+        self._parse_materials(json)
+        self._parse_figures(json)
+        self._parse_zones(json)
+
+    def _parse_materials(self, json: dict) -> None:
+        """Parse materials from JSON"""
+        self.geo_mat_config.materials = [material["data"]["id"] for material in json["materialsManager"]]
+
+    def _parse_figures(self, json: dict) -> None:
+        """Parse figures from JSON"""
+        self.geo_mat_config.figures = [solid_figures.parse_figure(
+            figure_dict) for figure_dict in json["scene"]["object"]["children"]]
+
+    def _parse_zones(self, json: dict) -> None:
+        """Parse zones from JSON"""
+        self.geo_mat_config.zones = [
+            Zone(
+                id=(idx+1),
+                figures_operators=self._parse_csg_operations(zone["unionOperations"]),
+                material=self.geo_mat_config.materials.index(zone["materialData"]["id"]),
+            ) for idx, zone in enumerate(json["zonesManager"]["zones"])
+        ]
+
+    def _parse_csg_operations(self, operations: list[list[dict]]) -> list[set[int]]:
+        operations = [item for ops in operations for item in ops]
+        parsed_operations = []
+        for operation in operations:
+            figure_id = self._get_figure_index_by_uuid(operation["objectUuid"])
+            if operation["mode"] == "union":
+                parsed_operations.append(set([figure_id]))
+            elif operation["mode"] == "subtraction":
+                parsed_operations[-1].add(-figure_id)
+            elif operation["mode"] == "intersection":
+                parsed_operations[-1].add(figure_id)
+            else:
+                raise ValueError("Unexpected CSG operation: {1}".format(operation["mode"]))
+
+        return parsed_operations
+
+    def _get_figure_index_by_uuid(self, uuid: str) -> int:
+        figure = [figure for figure in self.geo_mat_config.figures if figure.uuid == uuid][0]
+        return self.geo_mat_config.figures.index(figure)
 
     def save_configs(self, target_dir: str):
         """

@@ -40,7 +40,7 @@ _Geo_str = """
   001          +1
   END
     1
-    1
+    0
 """
 
 _Test_dir = './test_runs'

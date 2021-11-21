@@ -41,7 +41,7 @@ _Geo_template_default = """
   001          +1
   END
     1
-    1
+    0
 """
 
 
