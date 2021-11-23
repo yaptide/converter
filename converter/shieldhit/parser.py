@@ -128,6 +128,11 @@ class DummmyParser(Parser):
             geo_f.write(self.geo_mat_config.get_geo_string())
 
     def get_configs_json(self) -> dict:
+        """
+        Return a dict representation of the config files.
+        Each file is a field ("beam", "mat", "detect" and "geo") that contains
+        the respective file contents.
+        """
         configs_json = {
             "beam": str(self.beam_config),
             "mat": str(self.mat_config),
@@ -180,7 +185,10 @@ class ShieldhitParser(DummmyParser):
         ]
 
     def _parse_csg_operations(self, operations: list[list[dict]]) -> list[set[int]]:
-        """Parse dict of csg operations to a list of sets. Sets contain a list of intersecting geometries. The list contains a union of geometries from sets."""
+        """
+        Parse dict of csg operations to a list of sets. Sets contain a list of intersecting geometries.
+        The list contains a union of geometries from sets.
+        """
         operations = [item for ops in operations for item in ops]
         parsed_operations = []
         for operation in operations:
