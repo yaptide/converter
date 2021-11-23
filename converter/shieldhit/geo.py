@@ -126,8 +126,8 @@ class Zone():
         return self.zone_template.format(
             id=self.id,
             operators='OR'.join(['  '.join(['{0:+5}'.format(id)
-                                 for id in set])
-                                 for set in self.figures_operators]),
+                                 for id in figure_set])
+                                 for figure_set in self.figures_operators]),
         )
 
 
