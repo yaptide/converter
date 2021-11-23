@@ -170,12 +170,14 @@ END
             jdbg1=self.jdbg1,
             jdbg2=self.jdbg2,
             title=self.title,
-            figures="".join([parse_figure(figure, idx) for idx, figure in enumerate(self.figures)])[1:],
+            # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
+            figures="".join([parse_figure(figure, idx+1) for idx, figure in enumerate(self.figures)])[1:],
             zones_geometries="".join([str(zone) for zone in self.zones])[1:],
             zones_materials=self._get_zone_material_string(),
         )
 
     def get_mat_string(self) -> str:
         """Generate mat.dat config."""
-        material_strings = [self.material_template.format(idx=idx, mat=mat) for idx, mat in enumerate(self.materials)]
+        # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
+        material_strings = [self.material_template.format(idx=idx+1, mat=mat) for idx, mat in enumerate(self.materials)]
         return "".join(material_strings)

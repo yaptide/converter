@@ -177,9 +177,11 @@ class ShieldhitParser(DummmyParser):
         """Parse zones from JSON"""
         self.geo_mat_config.zones = [
             Zone(
-                id=(idx+1),
+                # lists are numbered from 0, but shieldhit materials are numbered from 1
+                id=idx+1,
                 figures_operators=self._parse_csg_operations(zone["unionOperations"]),
-                material=self.geo_mat_config.materials.index(zone["materialData"]["id"]),
+                # lists are numbered from 0, but shieldhit materials are numbered from 1
+                material=self.geo_mat_config.materials.index(zone["materialData"]["id"])+1,
             ) for idx, zone in enumerate(json["zonesManager"]["zones"])
         ]
 

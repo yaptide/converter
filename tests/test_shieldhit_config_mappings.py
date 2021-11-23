@@ -14,7 +14,7 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 
 _Beam_template_default = _Beam_template.format(energy=150, nstat=1000)
 
-_Mat_template_default = """MEDIUM 0
+_Mat_template_default = """MEDIUM 1
 ICRU 276
 END
 """
@@ -36,7 +36,7 @@ Output
 
 _Geo_template_default = """
     0    0          Unnamed geometry
-  SPH    0       0.0       0.0       0.0       1.0
+  SPH    1       0.0       0.0       0.0       1.0
   END
   001          +1
   END

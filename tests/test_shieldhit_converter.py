@@ -15,16 +15,16 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
 
 
-_Mat_template = """MEDIUM 0
+_Mat_template = """MEDIUM 1
 ICRU 98
 END
-MEDIUM 1
+MEDIUM 2
 ICRU 3
 END
-MEDIUM 2
+MEDIUM 3
 ICRU 1
 END
-MEDIUM 3
+MEDIUM 4
 ICRU 906
 END
 """
@@ -46,16 +46,16 @@ Output
 
 _Geo_template = """
     0    0          Unnamed geometry
-  SPH    0       0.0       0.0       0.3       1.0
-  SPH    1       0.3       0.0       0.0       1.0
-  SPH    2       0.0       0.0      -0.3       1.0
-  SPH    3      -0.3       0.0       0.0       1.0
+  SPH    1       0.0       0.0       0.3       1.0
+  SPH    2       0.3       0.0       0.0       1.0
+  SPH    3       0.0       0.0      -0.3       1.0
+  SPH    4      -0.3       0.0       0.0       1.0
   END
   001          +0     -1
   002          +2     +3     -1
   END
     1    2
-    3    2
+    4    3
 """
 
 _Test_dir = './test_runs'

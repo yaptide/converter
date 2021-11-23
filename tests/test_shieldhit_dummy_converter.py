@@ -13,7 +13,7 @@ MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
 
-_Mat_str = """MEDIUM 0
+_Mat_str = """MEDIUM 1
 ICRU 276
 END
 """
@@ -35,7 +35,7 @@ Output
 
 _Geo_str = """
     0    0          Unnamed geometry
-  SPH    0       0.0       0.0       0.0       1.0
+  SPH    1       0.0       0.0       0.0       1.0
   END
   001          +1
   END
