@@ -11,25 +11,24 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
+    strategy:
+       matrix:
+         python-version: ['3.9', '3.10']
     steps:
-      # Get repository
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.python-version }}
 
-      #install requirements.txt
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
           pip3 install -r test_requirements.txt
-      #run pytest unit tests
+
       - name: Run main tests
-        run: PYTHONPATH=. pytest tests/
+        # when triggering tests with `python -m pytest` (instead of simply calling `pytest`) we add current directory to sys.path
+        run: python -m pytest tests/
