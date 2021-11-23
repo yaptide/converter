@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from abc import ABC
 
 
@@ -10,16 +10,17 @@ class SolidFigure(ABC):
     the figure (its extend in space) is defined in its subclasses.
     """
 
-    uuid: str
-    position: tuple[float, float, float]
-    rotation: tuple[float, float, float]
+    uuid: str = "AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+
+    position: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
+    rotation: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
 
 
 @dataclass(frozen=True)
 class SphereFigure(SolidFigure):
     """A sphere. Its size is defined by its radius."""
 
-    radius: float
+    radius: float = 1.
 
 
 @dataclass(frozen=True)
@@ -30,9 +31,9 @@ class CylinderFigure(SolidFigure):
     of the radii to zero.
     """
 
-    radius_top: float
-    radius_bottom: float
-    height: float
+    radius_top: float = 1.
+    radius_bottom: float = 1.
+    height: float = 1.
 
 
 @dataclass(frozen=True)
@@ -44,9 +45,9 @@ class BoxFigure(SolidFigure):
     for example: the edge lengths 1, 1, 1 will result in a 1 by 1 by 1 cube).
     """
 
-    x_edge_length: float
-    y_edge_length: float
-    z_edge_length: float
+    x_edge_length: float = 1.
+    y_edge_length: float = 1.
+    z_edge_length: float = 1.
 
 
 def parse_figure(figure_dict: dict) -> SolidFigure:

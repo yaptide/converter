@@ -13,7 +13,7 @@ MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
 
-_Mat_str = """MEDIUM 0
+_Mat_str = """MEDIUM 1
 ICRU 276
 END
 """
@@ -34,23 +34,13 @@ Output
     """
 
 _Geo_str = """
-*---><---><--------><------------------------------------------------>
-    0    0           protons, H2O 30 cm cylinder, r=10, 1 zone
-*---><---><--------><--------><--------><--------><--------><-------->
-  RCC    1       0.0       0.0       0.0       0.0       0.0      30.0
-                10.0
-  RCC    2       0.0       0.0      -5.0       0.0       0.0      35.0
-                15.0
-  RCC    3       0.0       0.0     -10.0       0.0       0.0      40.0
-                20.0
+    0    0          Unnamed geometry
+  SPH    1       0.0       0.0       0.0       1.0
   END
   001          +1
-  002          +2     -1
-  003          +3     -2
   END
-* material codes: 1 - liquid water (ICRU material no 276), 1000 - vacuum, 0 - black body
-    1    2    3
-    1 1000    0
+    1
+    0
 """
 
 _Test_dir = './test_runs'

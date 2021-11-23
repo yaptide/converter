@@ -2,6 +2,7 @@ import pytest
 from os import path
 from converter.shieldhit.parser import Parser
 from converter.api import get_parser_from_str, run_parser
+import json
 
 _Beam_template = """
 RNDSEED      	89736501     ! Random seed
@@ -14,8 +15,17 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
 
 
-_Mat_template = """MEDIUM 0
-ICRU 276
+_Mat_template = """MEDIUM 1
+ICRU 98
+END
+MEDIUM 2
+ICRU 3
+END
+MEDIUM 3
+ICRU 1
+END
+MEDIUM 4
+ICRU 906
 END
 """
 
@@ -35,23 +45,17 @@ Output
     """
 
 _Geo_template = """
-*---><---><--------><------------------------------------------------>
-    0    0           protons, H2O 30 cm cylinder, r=10, 1 zone
-*---><---><--------><--------><--------><--------><--------><-------->
-  RCC    1       0.0       0.0       0.0       0.0       0.0      30.0
-                10.0
-  RCC    2       0.0       0.0      -5.0       0.0       0.0      35.0
-                15.0
-  RCC    3       0.0       0.0     -10.0       0.0       0.0      40.0
-                20.0
+    0    0          Unnamed geometry
+  SPH    1       0.0       0.0       0.3       1.0
+  SPH    2       0.3       0.0       0.0       1.0
+  SPH    3       0.0       0.0      -0.3       1.0
+  SPH    4      -0.3       0.0       0.0       1.0
   END
-  001          +1
-  002          +2     -1
-  003          +3     -2
+  001          +1     -2
+  002          +3     +4     -2
   END
-* material codes: 1 - liquid water (ICRU material no 276), 1000 - vacuum, 0 - black body
-    1    2    3
-    1 1000    0
+    1    2
+    4    3
 """
 
 _Test_dir = './test_runs'
@@ -73,7 +77,8 @@ def parser() -> Parser:
 @pytest.fixture
 def default_json() -> dict:
     """Creates default json."""
-    return {"beam": {"energy": 150.}}
+    with open(path.join(path.abspath("./input_examples"), 'example6.json'), 'r') as json_f:
+        return json.load(json_f)
 
 
 def test_if_beam_created(parser, default_json, output_dir) -> None:

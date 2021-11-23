@@ -3,13 +3,13 @@ from functools import reduce
 from dataclasses import dataclass, field
 from os import path
 from converter.common import Parser
+from converter.shieldhit.geo import GeoMatConfig, Zone
+import converter.solid_figures as solid_figures
 
 
 @dataclass(frozen=True)
 class Geometry(ABC):
     """Abstract geometry dataclass for DetectConfig."""
-
-    pass
 
 
 @dataclass(order=True, frozen=True)
@@ -80,22 +80,6 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 
 
 @dataclass
-class MatConfig:
-    """Class mapping of the mat.dat config file."""
-
-    materials: list[int] = field(default_factory=lambda: [276])
-
-    material_template: str = """MEDIUM {idx:d}
-ICRU {mat:d}
-END
-"""
-
-    def __str__(self) -> str:
-        material_strings = [self.material_template.format(idx=idx, mat=mat) for idx, mat in enumerate(self.materials)]
-        return "\n".join(material_strings)
-
-
-@dataclass
 class DetectConfig:
     """Class mapping of the detect.dat config file."""
 
@@ -113,46 +97,16 @@ class DetectConfig:
         return "\n".join(detect_strings)
 
 
-@dataclass
-class GeoConfig:
-    """Class mapping of the geo.dat config file."""
-
-    geo_template: str = """
-*---><---><--------><------------------------------------------------>
-    0    0           protons, H2O 30 cm cylinder, r=10, 1 zone
-*---><---><--------><--------><--------><--------><--------><-------->
-  RCC    1       0.0       0.0       0.0       0.0       0.0      30.0
-                10.0
-  RCC    2       0.0       0.0      -5.0       0.0       0.0      35.0
-                15.0
-  RCC    3       0.0       0.0     -10.0       0.0       0.0      40.0
-                20.0
-  END
-  001          +1
-  002          +2     -1
-  003          +3     -2
-  END
-* material codes: 1 - liquid water (ICRU material no 276), 1000 - vacuum, 0 - black body
-    1    2    3
-    1 1000    0
-"""
-
-    def __str__(self) -> str:
-        return self.geo_template
-
-
 class DummmyParser(Parser):
     """A simple placeholder parser that ignores the json input and prints example (default) configs."""
 
     def __init__(self) -> None:
         self.beam_config = BeamConfig()
-        self.mat_config = MatConfig()
         self.detect_config = DetectConfig()
-        self.geo_config = GeoConfig()
+        self.geo_mat_config = GeoMatConfig()
 
     def parse_configs(self, json: dict):
         """Basicaly do nothing since we work on defaults in this parser."""
-        pass
 
     def save_configs(self, target_dir: str):
         """
@@ -161,51 +115,90 @@ class DummmyParser(Parser):
         """
         target_dir = path.abspath(target_dir)
 
-        with open(path.join(target_dir, 'beam.dat'), 'x') as beam_f:
-            beam_f.write(str(self.beam_config))
+        for file_name, content in self.get_configs_json().items():
+            with open(path.join(target_dir, file_name), 'x') as conf_f:
+                conf_f.write(content)
 
-        with open(path.join(target_dir, 'mat.dat'), 'x') as mat_f:
-            mat_f.write(str(self.mat_config))
+    def get_configs_json(self) -> dict:
+        """
+        Return a dict representation of the config files. Each element has
+        the config files name as key and its content as value.
+        """
+        configs_json = {
+            "beam.dat": str(self.beam_config),
+            "mat.dat": self.geo_mat_config.get_mat_string(),
+            "detect.dat": str(self.detect_config),
+            "geo.dat": self.geo_mat_config.get_geo_string(),
+        }
 
-        with open(path.join(target_dir, 'detect.dat'), 'x') as detect_f:
-            detect_f.write(str(self.detect_config))
-
-        with open(path.join(target_dir, 'geo.dat'), 'x') as geo_f:
-            geo_f.write(str(self.geo_config))
+        return configs_json
 
 
 class ShieldhitParser(DummmyParser):
     """A regular shieldhit parser"""
 
-    def __init__(self) -> None:
-        super().__init__()
-
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
         self._parse_beam(json)
-        self._parse_mat(json)
+        self._parse_geo_mat(json)
         self._parse_detect(json)
-        self._parse_geo(json)
 
-    def _parse_beam(self, json) -> None:
+    def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
 
-    def _parse_mat(self, json) -> None:
-        """Parses data from the input json into the beam_config property"""
-        pass
-
-    def _parse_detect(self, json) -> None:
+    def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
-        pass
 
-    def _parse_geo(self, json) -> None:
-        """Parses data from the input json into the geo_config property"""
-        pass
+    def _parse_geo_mat(self, json: dict) -> None:
+        """Parses data from the input json into the geo_mat_config property"""
+        self._parse_materials(json)
+        self._parse_figures(json)
+        self._parse_zones(json)
 
-    def save_configs(self, target_dir: str):
+    def _parse_materials(self, json: dict) -> None:
+        """Parse materials from JSON"""
+        self.geo_mat_config.materials = [material["data"]["id"] for material in json["materialsManager"]]
+
+    def _parse_figures(self, json: dict) -> None:
+        """Parse figures from JSON"""
+        self.geo_mat_config.figures = [solid_figures.parse_figure(
+            figure_dict) for figure_dict in json["scene"]["object"]["children"]]
+
+    def _parse_zones(self, json: dict) -> None:
+        """Parse zones from JSON"""
+        self.geo_mat_config.zones = [
+            Zone(
+                # lists are numbered from 0, but shieldhit zones are numbered from 1
+                id=idx+1,
+                figures_operators=self._parse_csg_operations(zone["unionOperations"]),
+                # lists are numbered from 0, but shieldhit materials are numbered from 1
+                material=self.geo_mat_config.materials.index(zone["materialData"]["id"])+1,
+            ) for idx, zone in enumerate(json["zonesManager"]["zones"])
+        ]
+
+    def _parse_csg_operations(self, operations: list[list[dict]]) -> list[set[int]]:
         """
-        Save the configs as text files in the target_dir.
-        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
+        Parse dict of csg operations to a list of sets. Sets contain a list of intersecting geometries.
+        The list contains a union of geometries from sets.
         """
-        return super().save_configs(target_dir)
+        operations = [item for ops in operations for item in ops]
+        parsed_operations = []
+        for operation in operations:
+            # lists are numbered from 0, but shieldhit figures are numbered from 1
+            figure_id = self._get_figure_index_by_uuid(operation["objectUuid"])+1
+            if operation["mode"] == "union":
+                parsed_operations.append({figure_id})
+            elif operation["mode"] == "subtraction":
+                parsed_operations[-1].add(-figure_id)
+            elif operation["mode"] == "intersection":
+                parsed_operations[-1].add(figure_id)
+            else:
+                raise ValueError("Unexpected CSG operation: {1}".format(operation["mode"]))
+
+        return parsed_operations
+
+    def _get_figure_index_by_uuid(self, uuid: str) -> int:
+        """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
+        figure = [figure for figure in self.geo_mat_config.figures if figure.uuid == uuid][0]
+        return self.geo_mat_config.figures.index(figure)
