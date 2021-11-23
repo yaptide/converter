@@ -1,7 +1,7 @@
 from converter.solid_figures import SolidFigure, BoxFigure, CylinderFigure, SphereFigure
 from abc import ABC
 from dataclasses import dataclass, field
-from math import log10, ceil
+from math import log10, ceil, isclose
 
 
 def format_float(number: float, n: int) -> float:
@@ -14,10 +14,10 @@ def format_float(number: float, n: int) -> float:
     if number == 0:
         return 0.0
 
-    lenght = n
+    length = n
 
     # Adjust lenght for decimal separator ('.')
-    lenght -= 1
+    length -= 1
 
     # Sign messes up the log10 we use do determine how long the number is. We use
     # abs() to fix that, but we need to remember the sign and update `n` accordingly
@@ -27,25 +27,25 @@ def format_float(number: float, n: int) -> float:
         number = abs(number)
         sign = -1
         # Adjust lenght for the sign
-        lenght -= 1
+        length -= 1
 
     whole_length = ceil(log10(number))
 
     # Check if it will be possible to fit the number
-    if whole_length > lenght-1:
-        raise ValueError(f"Number is to big to be formatted. Minimum lenght: {whole_length-sign+1},\
-             requested length: {n}")
+    if whole_length > length-1:
+        raise ValueError(f"Number is to big to be formatted. Minimum length: {whole_length-sign+1},\
+requested length: {n}")
 
-    # Adjust n for the whole numbers, log returns resonable outputs for values greater
+    # Adjust n for the whole numbers, log returns reasonable outputs for values greater
     # than 1, for other values it returns nonpositive numbers, but we would like 1
     # to be returned. We solve that by taking the greater value between the returned and
     # and 1.
-    lenght -= max(whole_length, 1)
+    length -= max(whole_length, 1)
 
-    result = float(sign*round(number, lenght))
+    result = float(sign*round(number, length))
 
     # Check if the round function truncated the number, warn the user if it did.
-    if result != sign*number:
+    if isclose(result, sign*number):
         print(f'WARN: number was truncated when converting: {sign*number} -> {result}')
 
     return result
@@ -143,16 +143,6 @@ class GeoMatConfig:
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
-
-#     geo_template: str = """
-# *---><---><--------><------------------------------------------------>
-# {jdbg1:>5}{jdbg1:>5}          {title:>60}
-# *---><---><--------><--------><--------><--------><--------><-------->{figures}
-# END
-# {zones}
-# END
-# {materials}
-# """
 
     material_template: str = """MEDIUM {idx:d}
 ICRU {mat}
