@@ -12,3 +12,6 @@ class DummmyParser(Parser):
 
     def save_configs(self, target_dir: str) -> None:
         """Does nothing, not implemented yet."""
+
+    def get_configs_json(self) -> dict:
+        """Does nothing, not implemented yet."""

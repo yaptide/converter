@@ -14,3 +14,11 @@ class Parser(ABC):
         Save the configs as text files in the target_dir.
         The files are: beam.dat, mat.dat, detect.dat and geo.dat.
         """
+
+    @abstractmethod
+    def get_configs_json(self) -> dict:
+        """
+        Return a dict representation of the config files.
+        Each file is a field ("beam", "mat", "detect" and "geo") that contains
+        the respective file contents.
+        """

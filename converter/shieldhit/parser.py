@@ -127,6 +127,16 @@ class DummmyParser(Parser):
         with open(path.join(target_dir, 'geo.dat'), 'x') as geo_f:
             geo_f.write(self.geo_mat_config.get_geo_string())
 
+    def get_configs_json(self) -> dict:
+        configs_json = {
+            "beam": str(self.beam_config),
+            "mat": str(self.mat_config),
+            "detect": str(self.detect_config),
+            "geo": str(self.geo_config),
+        }
+
+        return configs_json
+
 
 class ShieldhitParser(DummmyParser):
     """A regular shieldhit parser"""
