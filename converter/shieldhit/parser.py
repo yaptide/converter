@@ -169,7 +169,7 @@ class ShieldhitParser(DummmyParser):
         """Parse zones from JSON"""
         self.geo_mat_config.zones = [
             Zone(
-                # lists are numbered from 0, but shieldhit materials are numbered from 1
+                # lists are numbered from 0, but shieldhit zones are numbered from 1
                 id=idx+1,
                 figures_operators=self._parse_csg_operations(zone["unionOperations"]),
                 # lists are numbered from 0, but shieldhit materials are numbered from 1
@@ -185,7 +185,8 @@ class ShieldhitParser(DummmyParser):
         operations = [item for ops in operations for item in ops]
         parsed_operations = []
         for operation in operations:
-            figure_id = self._get_figure_index_by_uuid(operation["objectUuid"])
+            # lists are numbered from 0, but shieldhit figures are numbered from 1
+            figure_id = self._get_figure_index_by_uuid(operation["objectUuid"])+1
             if operation["mode"] == "union":
                 parsed_operations.append({figure_id})
             elif operation["mode"] == "subtraction":
