@@ -14,8 +14,10 @@ def format_float(number: float, n: int) -> float:
     if number == 0:
         return 0.0
 
-    # Adjust n for .
-    n -= 1
+    lenght = n
+
+    # Adjust lenght for decimal separator ('.')
+    lenght -= 1
 
     # Sign messes up the log10 we use do determine how long the number is. We use
     # abs() to fix that, but we need to remember the sign and update `n` accordingly
@@ -24,23 +26,23 @@ def format_float(number: float, n: int) -> float:
     if number < 0:
         number = abs(number)
         sign = -1
-        # Adjust n for the sign
-        n -= 1
+        # Adjust lenght for the sign
+        lenght -= 1
 
     whole_length = ceil(log10(number))
 
     # Check if it will be possible to fit the number
-    if whole_length > n-1:
-        raise ValueError(f"Number is to big to be formatted. Whole part lenght: {whole_length-sign+1},\
-             requested length: {n-sign+1}")
+    if whole_length > lenght-1:
+        raise ValueError(f"Number is to big to be formatted. Minimum lenght: {whole_length-sign+1},\
+             requested length: {n}")
 
     # Adjust n for the whole numbers, log returns resonable outputs for values greater
     # than 1, for other values it returns nonpositive numbers, but we would like 1
     # to be returned. We solve that by taking the greater value between the returned and
     # and 1.
-    n -= max(whole_length, 1)
+    lenght -= max(whole_length, 1)
 
-    result = float(sign*round(number, n))
+    result = float(sign*round(number, lenght))
 
     # Check if the round function truncated the number, warn the user if it did.
     if result != sign*number:

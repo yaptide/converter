@@ -18,7 +18,6 @@ class Parser(ABC):
     @abstractmethod
     def get_configs_json(self) -> dict:
         """
-        Return a dict representation of the config files.
-        Each file is a field ("beam", "mat", "detect" and "geo") that contains
-        the respective file contents.
+        Return a dict representation of the config files. Each element has
+        the config files name as key and its content as value.
         """
