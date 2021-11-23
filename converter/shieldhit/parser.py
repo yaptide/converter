@@ -115,17 +115,9 @@ class DummmyParser(Parser):
         """
         target_dir = path.abspath(target_dir)
 
-        with open(path.join(target_dir, 'beam.dat'), 'x') as beam_f:
-            beam_f.write(str(self.beam_config))
-
-        with open(path.join(target_dir, 'mat.dat'), 'x') as mat_f:
-            mat_f.write(self.geo_mat_config.get_mat_string())
-
-        with open(path.join(target_dir, 'detect.dat'), 'x') as detect_f:
-            detect_f.write(str(self.detect_config))
-
-        with open(path.join(target_dir, 'geo.dat'), 'x') as geo_f:
-            geo_f.write(self.geo_mat_config.get_geo_string())
+        for file_name, content in self.get_configs_json().items():
+            with open(path.join(target_dir, file_name), 'x') as conf_f:
+                conf_f.write(content)
 
     def get_configs_json(self) -> dict:
         """
@@ -133,10 +125,10 @@ class DummmyParser(Parser):
         the config files name as key and its content as value.
         """
         configs_json = {
-            "beam": str(self.beam_config),
-            "mat": str(self.mat_config),
-            "detect": str(self.detect_config),
-            "geo": str(self.geo_config),
+            "beam.dat": str(self.beam_config),
+            "mat.dat": self.geo_mat_config.get_mat_string(),
+            "detect.dat": str(self.detect_config),
+            "geo.dat": self.geo_mat_config.get_geo_string(),
         }
 
         return configs_json
