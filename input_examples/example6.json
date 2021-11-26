@@ -473,21 +473,22 @@
 		"uuid": "E11E2B91-BAC0-4BC3-8D74-31754BB0FD93",
 		"name": "",
 		"boundingZone": {
-			"center": {
-				"x": 0,
-				"y": 0,
-				"z": 0
-			},
-			"size": {
-				"x": 2.8600000000000003,
-				"y": 2.2,
-				"z": 2.8600000000000003
-			},
-			"type": "BoundingZone",
-			"geometryType": "box",
-			"name": "World Zone",
-			"color": 16711680,
-			"marginMultiplier": 1.1
+			"userData": {
+				"geometryType": "BoxGeometry",
+				"position": [
+					-0.3,
+					0,
+					0
+				],
+				"rotation": [
+					0,
+					0,
+					0
+				],
+				"width": 1,
+				"height": 1,
+				"depth": 1
+			}
 		}
 	},
 	"beam": {

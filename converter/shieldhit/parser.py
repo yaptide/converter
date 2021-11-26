@@ -3,7 +3,7 @@ from functools import reduce
 from dataclasses import dataclass, field
 from os import path
 from converter.common import Parser
-from converter.shieldhit.geo import GeoMatConfig, Zone
+from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
 import converter.solid_figures as solid_figures
 
 
@@ -177,6 +177,44 @@ class ShieldhitParser(DummmyParser):
             ) for idx, zone in enumerate(json["zonesManager"]["zones"])
         ]
 
+        # TODO: Update json examples
+        # if "boundingZone" in json["zonesManager"]:
+        #     self._parse_world_zone(json)
+
+    def _parse_world_zone(self, json: dict) -> None:
+        """Parse the world zone and add it to the zone list"""
+        # Add bounding figure to figures
+        self.geo_mat_config.figures.append(
+            solid_figures.parse_figure(json["zonesManager"]["boundingZone"])
+        )
+        # Add the figure that will serve as a black hole wrapper around the bounding zone
+        self.geo_mat_config.figures.append(
+            solid_figures.parse_figure(json["zonesManager"]["boundingZone"]).expand(1.)
+        )
+
+        last_figure_idx = len(self.geo_mat_config.figures)-1
+        self.geo_mat_config.zones.append(
+            Zone(
+                id=len(self.geo_mat_config.zones)+1,
+                # slightly larger world zone - world zone
+                figures_operators=self._calculate_world_zone_operations(self, last_figure_idx),
+                # the last material is the black hole
+                material=len(self.geo_mat_config.materials)-1)
+        )
+
+        # TODO: Make this a valid black hole material
+        self.geo_mat_config.materials.append("BH")
+
+        # Add the black hole wrapper
+        self.geo_mat_config.zones.append(
+            Zone(
+                id=len(self.geo_mat_config.zones)+1,
+                # slightly larger world zone - world zone
+                figures_operators=[{last_figure_idx, -(last_figure_idx-1)}],
+                # the last material is the black hole
+                material=len(self.geo_mat_config.materials)-1)
+        )
+
     def _parse_csg_operations(self, operations: list[list[dict]]) -> list[set[int]]:
         """
         Parse dict of csg operations to a list of sets. Sets contain a list of intersecting geometries.
@@ -197,6 +235,21 @@ class ShieldhitParser(DummmyParser):
                 raise ValueError("Unexpected CSG operation: {1}".format(operation["mode"]))
 
         return parsed_operations
+
+    def _calculate_world_zone_operations(self, world_zone_figure: int) -> list[set[int]]:
+        """Calculate the world zone operations. Take the wolrd zone figure and subract all geometries."""
+        # Sum all zones
+        all_zones = [figure_operators for zone in self.geo_mat_config.zones
+                     for figure_operators in zone.figures_operators]
+
+        world_zone = [{world_zone_figure}]
+
+        for figure_set in all_zones:
+            for w_figure_set in world_zone:
+                new_world_zone = [w_figure_set.add(-figure) for figure in figure_set]
+            world_zone = new_world_zone
+
+        return world_zone
 
     def _get_figure_index_by_uuid(self, uuid: str) -> int:
         """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""

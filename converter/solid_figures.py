@@ -15,12 +15,19 @@ class SolidFigure(ABC):
     position: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
     rotation: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
 
+    def expand(self, expansion: float) -> None:
+        """Expand figure by `expansion` in each dimension."""
+
 
 @dataclass(frozen=True)
 class SphereFigure(SolidFigure):
     """A sphere. Its size is defined by its radius."""
 
     radius: float = 1.
+
+    def expand(self, expansion: float) -> None:
+        """Expand figure by x in each dimension."""
+        self.radius += expansion/2
 
 
 @dataclass(frozen=True)
@@ -35,6 +42,12 @@ class CylinderFigure(SolidFigure):
     radius_bottom: float = 1.
     height: float = 1.
 
+    def expand(self, expansion: float) -> None:
+        """Expand figure by x in each dimension."""
+        self.radius_top += expansion/2
+        self.radius_bottom += expansion/2
+        self.height += expansion
+
 
 @dataclass(frozen=True)
 class BoxFigure(SolidFigure):
@@ -48,6 +61,11 @@ class BoxFigure(SolidFigure):
     x_edge_length: float = 1.
     y_edge_length: float = 1.
     z_edge_length: float = 1.
+
+    def expand(self, expansion: float) -> None:
+        self.x_edge_length += expansion
+        self.y_edge_length += expansion
+        self.z_edge_length += expansion
 
 
 def parse_figure(figure_dict: dict) -> SolidFigure:
