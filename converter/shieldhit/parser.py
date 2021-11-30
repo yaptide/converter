@@ -163,7 +163,7 @@ class ShieldhitParser(DummmyParser):
     def _parse_figures(self, json: dict) -> None:
         """Parse figures from JSON"""
         self.geo_mat_config.figures = [solid_figures.parse_figure(
-            figure_dict) for figure_dict in json["scene"]["object"]["children"]]
+            figure_dict) for figure_dict in json["scene"]["object"].get('children')]
 
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""

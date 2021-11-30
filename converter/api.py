@@ -6,7 +6,7 @@ from converter.common import Parser
 def get_parser_from_str(parser_type: str) -> Parser:
     """Get a converter object based on the provided type."""
     # This is temporary, suggestions on how to do this better appreciated.
-    if parser_type.lower() == 'dummy':
+    if parser_type.lower() == 'sh_dummy':
         return SHDummyParser()
     if parser_type.lower() == 'shieldhit':
         return ShieldhitParser()
