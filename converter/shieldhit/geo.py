@@ -11,9 +11,9 @@ def format_float(number: float, n: int) -> float:
     as possible (in descending priority). so for example given 12.333 for n=5 you will
     get 12.33, n=7 will be 12.333
     """
-    input = number
+    result = number
     # If number is zero we just want to get 0.0 (it would mess up the log10 operation below)
-    if input == 0:
+    if result == 0:
         return 0.0
 
     length = n
@@ -25,13 +25,13 @@ def format_float(number: float, n: int) -> float:
     # abs() to fix that, but we need to remember the sign and update `n` accordingly
     sign = 1
 
-    if input < 0:
-        input = abs(input)
+    if result < 0:
+        result = abs(result)
         sign = -1
         # Adjust lenght for the sign
         length -= 1
 
-    whole_length = ceil(log10(input))
+    whole_length = ceil(log10(result))
 
     # Check if it will be possible to fit the number
     if whole_length > length-1:
@@ -44,7 +44,7 @@ requested length: {n}")
     # and 1.
     length -= max(whole_length, 1)
 
-    result = float(sign*round(input, length))
+    result = float(sign*round(result, length))
 
     # Check if the round function truncated the number, warn the user if it did.
     if not isclose(result, number):
