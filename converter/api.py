@@ -14,7 +14,7 @@ def get_parser_from_str(parser_type: str) -> Parser:
         return TopasDummyParser()
 
     print(f"Invalid parser type \"{parser_type}\".")
-    raise ValueError("Parser type must be either 'dummy', 'shieldhit' or 'topas'")
+    raise ValueError("Parser type must be either 'sh_dummy', 'shieldhit' or 'topas'")
 
 
 def run_parser(parser: Parser, input_data: dict, output_dir: str = None, silent: bool = True) -> None:
