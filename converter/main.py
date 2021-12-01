@@ -2,7 +2,7 @@ import sys
 import json
 import argparse
 import os
-from api import get_parser_from_str, run_parser
+from converter import api
 
 
 def dir_path(string):
@@ -10,6 +10,11 @@ def dir_path(string):
     if os.path.isdir(string):
         return string
     raise NotADirectoryError(string)
+
+
+def convert(output_format: str, input_json: dict, output_dir: str, silent: bool):
+    json_parser = api.get_parser_from_str(output_format)
+    api.run_parser(json_parser, json.load(input_json), output_dir, silent=silent)
 
 
 def main(args):
@@ -20,10 +25,10 @@ def main(args):
     arg_parser.add_argument('input_json', type=argparse.FileType('r'))
     arg_parser.add_argument('output_dir', nargs='?', default=os.path.curdir, type=dir_path)
     arg_parser.add_argument('output_format', nargs='?', default='shieldhit', type=str)
+    arg_parser.add_argument('-s', '--silent', action='store_true')
     parsed_args = arg_parser.parse_args(args)
 
-    json_parser = get_parser_from_str(parsed_args.output_format)
-    run_parser(json_parser, json.load(parsed_args.input_json), parsed_args.output_dir)
+    convert(parsed_args.output_format, parsed_args.input_json, parsed_args.output_dir, parsed_args.silent)
 
 
 if __name__ == '__main__':

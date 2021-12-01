@@ -116,7 +116,7 @@ class DummmyParser(Parser):
         target_dir = path.abspath(target_dir)
 
         for file_name, content in self.get_configs_json().items():
-            with open(path.join(target_dir, file_name), 'x') as conf_f:
+            with open(path.join(target_dir, file_name), 'w') as conf_f:
                 conf_f.write(content)
 
     def get_configs_json(self) -> dict:

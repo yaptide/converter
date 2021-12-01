@@ -17,7 +17,14 @@ def get_parser_from_str(parser_type: str) -> Parser:
     raise ValueError("Parser type must be either 'dummy', 'shieldhit' or 'topas'")
 
 
-def run_parser(parser: Parser, input_data: dict, output_dir: str) -> None:
+def run_parser(parser: Parser, input_data: dict, output_dir: str = None, silent: bool = True) -> None:
     """Convert the configs and save them in the output_dir directory."""
     parser.parse_configs(input_data)
-    parser.save_configs(output_dir)
+
+    if not silent:
+        for key, value in parser.get_configs_json().items():
+            print(f'File {key}:')
+            print(value)
+
+    if output_dir:
+        parser.save_configs(output_dir)
