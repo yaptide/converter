@@ -197,7 +197,7 @@ class ShieldhitParser(DummmyParser):
             Zone(
                 id=len(self.geo_mat_config.zones)+1,
                 # slightly larger world zone - world zone
-                figures_operators=self._calculate_world_zone_operations(self, last_figure_idx),
+                figures_operators=self._calculate_world_zone_operations(last_figure_idx),
                 # the last material is the black hole
                 material=len(self.geo_mat_config.materials)-1)
         )

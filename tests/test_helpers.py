@@ -2,7 +2,7 @@ import pytest
 from converter.shieldhit.geo import format_float
 
 
-@pytest.mark.parametrize("float,n,expected", [
+@pytest.mark.parametrize("value,n,expected", [
     (1, 10, 1.0),
     (0, 10, 0.0),
     (-1, 10, -1.0),
@@ -11,9 +11,9 @@ from converter.shieldhit.geo import format_float
     (123+1.0/3, 10, 123.333333),
     (-(123+1.0/3), 10, -123.33333),
 ])
-def test_format_float(float, n, expected):
+def test_format_float(value, n, expected):
     """Test if format_float works on all the edge cases."""
-    assert format_float(float, n) == expected
+    assert format_float(value, n) == expected
 
 
 def test_format_float_large_example():
