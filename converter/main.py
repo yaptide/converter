@@ -6,13 +6,14 @@ from converter import api
 
 
 def dir_path(string):
-    """Hleper function that helps argparse check if a given string is a valid directory."""
+    """Helper function that helps argparse check if a given string is a valid directory."""
     if os.path.isdir(string):
         return string
     raise NotADirectoryError(string)
 
 
 def convert(output_format: str, input_json: dict, output_dir: str, silent: bool):
+    """Run conversion and save output to output dir."""
     json_parser = api.get_parser_from_str(output_format)
     api.run_parser(json_parser, json.load(input_json), output_dir, silent=silent)
 
