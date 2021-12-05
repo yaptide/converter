@@ -26,7 +26,7 @@ class SphereFigure(SolidFigure):
     radius: float = 1.
 
     def expand(self, margin: float) -> None:
-        """Expand figure by `margin` in each dimension. Increases figures diameter by `margin`"""
+        """Expand figure by `margin` in each dimension. Increases figure radius by adding to it a `margin`"""
         self.radius += margin
 
 
