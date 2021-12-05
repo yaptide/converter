@@ -174,36 +174,39 @@ class ShieldhitParser(DummmyParser):
                 figures_operators=self._parse_csg_operations(zone["unionOperations"]),
                 # lists are numbered from 0, but shieldhit materials are numbered from 1
                 material=self.geo_mat_config.materials.index(zone["materialData"]["id"])+1,
-            ) for idx, zone in enumerate(json["zonesManager"]["zones"])
+            ) for idx, zone in enumerate(json["zoneManager"]["zones"])
         ]
 
-        if "boundingZone" in json["zonesManager"]:
+        if "worldZone" in json["zoneManager"]:
             self._parse_world_zone(json)
 
     def _parse_world_zone(self, json: dict) -> None:
         """Parse the world zone and add it to the zone list"""
         # Add bounding figure to figures
+        world_figure = solid_figures.parse_figure(json["zoneManager"]["worldZone"])
         self.geo_mat_config.figures.append(
-            solid_figures.parse_figure(json["zonesManager"]["boundingZone"])
+            world_figure
         )
 
         self.geo_mat_config.zones.append(
             Zone(
                 id=len(self.geo_mat_config.zones)+1,
                 # slightly larger world zone - world zone
-                figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)-1),
+                figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)),
                 # the last material is the black hole
                 material=1000
             )
         )
 
         # Add the figure that will serve as a black hole wrapper around the bounding zone
+        world_figure = solid_figures.parse_figure(json["zoneManager"]["worldZone"])
+        world_figure.expand(1.)
         self.geo_mat_config.figures.append(
-            solid_figures.parse_figure(json["zonesManager"]["boundingZone"]).expand(1.)
+            world_figure
         )
 
         # Add the black hole wrapper
-        last_figure_idx = len(self.geo_mat_config.figures)-1
+        last_figure_idx = len(self.geo_mat_config.figures)
         self.geo_mat_config.zones.append(
             Zone(
                 id=len(self.geo_mat_config.zones)+1,
@@ -244,8 +247,10 @@ class ShieldhitParser(DummmyParser):
         world_zone = [{world_zone_figure}]
 
         for figure_set in all_zones:
+            new_world_zone = []
             for w_figure_set in world_zone:
-                new_world_zone = [w_figure_set.add(-figure) for figure in figure_set]
+                for figure in figure_set:
+                    new_world_zone.append({*w_figure_set, -figure})
             world_zone = new_world_zone
 
         return world_zone

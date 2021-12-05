@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from abc import ABC
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class SolidFigure(ABC):
     """
     Abstract solid figure in 3D space. It is characterised by position in
@@ -19,7 +19,7 @@ class SolidFigure(ABC):
         """Expand figure by `expansion` in each dimension."""
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class SphereFigure(SolidFigure):
     """A sphere. Its size is defined by its radius."""
 
@@ -30,7 +30,7 @@ class SphereFigure(SolidFigure):
         self.radius += expansion/2
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class CylinderFigure(SolidFigure):
     """
     A cylinder, a cone or a truncated cone. It's defined by the radii of both of
@@ -49,7 +49,7 @@ class CylinderFigure(SolidFigure):
         self.height += expansion
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class BoxFigure(SolidFigure):
     """
     A rectangular box (cuboid). The figure can be rotated (meaning its walls don't have

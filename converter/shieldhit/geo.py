@@ -62,7 +62,7 @@ def parse_figure(figure: SolidFigure, number: int) -> str:
     if type(figure) is SphereFigure:
         return _parse_sphere(figure, number)
 
-    raise ValueError("Unexpected solid figure type: {}".format(type(figure)))
+    raise ValueError("Unexpected solid figure type: {}".format(figure))
 
 
 def _parse_box(box: BoxFigure, number: int) -> str:
