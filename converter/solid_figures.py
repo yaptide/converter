@@ -44,8 +44,9 @@ class CylinderFigure(SolidFigure):
 
     def expand(self, margin: float) -> None:
         """
-        Expand the figure by `margin` in each dimension. 
-        Increases figures height by 2 * `margin` (to achieve the same expansion by 1 * `margin` on the bottom and topside.
+        Expand the figure by `margin` in each dimension.
+        Increases figures height by 2 * `margin` (to achieve the same expansion by 1 * `margin` on the
+        bottom and top side.
         Increase as well bottom and top radius by 1 * `margin`.
         """
         self.radius_top += margin
@@ -68,8 +69,9 @@ class BoxFigure(SolidFigure):
 
     def expand(self, margin: float) -> None:
         """
-        Expand the figure by `margin` in each dimension. 
-        Increases figures weight, depth and height by 2 * `margin` to achieve the same expansion (1 * `margin`) on each side.
+        Expand the figure by `margin` in each dimension.
+        Increases figures weight, depth and height by 2 * `margin` to achieve the same
+        expansion (1 * `margin`) on each side.
         """
         self.x_edge_length += margin*2
         self.y_edge_length += margin*2
