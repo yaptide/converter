@@ -25,9 +25,9 @@ class SphereFigure(SolidFigure):
 
     radius: float = 1.
 
-    def expand(self, expansion: float) -> None:
-        """Expand figure by `expansion` in each dimension. Increases figures diameter by `expansion`"""
-        self.radius += expansion/2
+    def expand(self, margin: float) -> None:
+        """Expand figure by `margin` in each dimension. Increases figures diameter by `margin`"""
+        self.radius += margin
 
 
 @dataclass(frozen=False)
@@ -42,14 +42,14 @@ class CylinderFigure(SolidFigure):
     radius_bottom: float = 1.
     height: float = 1.
 
-    def expand(self, expansion: float) -> None:
+    def expand(self, margin: float) -> None:
         """
-        Expand figure by `expansion` in each dimension. Increases figures height and both diameters by
-        `expansion`.
+        Expand figure by `margin` in each dimension. Increases figures height and both diameters by
+        `margin`.
         """
-        self.radius_top += expansion/2
-        self.radius_bottom += expansion/2
-        self.height += expansion
+        self.radius_top += margin
+        self.radius_bottom += margin
+        self.height += margin*2
 
 
 @dataclass(frozen=False)
@@ -65,14 +65,14 @@ class BoxFigure(SolidFigure):
     y_edge_length: float = 1.
     z_edge_length: float = 1.
 
-    def expand(self, expansion: float) -> None:
+    def expand(self, margin: float) -> None:
         """
-        Expand figure by `expansion` in each dimension. Increases figures wieght, depth and height by
-        `expansion`.
+        Expand figure by `margin` in each dimension. Increases figures wieght, depth and height by
+        `margin`.
         """
-        self.x_edge_length += expansion
-        self.y_edge_length += expansion
-        self.z_edge_length += expansion
+        self.x_edge_length += margin*2
+        self.y_edge_length += margin*2
+        self.z_edge_length += margin*2
 
 
 def parse_figure(figure_dict: dict) -> SolidFigure:
