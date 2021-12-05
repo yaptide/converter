@@ -15,7 +15,7 @@ class SolidFigure(ABC):
     position: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
     rotation: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
 
-    def expand(self, expansion: float) -> None:
+    def expand(self, margin: float) -> None:
         """Expand figure by `expansion` in each dimension."""
 
 
