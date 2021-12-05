@@ -44,8 +44,9 @@ class CylinderFigure(SolidFigure):
 
     def expand(self, margin: float) -> None:
         """
-        Expand figure by `margin` in each dimension. Increases figures height and both diameters by
-        `margin`.
+        Expand the figure by `margin` in each dimension. 
+        Increases figures height by 2 * `margin` (to achieve the same expansion by 1 * `margin` on the bottom and topside.
+        Increase as well bottom and top radius by 1 * `margin`.
         """
         self.radius_top += margin
         self.radius_bottom += margin
