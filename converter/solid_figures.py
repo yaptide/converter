@@ -44,7 +44,7 @@ class CylinderFigure(SolidFigure):
 
     def expand(self, expansion: float) -> None:
         """
-        Expand figure by `expansion` in each dimension. Increases figures height and both diameters by 
+        Expand figure by `expansion` in each dimension. Increases figures height and both diameters by
         `expansion`.
         """
         self.radius_top += expansion/2
@@ -67,7 +67,7 @@ class BoxFigure(SolidFigure):
 
     def expand(self, expansion: float) -> None:
         """
-        Expand figure by `expansion` in each dimension. Increases figures wieght, depth and height by 
+        Expand figure by `expansion` in each dimension. Increases figures wieght, depth and height by
         `expansion`.
         """
         self.x_edge_length += expansion
