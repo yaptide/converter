@@ -78,7 +78,6 @@ def _parse_box(box: BoxFigure, number: int) -> str:
         box.position[2] - diagonal_vect[2]/2,
     )
 
-
     return """
   BOX {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
           {p7:>10}{p8:>10}{p9:>10}{p10:>10}{p11:>10}{p12:>10}""".format(

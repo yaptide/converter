@@ -177,9 +177,8 @@ class ShieldhitParser(DummmyParser):
             ) for idx, zone in enumerate(json["zonesManager"]["zones"])
         ]
 
-        # TODO: Update json examples
-        # if "boundingZone" in json["zonesManager"]:
-        #     self._parse_world_zone(json)
+        if "boundingZone" in json["zonesManager"]:
+            self._parse_world_zone(json)
 
     def _parse_world_zone(self, json: dict) -> None:
         """Parse the world zone and add it to the zone list"""
@@ -187,32 +186,32 @@ class ShieldhitParser(DummmyParser):
         self.geo_mat_config.figures.append(
             solid_figures.parse_figure(json["zonesManager"]["boundingZone"])
         )
+
+        self.geo_mat_config.zones.append(
+            Zone(
+                id=len(self.geo_mat_config.zones)+1,
+                # slightly larger world zone - world zone
+                figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)-1),
+                # the last material is the black hole
+                material=1000
+            )
+        )
+
         # Add the figure that will serve as a black hole wrapper around the bounding zone
         self.geo_mat_config.figures.append(
             solid_figures.parse_figure(json["zonesManager"]["boundingZone"]).expand(1.)
         )
 
-        last_figure_idx = len(self.geo_mat_config.figures)-1
-        self.geo_mat_config.zones.append(
-            Zone(
-                id=len(self.geo_mat_config.zones)+1,
-                # slightly larger world zone - world zone
-                figures_operators=self._calculate_world_zone_operations(last_figure_idx),
-                # the last material is the black hole
-                material=len(self.geo_mat_config.materials)-1)
-        )
-
-        # TODO: Make this a valid black hole material
-        self.geo_mat_config.materials.append("BH")
-
         # Add the black hole wrapper
+        last_figure_idx = len(self.geo_mat_config.figures)-1
         self.geo_mat_config.zones.append(
             Zone(
                 id=len(self.geo_mat_config.zones)+1,
                 # slightly larger world zone - world zone
                 figures_operators=[{last_figure_idx, -(last_figure_idx-1)}],
                 # the last material is the black hole
-                material=len(self.geo_mat_config.materials)-1)
+                material=0
+            )
         )
 
     def _parse_csg_operations(self, operations: list[list[dict]]) -> list[set[int]]:
