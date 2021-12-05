@@ -26,7 +26,7 @@ class SphereFigure(SolidFigure):
     radius: float = 1.
 
     def expand(self, expansion: float) -> None:
-        """Expand figure by `expansion` in each dimension. Increases figures radius by `expansion`"""
+        """Expand figure by `expansion` in each dimension. Increases figures diameter by `expansion`"""
         self.radius += expansion/2
 
 
@@ -44,7 +44,7 @@ class CylinderFigure(SolidFigure):
 
     def expand(self, expansion: float) -> None:
         """
-        Expand figure by `expansion` in each dimension. Increases figures height and both radi by 
+        Expand figure by `expansion` in each dimension. Increases figures height and both diameters by 
         `expansion`.
         """
         self.radius_top += expansion/2
