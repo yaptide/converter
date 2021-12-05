@@ -63,6 +63,7 @@ class BoxFigure(SolidFigure):
     z_edge_length: float = 1.
 
     def expand(self, expansion: float) -> None:
+        """Expand figure by x in each dimension."""
         self.x_edge_length += expansion
         self.y_edge_length += expansion
         self.z_edge_length += expansion

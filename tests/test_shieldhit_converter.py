@@ -77,7 +77,7 @@ def parser() -> Parser:
 @pytest.fixture
 def default_json() -> dict:
     """Creates default json."""
-    with open(path.join(path.abspath("./input_examples"), 'example6.json'), 'r') as json_f:
+    with open(path.join(path.abspath("./input_examples"), 'sh_parser_test.json'), 'r') as json_f:
         return json.load(json_f)
 
 
