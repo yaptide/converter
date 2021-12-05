@@ -26,7 +26,7 @@ class SphereFigure(SolidFigure):
     radius: float = 1.
 
     def expand(self, expansion: float) -> None:
-        """Expand figure by x in each dimension."""
+        """Expand figure by `expansion` in each dimension. Increases figures radius by `expansion`"""
         self.radius += expansion/2
 
 
@@ -43,7 +43,9 @@ class CylinderFigure(SolidFigure):
     height: float = 1.
 
     def expand(self, expansion: float) -> None:
-        """Expand figure by x in each dimension."""
+        """
+        Expand figure by `expansion` in each dimension. Increases figures height and both radi by `expansion`.
+        """
         self.radius_top += expansion/2
         self.radius_bottom += expansion/2
         self.height += expansion
@@ -63,7 +65,9 @@ class BoxFigure(SolidFigure):
     z_edge_length: float = 1.
 
     def expand(self, expansion: float) -> None:
-        """Expand figure by x in each dimension."""
+        """
+        Expand figure by `expansion` in each dimension. Increases figures wieght, depth and height by `expansion`.
+        """
         self.x_edge_length += expansion
         self.y_edge_length += expansion
         self.z_edge_length += expansion
