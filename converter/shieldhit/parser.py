@@ -6,6 +6,9 @@ from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
 import converter.solid_figures as solid_figures
 
+BLACK_HOLE_MATERIAL = 0
+VACUUM_MATERIAL = 1000
+
 
 @dataclass(frozen=True)
 class Geometry(ABC):
@@ -184,9 +187,7 @@ class ShieldhitParser(DummmyParser):
         """Parse the world zone and add it to the zone list"""
         # Add bounding figure to figures
         world_figure = solid_figures.parse_figure(json["zoneManager"]["worldZone"])
-        self.geo_mat_config.figures.append(
-            world_figure
-        )
+        self.geo_mat_config.figures.append(world_figure)
 
         self.geo_mat_config.zones.append(
             Zone(
@@ -194,12 +195,14 @@ class ShieldhitParser(DummmyParser):
                 # slightly larger world zone - world zone
                 figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)),
                 # the last material is the black hole
-                material=1000
+                material=VACUUM_MATERIAL
             )
         )
 
-        # Add the figure that will serve as a black hole wrapper around the bounding zone
+        # Add the figure that will serve as a black hole wrapper around the world zone
+        # Take the world zone figure
         world_figure = solid_figures.parse_figure(json["zoneManager"]["worldZone"])
+        # Make the figure slightly bigger. It will form the black hole wrapper around the simulation.
         world_figure.expand(1.)
         self.geo_mat_config.figures.append(
             world_figure
@@ -213,7 +216,7 @@ class ShieldhitParser(DummmyParser):
                 # slightly larger world zone - world zone
                 figures_operators=[{last_figure_idx, -(last_figure_idx-1)}],
                 # the last material is the black hole
-                material=0
+                material=BLACK_HOLE_MATERIAL
             )
         )
 
