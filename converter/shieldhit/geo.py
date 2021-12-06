@@ -13,8 +13,8 @@ def format_float(number: float, n: int) -> float:
     """
     result = number
     # If number is zero we just want to get 0.0 (it would mess up the log10 operation below)
-    if result == 0:
-        return 0.0
+    if isclose(result, 0.):
+        return 0.
 
     length = n
 
@@ -50,6 +50,11 @@ requested length: {n}")
     if not isclose(result, number):
         print(f'WARN: number was truncated when converting: {number} -> {result}')
 
+    # Formatting negative numbers smaller than the desired precission could result in -0.0 or 0.0 randomly.
+    # To avoid this we catch -0.0 and return 0.0.
+    if isclose(result, 0.):
+        return 0.
+
     return result
 
 
@@ -67,7 +72,7 @@ def parse_figure(figure: SolidFigure, number: int) -> str:
 
 def _parse_box(box: BoxFigure, number: int) -> str:
     """Parse a BoxFigure into a str representation of SH12A input file."""
-    rotation = R.from_euler('xyz', box.rotation)
+    rotation = R.from_euler('xyz', box.rotation, degrees=True)
     x_vect = rotation.apply([box.x_edge_length, 0, 0])
     y_vect = rotation.apply([0, box.y_edge_length, 0])
     z_vect = rotation.apply([0, 0, box.z_edge_length])
@@ -99,7 +104,7 @@ def _parse_box(box: BoxFigure, number: int) -> str:
 
 def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
     """Parse a CylinderFigure into a str representation of SH12A input file."""
-    rotation = R.from_euler('xyz', cylinder.rotation)
+    rotation = R.from_euler('xyz', cylinder.rotation, degrees=True)
     height_vect = rotation.apply([0, cylinder.height, 0])
     lower_base_position = (
         cylinder.position[0] - height_vect[0]/2,
@@ -157,8 +162,48 @@ class Zone():
 class GeoMatConfig:
     """Class mapping of the geo.dat config file."""
 
-    figures: list[SolidFigure] = field(default_factory=lambda: [SphereFigure()])
-    zones: list[Zone] = field(default_factory=lambda: [Zone()])
+    figures: list[SolidFigure] = field(default_factory=lambda: [
+        CylinderFigure(
+            position=(0., 0., 10.),
+            radius_top=10.,
+            radius_bottom=10.,
+            height=20.,
+            rotation=(90., 0., 0.)
+            ),
+        CylinderFigure(
+            position=(0., 0., 7.5),
+            radius_top=15.,
+            radius_bottom=15.,
+            height=25.,
+            rotation=(90., 0., 0.)
+            ),
+        CylinderFigure(
+            position=(0., 0., 5.),
+            radius_top=20.,
+            radius_bottom=20.,
+            height=30.,
+            rotation=(90., 0., 0.)
+            ),
+        ]
+    )
+    zones: list[Zone] = field(default_factory=lambda: [
+        Zone(
+            id=1,
+            figures_operators=[{1, }],
+            material="1",
+        ),
+        Zone(
+            id=2,
+            figures_operators=[{-1, 2}],
+            material="1000",
+        ),
+        Zone(
+            id=3,
+            figures_operators=[{-2, 3}],
+            material="0",
+        ),
+        ]
+    )
     materials: list[str] = field(default_factory=lambda: [276])
     jdbg1: int = 0
     jdbg2: int = 0
