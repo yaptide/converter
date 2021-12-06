@@ -13,8 +13,8 @@ def format_float(number: float, n: int) -> float:
     """
     result = number
     # If number is zero we just want to get 0.0 (it would mess up the log10 operation below)
-    if result == 0:
-        return 0.0
+    if isclose(result, 0.):
+        return 0.
 
     length = n
 
@@ -49,6 +49,11 @@ requested length: {n}")
     # Check if the round function truncated the number, warn the user if it did.
     if not isclose(result, number):
         print(f'WARN: number was truncated when converting: {number} -> {result}')
+
+    # Formatting negative numbers smaller than the desired precission could result in -0.0 or 0.0 randomly.
+    # To avoid this we catch -0.0 and return 0.0.
+    if isclose(result, 0.):
+        return 0.
 
     return result
 
