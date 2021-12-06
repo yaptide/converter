@@ -1,7 +1,7 @@
 from abc import ABC
 from functools import reduce
 from dataclasses import dataclass, field
-from os import path
+from os import name, path
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
 import converter.solid_figures as solid_figures
@@ -14,9 +14,12 @@ VACUUM_MATERIAL = 1000
 class Geometry(ABC):
     """Abstract geometry dataclass for DetectConfig."""
 
+    def get_name(self) -> str:
+        return "abc"
+
 
 @dataclass(order=True, frozen=True)
-class Cylinder(Geometry):
+class OldCylinder(Geometry):
     """Cylinder geometry dataclass used in DetectConfig."""
 
     sort_index: int = field(init=False)
@@ -38,7 +41,7 @@ class Cylinder(Geometry):
 
 
 @dataclass(order=True, frozen=True)
-class Mesh(Geometry):
+class OldMesh(Geometry):
     """Mesh geometry dataclass used in DetectConfig."""
 
     sort_index: int = field(init=False)
@@ -65,17 +68,17 @@ class Mesh(Geometry):
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 150.
-    nstat: int = 1000
+    energy: float = 150.0
+    nstat: int = 10000
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
-TMAX0      	{energy:3.6f}   0.0  ! Incident energy; (MeV/nucl)
-NSTAT       {nstat:d}    -1 ! NSTAT, Step of saving
+TMAX0      	{energy:3.6f}   1.5  ! Incident energy; (MeV/nucl)
+NSTAT       {nstat:d}    0 ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
-NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
+NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
 
     def __str__(self) -> str:
@@ -83,7 +86,96 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 
 
 @dataclass
+class Cylinder(Geometry):
+    """Cylinder geometry dataclass used in DetectConfig."""
+
+    id: int
+    r: tuple[float, int] = (10.0, 1)
+    z: tuple[float, float, int] = (0.0, 20.0, 40)
+
+    template: str = """Geometry Cyl
+    Name {name}
+    R 0.0 {radius:f} {r_n:d}
+    Z {z_p1:f} {z_p2:f} {z_n:d}"""
+
+    def get_name(self) -> str:
+        return f'Cyl_{self.id}'
+
+    def __str__(self) -> str:
+        radius, r_n = self.r
+        z_p1, z_p2, z_n = self.z
+        return self.template.format(name=self.get_name(),
+                                    radius=radius, r_n=r_n,
+                                    z_p1=z_p1, z_p2=z_p2, z_n=z_n,)
+
+
+
+@dataclass
+class Mesh(Geometry):
+    """Mesh geometry dataclass used in DetectConfig."""
+
+    id: int
+    x: tuple[float, float, int] = (-0.5, 0.5, 1)
+    y: tuple[float, float, int] = (-2.0, 2.0, 8)
+    z: tuple[float, float, int] = (0.0, 20.0, 40)
+
+    template: str = """Geometry Mesh
+    Name {name}
+    X {x_p1:f} {x_p2:f} {x_n:d}
+    Y {y_p1:f} {y_p2:f} {y_n:d}
+    Y {z_p1:f} {z_p2:f} {z_n:d}"""
+
+    def get_name(self) -> str:
+        return f'Mesh_{self.id}'
+
+    def __str__(self) -> str:
+        x_p1, x_p2, x_n = self.x
+        y_p1, y_p2, y_n = self.y
+        z_p1, z_p2, z_n = self.z
+        return self.template.format(name=self.get_name(),
+                                    x_p1=x_p1, x_p2=x_p2, x_n=x_n,
+                                    y_p1=y_p1, y_p2=y_p2, y_n=y_n,
+                                    z_p1=z_p1, z_p2=z_p2, z_n=z_n,)
+
+
+@dataclass
+class OutputDetect:
+    """Output in detect.dat config file."""
+
+    name: str
+    quantities: list[str] = []
+
+    template: str = """Output
+    Filename {name}.bdo
+    Geo {name}
+    Quantity DoseGy"""
+
+    def __str__(self) -> str:
+        return self.template.format(name=self.name)
+
+
+@dataclass
 class DetectConfig:
+    """Class mapping of the detect.dat config file."""
+
+    geometries: list[Geometry] = [Cylinder(id=0), Mesh(id=0)]
+
+    def set_geometries(self, geos_to_set):
+        pass
+
+    def __str__(self) -> str:
+        geos_list = []
+        output_list = []
+        for geometry in self.geometries:
+            geos_list.append(str(geometry))
+            output_list.append(str(OutputDetect(name=geometry.get_name())))
+        
+        return "\n\n".join("\n\n".join(geos_list),"\n\n".join(output_list))
+
+
+
+@dataclass
+class OldDetectConfig:
     """Class mapping of the detect.dat config file."""
 
     geometries: list[Geometry] = field(default_factory=lambda: [Cylinder(id=0), Mesh(id=0)])
@@ -152,6 +244,7 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
+
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
