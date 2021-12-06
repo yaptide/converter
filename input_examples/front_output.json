@@ -90,43 +90,43 @@
 		"name": "DetectManager",
 		"detectGeometries": [
 			{
-				"uuid": "85C8C3A8-424F-4FA8-B8D1-EDFCCC0C7632",
+				"uuid": "0206B98D-6A88-4A16-B309-B22258047718",
 				"data": {
-					"width": 1,
-					"height": 1,
-					"depth": 20,
 					"radius": 10,
 					"innerRadius": 0,
-					"xSegments": 1,
-					"ySegments": 1,
-					"zSegments": 400,
+					"depth": 20,
 					"radialSegments": 1,
-					"zoneId": -1
+					"zSegments": 400
 				},
 				"type": "Cyl",
-				"position": [0,0,10],
-				"name": "CylZ_Mesh",
+				"position": [
+					0,
+					0,
+					10
+				],
+				"name": "Detect",
 				"colorHex": 65535
 			},
 			{
-				"uuid": "84826A98-1EAD-4E91-A6CD-2EBAAF4AEB73",
+				"uuid": "E9F3017C-1785-4FA2-9B91-4F33E2635F60",
 				"data": {
 					"width": 1,
 					"height": 4,
 					"depth": 20,
-					"radius": 1,
-					"innerRadius": 0,
 					"xSegments": 1,
 					"ySegments": 80,
-					"zSegments": 400,
-					"radialSegments": 1,
-					"zoneId": -1
+					"zSegments": 400
 				},
 				"type": "Mesh",
-				"position": [0,0,10],
-				"name": "YZ_Mesh",
+				"position": [
+					0,
+					0,
+					10
+				],
+				"name": "Detect",
 				"colorHex": 65535
-			}],
+			}
+		],
 		"filters": []
 	},
 	"beam": {
