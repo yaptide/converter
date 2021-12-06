@@ -184,7 +184,7 @@ class GeoMatConfig:
     zones: list[Zone] = field(default_factory=lambda: [
         Zone(
             id=1,
-            figures_operators=[{1,}],
+            figures_operators=[{1, }],
             material="1",
         ),
         Zone(
