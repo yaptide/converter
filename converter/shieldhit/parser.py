@@ -65,7 +65,7 @@ class Mesh(Geometry):
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 150.0
+    energy: float = 150.
     nstat: int = 10000
 
     beam_template: str = """
