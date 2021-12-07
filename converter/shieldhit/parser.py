@@ -66,16 +66,16 @@ class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
     energy: float = 150.
-    nstat: int = 1000
+    nstat: int = 10000
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
-TMAX0      	{energy:3.6f}   0.0  ! Incident energy; (MeV/nucl)
-NSTAT       {nstat:d}    -1 ! NSTAT, Step of saving
+TMAX0      	{energy:3.1f}  1.5       ! Incident energy; (MeV/nucl)
+NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
-NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
+NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 """
 
     def __str__(self) -> str:
@@ -86,18 +86,31 @@ NUCRE           0            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 class DetectConfig:
     """Class mapping of the detect.dat config file."""
 
-    geometries: list[Geometry] = field(default_factory=lambda: [Cylinder(id=0), Mesh(id=0)])
+    detect_template = """Geometry Cyl
+    Name CylZ_Mesh
+    R  0.0  10.0    1
+    Z  0.0  20.0    400
 
-    detect_template = """Output
-    Filename mesh.bdo
-    Geo ScoringCylinder
-    Quantity Dose
+Geometry Mesh
+    Name YZ_Mesh
+    X -0.5  0.5    1
+    Y -2.0  2.0    80
+    Z  0.0  20.0   400
+
+
+Output
+    Filename cylz.bdo
+    Geo CylZ_Mesh
+    Quantity DoseGy
+
+Output
+    Filename yzmsh.bdo
+    Geo YZ_Mesh
+    Quantity DoseGy
     """
 
     def __str__(self):
-        detect_strings = [str(geo)
-                          for geo in self.geometries] + [self.detect_template]
-        return "\n".join(detect_strings)
+        return self.detect_template
 
 
 class DummmyParser(Parser):
