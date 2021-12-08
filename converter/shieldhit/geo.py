@@ -112,8 +112,8 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
         cylinder.position[2] - height_vect[2]/2,
     )
     return """
-  TRC {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
-          {p7:>10}{p8:>10}""".format(
+  RCC {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
+          {p7:>10}""".format(
         number=number,
         p1=format_float(lower_base_position[0], 10),
         p2=format_float(lower_base_position[1], 10),
@@ -122,7 +122,6 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
         p5=format_float(height_vect[1], 10),
         p6=format_float(height_vect[2], 10),
         p7=format_float(cylinder.radius_bottom, 10),
-        p8=format_float(cylinder.radius_top, 10),
     )
 
 
