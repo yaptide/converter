@@ -122,7 +122,6 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
         p5=format_float(height_vect[1], 10),
         p6=format_float(height_vect[2], 10),
         p7=format_float(cylinder.radius_bottom, 10),
-        # p8=format_float(cylinder.radius_top, 10),
     )
 
 
