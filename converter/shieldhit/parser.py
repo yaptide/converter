@@ -4,113 +4,12 @@ from dataclasses import dataclass, field
 from os import path
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
+from converter.shieldhit.detect import DetectConfig
+from converter.shieldhit.beam import BeamConfig
 import converter.solid_figures as solid_figures
 
 BLACK_HOLE_MATERIAL = 0
 VACUUM_MATERIAL = 1000
-
-
-@dataclass(frozen=True)
-class Geometry(ABC):
-    """Abstract geometry dataclass for DetectConfig."""
-
-
-@dataclass(order=True, frozen=True)
-class Cylinder(Geometry):
-    """Cylinder geometry dataclass used in DetectConfig."""
-
-    sort_index: int = field(init=False)
-
-    id: str
-    radius: int = 1
-    height: int = 400
-
-    template: str = """Geometry Cyl
-    Name ScoringCylinder
-    R 0.0 10.0 {cyl_nr:d}
-    Z 0.0 30.0 {cyl_nz:d}"""
-
-    def __post_init__(self):
-        object.__setattr__(self, 'sort_index', self.id)
-
-    def __str__(self) -> str:
-        return self.template.format(cyl_nr=self.radius, cyl_nz=self.height)
-
-
-@dataclass(order=True, frozen=True)
-class Mesh(Geometry):
-    """Mesh geometry dataclass used in DetectConfig."""
-
-    sort_index: int = field(init=False)
-
-    id: str
-    x: int = 1
-    y: int = 100
-    z: int = 300
-
-    template: str = """Geometry Mesh
-    Name MyMesh_YZ
-    X -5.0  5.0    {mesh_nx:d}
-    Y -5.0  5.0    {mesh_ny:d}
-    Z  0.0  30.0   {mesh_nz:d}"""
-
-    def __post_init__(self):
-        object.__setattr__(self, 'sort_index', self.id)
-
-    def __str__(self) -> str:
-        return self.template.format(mesh_nx=self.x, mesh_ny=self.y, mesh_nz=self.z)
-
-
-@dataclass
-class BeamConfig:
-    """Class mapping of the beam.dat config file."""
-
-    energy: float = 150.
-    nstat: int = 10000
-
-    beam_template: str = """
-RNDSEED      	89736501     ! Random seed
-JPART0       	2            ! Incident particle type
-TMAX0      	{energy:3.1f}  1.5       ! Incident energy; (MeV/nucl)
-NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
-STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
-MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
-NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
-"""
-
-    def __str__(self) -> str:
-        return self.beam_template.format(energy=self.energy, nstat=self.nstat)
-
-
-@dataclass
-class DetectConfig:
-    """Class mapping of the detect.dat config file."""
-
-    detect_template = """Geometry Cyl
-    Name CylZ_Mesh
-    R  0.0  10.0    1
-    Z  0.0  20.0    400
-
-Geometry Mesh
-    Name YZ_Mesh
-    X -0.5  0.5    1
-    Y -2.0  2.0    80
-    Z  0.0  20.0   400
-
-
-Output
-    Filename cylz.bdo
-    Geo CylZ_Mesh
-    Quantity DoseGy
-
-Output
-    Filename yzmsh.bdo
-    Geo YZ_Mesh
-    Quantity DoseGy
-    """
-
-    def __str__(self):
-        return self.detect_template
 
 
 class DummmyParser(Parser):
