@@ -7,67 +7,96 @@ class ScoringGeometry(ABC):
     """Abstract geometry dataclass for DetectConfig."""
 
 
-@dataclass(order=True, frozen=True)
+@dataclass(frozen=True)
 class ScoringCylinder(ScoringGeometry):
-    """Cylinder geometry dataclass used in DetectConfig."""
+    """Cylinder scoring geometry dataclass used in DetectConfig."""
 
-    sort_index: int = field(init=False)
-
-    id: str
-    radius: int = 1
-    height: int = 400
+    name: str = "CylZ_Mesh"
+    r_min = 0.
+    r_max = 10.
+    r_bins: int = 1
+    h_min = 0.
+    h_max = 20.
+    h_bins: int = 400
 
     template: str = """Geometry Cyl
-    Name ScoringCylinder
-    R 0.0 10.0 {cyl_nr:d}
-    Z 0.0 30.0 {cyl_nz:d}"""
-
-    def __post_init__(self):
-        object.__setattr__(self, 'sort_index', self.id)
+    Name {name:s}
+    R {r_min:g} {r_max:g} {r_bins:d}
+    Z {h_min:g} {h_max:g} {h_bins:d}
+"""
 
     def __str__(self) -> str:
-        return self.template.format(cyl_nr=self.radius, cyl_nz=self.height)
+        return self.template.format(
+            name=self.name,
+            r_min=self.r_min, r_max=self.r_max, r_bins=self.r_bins,
+            h_min=self.h_min, h_max=self.h_max, h_bins=self.h_bins,
+        )
 
 
-@dataclass(order=True, frozen=True)
+@dataclass(frozen=True)
 class ScoringMesh(ScoringGeometry):
-    """Mesh geometry dataclass used in DetectConfig."""
+    """Mesh scoring geometry dataclass used in DetectConfig."""
 
-    sort_index: int = field(init=False)
-
-    id: str
-    x: int = 1
-    y: int = 100
-    z: int = 300
+    name: str = "YZ_Mesh"
+    x_min: int = -0.5
+    x_max: int = 0.5
+    x_bins: int = 1
+    y_min: int = -2.
+    y_max: int = 2.
+    y_bins: int = 80
+    z_min: int = 0.
+    z_max: int = 20.
+    z_bins: int = 400
 
     template: str = """Geometry Mesh
-    Name MyMesh_YZ
-    X -5.0  5.0    {mesh_nx:d}
-    Y -5.0  5.0    {mesh_ny:d}
-    Z  0.0  30.0   {mesh_nz:d}"""
-
-    def __post_init__(self):
-        object.__setattr__(self, 'sort_index', self.id)
+    Name {name:s}
+    X {x_min:g} {x_max:g} {x_bins:d}
+    Y {y_min:g} {y_max:g} {y_bins:d}
+    Z {z_min:g} {z_max:g} {z_bins:d}
+"""
 
     def __str__(self) -> str:
-        return self.template.format(mesh_nx=self.x, mesh_ny=self.y, mesh_nz=self.z)
+        return self.template.format(
+            name=self.name,
+            x_min=self.x_min, x_max=self.x_max, x_bins=self.x_bins,
+            y_min=self.y_min, y_max=self.y_max, y_bins=self.y_bins,
+            z_min=self.z_min, z_max=self.z_max, z_bins=self.z_bins,
+        )
+
+
+@dataclass(frozen=True)
+class ScoringZone(ScoringGeometry):
+    """Scoring zone dataclass used un DetectConfig."""
+
+    name: str
+    first_zone_id: str
+    last_zone_id: str = ""
+    volume: int = 1.
+
+    template: str = """Geometry Zone
+    Name {name:s}
+    Zone {first_zone:s} {last_zone:s}
+    Volume {volume:d}
+"""
+
+    def __str__(self) -> str:
+        return self.template.format(
+            name=self.name,
+            first_zone=self.first_zone_id, last_zone=self.last_zone_id,
+            volume=self.volume,
+        )
 
 
 @dataclass
 class DetectConfig:
     """Class mapping of the detect.dat config file."""
 
-    detect_template = """Geometry Cyl
-    Name CylZ_Mesh
-    R  0.0  10.0    1
-    Z  0.0  20.0    400
+    scoring_geometries: list[ScoringGeometry] = field(default_factory=lambda: [
+        ScoringCylinder(),
+        ScoringMesh(),
+    ])
 
-Geometry Mesh
-    Name YZ_Mesh
-    X -0.5  0.5    1
-    Y -2.0  2.0    80
-    Z  0.0  20.0   400
-
+    detect_template = """{scoring_geometries:s}
 
 Output
     Filename cylz.bdo
@@ -81,4 +110,6 @@ Output
     """
 
     def __str__(self):
-        return self.detect_template
+        return self.detect_template.format(
+            scoring_geometries="\n".join([str(geom) for geom in self.scoring_geometries])
+        )
