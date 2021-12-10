@@ -119,7 +119,11 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_scoring_filters(self, json: dict) -> list[ScoringFilter]:
         """Parses scoring filters from the input json."""
-        filters = []
+        filters = [ScoringFilter(
+            name=filter_dict["name"],
+            rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
+                   for rule_dict in filter_dict["rules"]],
+        ) for filter_dict in json["detectManager"]["filters"]]
 
         return filters
 
