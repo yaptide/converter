@@ -325,6 +325,7 @@
 					"id": "170",
 					"name": "GLASS, LEAD"
 				},
+				"materialUuid": "5172F301-C69D-479B-81E0-F4FB5A16A94D",
 				"unionOperations": [
 					[
 						{
@@ -461,16 +462,19 @@
 		},
 		"colorHex": 16776960
 	},
-	"materialsManager": [
-		{
-			"data": {
-				"id": "170",
-				"name": "GLASS, LEAD"
-			},
-			"color": 16727357,
-			"flatShading": true,
-			"opacity": 1,
-			"transparent": true
+	"materialManager": {
+		"materials": [
+			{
+				"uuid": "5172F301-C69D-479B-81E0-F4FB5A16A94D",
+				"name": "AMORPHOUS CARBON (density 2.0 g/cm3)",
+				"icru": 170,
+				"color": 16711680
+			}
+		],
+		"selectedMaterials": {
+			"ECE3D5A5-9B49-4A9B-B81C-BB22C825F85D": 1,
+			"8BEE5624-81C2-4B79-824A-563CF0F8163D": 1,
+			"736C07A0-06DA-41F1-A828-3425FC47152A": 1
 		}
-	]
+	}
 }

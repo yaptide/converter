@@ -203,7 +203,7 @@ class GeoMatConfig:
         ),
     ]
     )
-    materials: list[str] = field(default_factory=lambda: [276])
+    materials: list[tuple[str, str]] = field(default_factory=lambda: [("", 276)])
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
@@ -243,5 +243,5 @@ END
     def get_mat_string(self) -> str:
         """Generate mat.dat config."""
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
-        material_strings = [self.material_template.format(idx=idx+1, mat=mat) for idx, mat in enumerate(self.materials)]
+        material_strings = [self.material_template.format(idx=idx+1, mat=mat[1]) for idx, mat in enumerate(self.materials)]
         return "".join(material_strings)

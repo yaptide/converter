@@ -73,12 +73,21 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
-        self.geo_mat_config.materials = [material["data"]["id"] for material in json["materialsManager"]]
+        self.geo_mat_config.materials = [(material["uuid"], material["icru"])
+                                         for material in json["materialManager"]["materials"]]
 
     def _parse_figures(self, json: dict) -> None:
         """Parse figures from JSON"""
         self.geo_mat_config.figures = [solid_figures.parse_figure(
             figure_dict) for figure_dict in json["scene"]["object"].get('children')]
+
+    def _get_material_id(self, uuid: str) -> int:
+        """Find zone by uuid and retun its id."""
+        for idx, item in enumerate(self.geo_mat_config.materials):
+            if item[0] == uuid:
+                return idx+1
+
+        raise ValueError(f"No material with uuid {uuid} in materials {self.geo_mat_config.materials}.")
 
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""
@@ -87,8 +96,7 @@ class ShieldhitParser(DummmyParser):
                 # lists are numbered from 0, but shieldhit zones are numbered from 1
                 id=idx+1,
                 figures_operators=self._parse_csg_operations(zone["unionOperations"]),
-                # lists are numbered from 0, but shieldhit materials are numbered from 1
-                material=self.geo_mat_config.materials.index(zone["materialData"]["id"])+1,
+                material=self._get_material_id(zone["materialUuid"]),
             ) for idx, zone in enumerate(json["zoneManager"]["zones"])
         ]
 
