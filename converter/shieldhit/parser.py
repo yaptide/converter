@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 from os import path
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
-from converter.shieldhit.detect import DetectConfig
+from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
+from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh, ScoringZone
 from converter.shieldhit.beam import BeamConfig
 import converter.solid_figures as solid_figures
 
@@ -64,6 +65,69 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
+        self.detect_config.scoring_geometries = self._parse_scoring_geometries(json)
+        self.detect_config.scoring_filters = self._parse_scoring_filters(json)
+        self.detect_config.scoring_outputs = self._parse_scoring_outputs(json)
+
+    def _parse_scoring_geometries(self, json: dict) -> list[ScoringGeometry]:
+        """Parses scoring geometries from the input json."""
+        geometries = []
+        for geometry_dict in json["detectManager"]["detectGeometries"]:
+            if geometry_dict["type"] == "Cyl":
+                geometries.append(ScoringCylinder(
+                    name=geometry_dict["name"],
+                    r_min=geometry_dict["data"]["innerRadius"],
+                    r_max=geometry_dict["data"]["radius"],
+                    r_bins=geometry_dict["data"]["radialSegments"],
+                    h_min=geometry_dict["position"][2]-geometry_dict["data"]["radialSegments"]/2,
+                    h_max=geometry_dict["position"][2]+geometry_dict["data"]["radialSegments"]/2,
+                    h_bins=geometry_dict["data"]["zSegments"],
+                ))
+            elif geometry_dict["type"] == "Mesh":
+                geometries.append(ScoringMesh(
+                    name=geometry_dict["name"],
+                    x_min=geometry_dict["position"][0]-geometry_dict["data"]["width"]/2,
+                    x_max=geometry_dict["position"][0]+geometry_dict["data"]["width"]/2,
+                    x_bins=geometry_dict["data"]["xSegments"],
+                    y_min=geometry_dict["position"][1]-geometry_dict["data"]["height"]/2,
+                    y_max=geometry_dict["position"][1]+geometry_dict["data"]["height"]/2,
+                    y_bins=geometry_dict["data"]["ySegments"],
+                    z_min=geometry_dict["position"][2]-geometry_dict["data"]["depth"]/2,
+                    z_max=geometry_dict["position"][2]+geometry_dict["data"]["depth"]/2,
+                    z_bins=geometry_dict["data"]["zSegments"],
+                ))
+            elif geometry_dict["type"] == "Zone":
+                geometries.append(ScoringZone(
+                    name=geometry_dict["name"],
+                    first_zone_id=self._get_zone_index_by_uuid(geometry_dict["data"]["zoneUuid"]),
+                ))
+            elif geometry_dict["type"] == "All":
+                geometries.append(ScoringGlobal(
+                    name=geometry_dict["name"],
+                ))
+            else:
+                raise ValueError("Invalid ScoringGeometry type \"{0}\".".format(geometry_dict["type"]))
+
+            return geometries
+
+    def _get_zone_index_by_uuid(self, uuid: str):
+        for idx, zone in self.geo_mat_config.zones:
+            if zone.uuid == uuid:
+                return idx+1
+
+        raise ValueError(f"No zone with uuid \"{uuid}\".")
+
+    def _parse_scoring_filters(self, json: dict) -> list[ScoringFilter]:
+        """Parses scoring filters from the input json."""
+        filters = []
+
+        return filters
+
+    def _parse_scoring_outputs(self, json: dict) -> list[ScoringOutput]:
+        """Parses scoring outputs from the input json."""
+        outputs = []
+
+        return outputs
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
@@ -82,7 +146,7 @@ class ShieldhitParser(DummmyParser):
             figure_dict) for figure_dict in json["scene"]["object"].get('children')]
 
     def _get_material_id(self, uuid: str) -> int:
-        """Find zone by uuid and retun its id."""
+        """Find material by uuid and retun its id."""
         for idx, item in enumerate(self.geo_mat_config.materials):
             if item[0] == uuid:
                 return idx+1
@@ -93,6 +157,7 @@ class ShieldhitParser(DummmyParser):
         """Parse zones from JSON"""
         self.geo_mat_config.zones = [
             Zone(
+                uuid=zone["uuid"],
                 # lists are numbered from 0, but shieldhit zones are numbered from 1
                 id=idx+1,
                 figures_operators=self._parse_csg_operations(zone["unionOperations"]),
@@ -111,6 +176,7 @@ class ShieldhitParser(DummmyParser):
 
         self.geo_mat_config.zones.append(
             Zone(
+                uuid="",
                 id=len(self.geo_mat_config.zones)+1,
                 # slightly larger world zone - world zone
                 figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)),
@@ -132,6 +198,7 @@ class ShieldhitParser(DummmyParser):
         last_figure_idx = len(self.geo_mat_config.figures)
         self.geo_mat_config.zones.append(
             Zone(
+                uuid="",
                 id=len(self.geo_mat_config.zones)+1,
                 # slightly larger world zone - world zone
                 figures_operators=[{last_figure_idx, -(last_figure_idx-1)}],

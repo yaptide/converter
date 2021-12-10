@@ -8,6 +8,19 @@ class ScoringGeometry(ABC):
 
 
 @dataclass(frozen=True)
+class ScoringGlobal(ScoringGeometry):
+    """\"All\" scoring geometry. Scores on the whole defined space."""
+    name: str
+
+    template: str = """Geometry All
+    Name {name}
+"""
+
+    def __str__(self) -> str:
+        return self.template.format(name=self.name)
+
+
+@dataclass(frozen=True)
 class ScoringCylinder(ScoringGeometry):
     """Cylinder scoring geometry dataclass used in DetectConfig."""
 
@@ -20,7 +33,7 @@ class ScoringCylinder(ScoringGeometry):
     h_bins: int = 400
 
     template: str = """Geometry Cyl
-    Name {name:s}
+    Name {name}
     R {r_min:g} {r_max:g} {r_bins:d}
     Z {h_min:g} {h_max:g} {h_bins:d}
 """
@@ -49,7 +62,7 @@ class ScoringMesh(ScoringGeometry):
     z_bins: int = 400
 
     template: str = """Geometry Mesh
-    Name {name:s}
+    Name {name}
     X {x_min:g} {x_max:g} {x_bins:d}
     Y {y_min:g} {y_max:g} {y_bins:d}
     Z {z_min:g} {z_max:g} {z_bins:d}
@@ -74,8 +87,8 @@ class ScoringZone(ScoringGeometry):
     volume: int = 1.
 
     template: str = """Geometry Zone
-    Name {name:s}
-    Zone {first_zone:s} {last_zone:s}
+    Name {name}
+    Zone {first_zone} {last_zone}
     Volume {volume:d}
 """
 

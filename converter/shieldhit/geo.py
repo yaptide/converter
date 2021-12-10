@@ -141,6 +141,8 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 class Zone():
     """Dataclass mapping for SH12A zones."""
 
+    uuid: str
+
     id: int = 1
     figures_operators: list[set[int]] = field(default_factory=lambda: [{1}])
     material: str = "0"
@@ -187,16 +189,19 @@ class GeoMatConfig:
     )
     zones: list[Zone] = field(default_factory=lambda: [
         Zone(
+            uuid="",
             id=1,
             figures_operators=[{1, }],
             material="1",
         ),
         Zone(
+            uuid="",
             id=2,
             figures_operators=[{-1, 2}],
             material="1000",
         ),
         Zone(
+            uuid="",
             id=3,
             figures_operators=[{-2, 3}],
             material="0",
