@@ -168,22 +168,22 @@ class GeoMatConfig:
             radius_bottom=10.,
             height=20.,
             rotation=(90., 0., 0.)
-            ),
+        ),
         CylinderFigure(
             position=(0., 0., 7.5),
             radius_top=15.,
             radius_bottom=15.,
             height=25.,
             rotation=(90., 0., 0.)
-            ),
+        ),
         CylinderFigure(
             position=(0., 0., 5.),
             radius_top=20.,
             radius_bottom=20.,
             height=30.,
             rotation=(90., 0., 0.)
-            ),
-        ]
+        ),
+    ]
     )
     zones: list[Zone] = field(default_factory=lambda: [
         Zone(
@@ -201,7 +201,7 @@ class GeoMatConfig:
             figures_operators=[{-2, 3}],
             material="0",
         ),
-        ]
+    ]
     )
     materials: list[str] = field(default_factory=lambda: [276])
     jdbg1: int = 0
