@@ -6,6 +6,7 @@ from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringCylin
 @dataclass
 class ScoringFilter():
     """Dataclass storing information about simulation output. Used in DetectConfig dataclass."""
+
     name: str
     rules: list[tuple[str, str, int]]
 
@@ -25,6 +26,7 @@ class ScoringFilter():
 @dataclass
 class OutputQuantity():
     """Class for storing output quantities used in detect."""
+
     detector_type: str
     filter_name: str = ""
     diff1: tuple[float, float, float, str] = None
@@ -51,6 +53,7 @@ class OutputQuantity():
 @dataclass
 class ScoringOutput():
     """Dataclass storing information about shieldhit scoring outputs."""
+
     filename: str = None
     fileformat: str = None
     geometry: str = None
