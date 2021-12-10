@@ -5,6 +5,7 @@ from abc import ABC
 @dataclass(frozen=True)
 class ScoringGeometry(ABC):
     """Abstract geometry dataclass for DetectConfig."""
+    uuid: str
 
 
 @dataclass(frozen=True)

@@ -75,6 +75,7 @@ class ShieldhitParser(DummmyParser):
         for geometry_dict in json["detectManager"]["detectGeometries"]:
             if geometry_dict["type"] == "Cyl":
                 geometries.append(ScoringCylinder(
+                    uuid=geometry_dict["uuid"],
                     name=geometry_dict["name"],
                     r_min=geometry_dict["data"]["innerRadius"],
                     r_max=geometry_dict["data"]["radius"],
@@ -85,6 +86,7 @@ class ShieldhitParser(DummmyParser):
                 ))
             elif geometry_dict["type"] == "Mesh":
                 geometries.append(ScoringMesh(
+                    uuid=geometry_dict["uuid"],
                     name=geometry_dict["name"],
                     x_min=geometry_dict["position"][0]-geometry_dict["data"]["width"]/2,
                     x_max=geometry_dict["position"][0]+geometry_dict["data"]["width"]/2,
@@ -98,11 +100,13 @@ class ShieldhitParser(DummmyParser):
                 ))
             elif geometry_dict["type"] == "Zone":
                 geometries.append(ScoringZone(
+                    uuid=geometry_dict["uuid"],
                     name=geometry_dict["name"],
                     first_zone_id=self._get_zone_index_by_uuid(geometry_dict["data"]["zoneUuid"]),
                 ))
             elif geometry_dict["type"] == "All":
                 geometries.append(ScoringGlobal(
+                    uuid=geometry_dict["uuid"],
                     name=geometry_dict["name"],
                 ))
             else:
@@ -110,8 +114,9 @@ class ShieldhitParser(DummmyParser):
 
             return geometries
 
-    def _get_zone_index_by_uuid(self, uuid: str):
-        for idx, zone in self.geo_mat_config.zones:
+    def _get_zone_index_by_uuid(self, uuid: str) -> int:
+        """Finds zone in the geo_mat_config object by its uuid and returns its simmulation index."""
+        for idx, zone in enumerate(self.geo_mat_config.zones):
             if zone.uuid == uuid:
                 return idx+1
 
@@ -129,9 +134,68 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_scoring_outputs(self, json: dict) -> list[ScoringOutput]:
         """Parses scoring outputs from the input json."""
-        outputs = []
+        outputs = [ScoringOutput(
+            filename=output_dict["name"],
+            fileformat='DAT',
+            geometry=self._get_scoring_geometry_bu_uuid(
+                output_dict["detectGeometry"]) if 'detectGeometry' in output_dict else None,
+            medium=output_dict["medium"] if 'medium' in output_dict else None,
+            offset=output_dict["offset"] if 'offset' in output_dict else None,
+            primaries=output_dict["primaries"] if 'primaries' in output_dict else None,
+            quantities=[self._parse_output_quantity(quantity)
+                        for quantity in output_dict["quantities"]["active"]] if 'quantities' in output_dict else [],
+            rescale=output_dict["rescale"] if 'rescale' in output_dict else None,
+        ) for output_dict in json["scoringManager"]["scoringOutputs"]]
 
         return outputs
+
+    def _get_scoring_geometry_bu_uuid(self, uuid: str) -> str:
+        """Finds scoring geometry in the detect_config object by its uuid and returns its simmulation name."""
+        for scoring_geometry in self.detect_config.scoring_geometries:
+            if scoring_geometry.uuid == uuid:
+                return scoring_geometry.name
+
+        raise ValueError(f"No scoring geometry with uuid \"{uuid}\".")
+
+    def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
+        """Parse a single output quantity."""
+        diff1 = None
+        diff1_t = None
+        diff2 = None
+        diff2_t = None
+
+        if len(quantity_dict["modifiers"]) >= 1:
+            diff1 = (
+                quantity_dict["modifiers"][0]["lowerLimit"],
+                quantity_dict["modifiers"][0]["upperLimit"],
+                quantity_dict["modifiers"][0]["binsNumber"],
+                quantity_dict["modifiers"][0]["isLog"],
+            )
+            diff1_t = quantity_dict["modifiers"][0]["diffType"]
+
+        if len(quantity_dict["modifiers"]) >= 2:
+            diff2 = (
+                quantity_dict["modifiers"][1]["lowerLimit"],
+                quantity_dict["modifiers"][1]["upperLimit"],
+                quantity_dict["modifiers"][1]["binsNumber"],
+                quantity_dict["modifiers"][1]["isLog"],
+            )
+            diff2_t = quantity_dict["modifiers"][1]["diffType"]
+
+        return OutputQuantity(
+            detector_type=quantity_dict["keyword"],
+            filter_name=self._get_scoring_filter_by_uuid(quantity_dict["filter"]) if filter in quantity_dict else "",
+            diff1=diff1,
+            diff1_t=diff1_t,
+            diff2=diff2,
+            diff2_t=diff2_t,
+        )
+
+    def _get_scoring_filter_by_uuid(self, uuid: str) -> str:
+        """Finds scoring filter in the detect_config object by its uuid and returns its simmulation name."""
+        for scoring_filter in self.detect_config.scoring_filters:
+            if scoring_filter.uuid == uuid:
+                return scoring_filter.name
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""

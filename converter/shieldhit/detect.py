@@ -99,8 +99,8 @@ class DetectConfig:
     """Class mapping of the detect.dat config file."""
 
     scoring_geometries: list[ScoringGeometry] = field(default_factory=lambda: [
-        ScoringCylinder(),
-        ScoringMesh(),
+        ScoringCylinder(""),
+        ScoringMesh(""),
     ])
 
     scoring_filters: list[ScoringFilter] = field(default_factory=lambda: [])
