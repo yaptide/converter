@@ -80,9 +80,10 @@ class ShieldhitParser(DummmyParser):
                     r_min=geometry_dict["data"]["innerRadius"],
                     r_max=geometry_dict["data"]["radius"],
                     r_bins=geometry_dict["data"]["radialSegments"],
-                    h_min=geometry_dict["position"][2]-geometry_dict["data"]["radialSegments"]/2,
-                    h_max=geometry_dict["position"][2]+geometry_dict["data"]["radialSegments"]/2,
+                    h_min=geometry_dict["position"][2]-geometry_dict["data"]["depth"]/2,
+                    h_max=geometry_dict["position"][2]+geometry_dict["data"]["depth"]/2,
                     h_bins=geometry_dict["data"]["zSegments"],
+
                 ))
             elif geometry_dict["type"] == "Mesh":
                 geometries.append(ScoringMesh(
@@ -112,7 +113,7 @@ class ShieldhitParser(DummmyParser):
             else:
                 raise ValueError("Invalid ScoringGeometry type \"{0}\".".format(geometry_dict["type"]))
 
-            return geometries
+        return geometries
 
     def _get_zone_index_by_uuid(self, uuid: str) -> int:
         """Finds zone in the geo_mat_config object by its uuid and returns its simmulation index."""
@@ -136,7 +137,7 @@ class ShieldhitParser(DummmyParser):
         """Parses scoring outputs from the input json."""
         outputs = [ScoringOutput(
             filename=output_dict["name"],
-            fileformat='DAT',
+            fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
             geometry=self._get_scoring_geometry_bu_uuid(
                 output_dict["detectGeometry"]) if 'detectGeometry' in output_dict else None,
             medium=output_dict["medium"] if 'medium' in output_dict else None,

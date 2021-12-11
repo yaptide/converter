@@ -26,11 +26,11 @@ class ScoringCylinder(ScoringGeometry):
     """Cylinder scoring geometry dataclass used in DetectConfig."""
 
     name: str = "CylZ_Mesh"
-    r_min = 0.
-    r_max = 10.
+    r_min: float = 0.
+    r_max: float = 10.
     r_bins: int = 1
-    h_min = 0.
-    h_max = 20.
+    h_min: float = 0.
+    h_max: float = 20.
     h_bins: int = 400
 
     template: str = """Geometry Cyl
@@ -52,14 +52,14 @@ class ScoringMesh(ScoringGeometry):
     """Mesh scoring geometry dataclass used in DetectConfig."""
 
     name: str = "YZ_Mesh"
-    x_min: int = -0.5
-    x_max: int = 0.5
+    x_min: float = -0.5
+    x_max: float = 0.5
     x_bins: int = 1
-    y_min: int = -2.
-    y_max: int = 2.
+    y_min: float = -2.
+    y_max: float = 2.
     y_bins: int = 80
-    z_min: int = 0.
-    z_max: int = 20.
+    z_min: float = 0.
+    z_max: float = 20.
     z_bins: int = 400
 
     template: str = """Geometry Mesh
@@ -85,7 +85,7 @@ class ScoringZone(ScoringGeometry):
     name: str
     first_zone_id: str
     last_zone_id: str = ""
-    volume: int = 1.
+    volume: float = 1.
 
     template: str = """Geometry Zone
     Name {name}

@@ -139,7 +139,7 @@ def zone(request):
     Fixture that provides a zone based on a list containing csg information, id
     and material that the zone is made out of.
     """
-    return Zone(**request.param)
+    return Zone("", **request.param)
 
 
 @pytest.mark.parametrize("zone,expected", _Zone_test_cases, indirect=["zone"])

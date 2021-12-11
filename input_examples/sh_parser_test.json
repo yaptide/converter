@@ -396,46 +396,44 @@
 		"name": "DetectManager",
 		"detectGeometries": [
 			{
-				"uuid": "C2A468BF-C1F8-4E8A-A671-AC861A448E01",
+				"uuid": "563DBCFF-0B85-4511-B557-DE55AB4FA692",
 				"data": {
-					"width": 1,
-					"height": 1,
-					"depth": 1,
-					"radius": 1,
+					"radius": 10,
 					"innerRadius": 0,
-					"xSegments": 1,
-					"ySegments": 1,
-					"zSegments": 100,
+					"depth": 20,
 					"radialSegments": 1,
-					"zoneId": 850
+					"zSegments": 400
 				},
-				"type": "All",
+				"type": "Cyl",
 				"position": [
 					0,
-					0.27998487941081107,
-					2.330478210693258
+					0,
+					10
 				],
-				"name": "Detect",
+				"name": "CylZ_Mesh",
+				"colorHex": 65535
+			},
+			{
+				"uuid": "87D9453D-ED04-4A7C-97F0-6E6A28DFF382",
+				"data": {
+					"width": 1,
+					"height": 4,
+					"depth": 20,
+					"xSegments": 1,
+					"ySegments": 80,
+					"zSegments": 400
+				},
+				"type": "Mesh",
+				"position": [
+					0,
+					0,
+					10
+				],
+				"name": "YZ_Mesh",
 				"colorHex": 65535
 			}
 		],
-		"filters": [
-			{
-				"uuid": "38C26917-B5CE-4F95-A127-2B321794F3AB",
-				"name": "Filter",
-				"rules": []
-			},
-			{
-				"uuid": "ACFCB0F4-0585-4362-BB7A-178889CEADAF",
-				"name": "Filter",
-				"rules": []
-			},
-			{
-				"uuid": "193A5DB1-BA8C-4F57-84D4-53C4C549CF71",
-				"name": "Filter",
-				"rules": []
-			}
-		]
+		"filters": []
 	},
 	"beam": {
 		"position": [
@@ -476,5 +474,45 @@
 			"8BEE5624-81C2-4B79-824A-563CF0F8163D": 1,
 			"736C07A0-06DA-41F1-A828-3425FC47152A": 1
 		}
+	},
+	"scoringManager": {
+		"uuid": "42E44040-61AD-4483-8604-9BC02775C7D7",
+		"name": "Outputs",
+		"scoringOutputs": [
+			{
+				"name": "cylz.bdo",
+				"uuid": "11985E99-1ABC-4EDE-839F-7EA66A48394D",
+				"quantities": {
+					"active": [
+						{
+							"uuid": "97BE2F24-F5FE-492E-AAA3-A3DFD190C198",
+							"keyword": "DoseGy",
+							"rescale": 2,
+							"modifiers": []
+						}
+					],
+					"disabled": []
+				},
+				"detectGeometry": "563DBCFF-0B85-4511-B557-DE55AB4FA692",
+				"trace": false
+			},
+			{
+				"name": "yzmsh.bdo",
+				"uuid": "11985E99-1ABC-4EDE-839F-7EA66A48394D",
+				"quantities": {
+					"active": [
+						{
+							"uuid": "97BE2F24-F5FE-492E-AAA3-A3DFD190C198",
+							"keyword": "DoseGy",
+							"rescale": 2,
+							"modifiers": []
+						}
+					],
+					"disabled": []
+				},
+				"detectGeometry": "87D9453D-ED04-4A7C-97F0-6E6A28DFF382",
+				"trace": false
+			}
+		]
 	}
 }
