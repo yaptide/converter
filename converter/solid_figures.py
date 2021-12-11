@@ -86,7 +86,8 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
                               position=tuple(figure_dict["userData"]["position"]),
                               rotation=tuple(figure_dict["userData"]["rotation"]),
                               radius_top=figure_dict["userData"]['parameters']["radiusTop"],
-                              radius_bottom=figure_dict["userData"]['parameters']["radiusBottom"],
+                              radius_bottom=figure_dict["userData"]['parameters']["radiusBottom"]
+                              if "radiusBottom" in figure_dict["userData"]['parameters'] else 0,
                               height=figure_dict["userData"]['parameters']["height"],
                               )
     if figure_type == "BoxGeometry":

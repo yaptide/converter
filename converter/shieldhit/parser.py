@@ -321,5 +321,8 @@ class ShieldhitParser(DummmyParser):
 
     def _get_figure_index_by_uuid(self, uuid: str) -> int:
         """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
-        figure = [figure for figure in self.geo_mat_config.figures if figure.uuid == uuid][0]
-        return self.geo_mat_config.figures.index(figure)
+        for idx, figure in enumerate(self.geo_mat_config.figures):
+            if figure.uuid == uuid:
+                return idx
+
+        raise ValueError(f"No figure with uuid \"{uuid}\".")

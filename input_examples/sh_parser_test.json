@@ -175,137 +175,30 @@
 			],
 			"children": [
 				{
-					"uuid": "48EE4307-80C7-47AA-BF01-9132898B2B5C",
+					"uuid": "48EE4307-80C7-47AA-BF01-9132898B2B5A",
 					"type": "BoxMesh",
 					"name": "Box",
 					"userData": {
 						"id": 860,
-						"geometryType": "BoxGeometry",
+						"geometryType": "CylinderGeometry",
 						"position": [
 							0,
-							0.7275770401930592,
-							0
+							0,
+							10
 						],
 						"rotation": [
-							0,
+							90,
 							0,
 							0
 						],
 						"parameters": {
-							"width": 1,
-							"height": 1,
-							"depth": 1
+							"radiusTop": 10,
+							"height": 20
 						}
 					},
 					"layers": 1,
-					"matrix": [
-						0.4083350484504267,
-						0.6996917138530967,
-						0.5862542057608661,
-						0,
-						-0.39990299119654127,
-						0.714444893302007,
-						-0.5741481447037367,
-						0,
-						-0.8205730228560081,
-						-5.551115123125783e-17,
-						0.5715416994069228,
-						0,
-						0,
-						0.7275770401930592,
-						0,
-						1
-					],
 					"geometry": "8D5F1D9F-204F-4A98-BD12-2479E0B2BD91",
 					"material": "EEADBF59-A957-46DB-98B5-FB4EEFBDC06D"
-				},
-				{
-					"uuid": "09360EDF-E555-44D9-8561-128493CC2314",
-					"type": "BoxMesh",
-					"name": "Box",
-					"userData": {
-						"id": 861,
-						"geometryType": "BoxGeometry",
-						"position": [
-							0,
-							0.27553049680261,
-							0
-						],
-						"rotation": [
-							0,
-							0,
-							0
-						],
-						"parameters": {
-							"width": 1,
-							"height": 1,
-							"depth": 1
-						}
-					},
-					"layers": 1,
-					"matrix": [
-						0.6611835735359156,
-						0,
-						0,
-						0,
-						0,
-						0.6508475742054244,
-						0,
-						0,
-						0,
-						0,
-						2.3353946042996534,
-						0,
-						0,
-						0.27553049680261,
-						0,
-						1
-					],
-					"geometry": "8D5F1D9F-204F-4A98-BD12-2479E0B2BD91",
-					"material": "6E9761A0-C19E-4E20-9C8F-2A2EF32101F4"
-				},
-				{
-					"uuid": "E10C12F9-7C85-417D-B6B3-755FAFE54EFA",
-					"type": "SphereMesh",
-					"name": "Sphere",
-					"userData": {
-						"id": 862,
-						"geometryType": "SphereGeometry",
-						"position": [
-							0,
-							0,
-							0
-						],
-						"rotation": [
-							0,
-							0,
-							0
-						],
-						"parameters": {
-							"radius": 1
-						}
-					},
-					"layers": 1,
-					"matrix": [
-						1,
-						0,
-						0,
-						0,
-						0,
-						2.889712625488376,
-						0,
-						0,
-						0,
-						0,
-						0.3149811403140796,
-						0,
-						0,
-						0,
-						0,
-						1
-					],
-					"geometry": "F24134D6-63C8-4E44-A1A7-14420EFEE201",
-					"material": "94DE2BFA-C365-4277-BE8E-8DB2FED9A83A"
 				}
 			]
 		}
@@ -330,17 +223,7 @@
 					[
 						{
 							"mode": "union",
-							"objectUuid": "48EE4307-80C7-47AA-BF01-9132898B2B5C"
-						},
-						{
-							"mode": "intersection",
-							"objectUuid": "E10C12F9-7C85-417D-B6B3-755FAFE54EFA"
-						}
-					],
-					[
-						{
-							"mode": "union",
-							"objectUuid": "09360EDF-E555-44D9-8561-128493CC2314"
+							"objectUuid": "48EE4307-80C7-47AA-BF01-9132898B2B5A"
 						}
 					]
 				],
@@ -374,9 +257,9 @@
 			"userData": {
 				"geometryType": "BoxGeometry",
 				"parameters": {
-					"width": 3,
-					"height": 3,
-					"depth": 3
+					"width": 22,
+					"height": 22,
+					"depth": 22
 				},
 				"position": [
 					0,
@@ -465,7 +348,7 @@
 			{
 				"uuid": "5172F301-C69D-479B-81E0-F4FB5A16A94D",
 				"name": "AMORPHOUS CARBON (density 2.0 g/cm3)",
-				"icru": 170,
+				"icru": 276,
 				"color": 16711680
 			}
 		],
