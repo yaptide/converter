@@ -5,12 +5,14 @@ from abc import ABC
 @dataclass(frozen=True)
 class ScoringGeometry(ABC):
     """Abstract geometry dataclass for DetectConfig."""
+
     uuid: str
 
 
 @dataclass(frozen=True)
 class ScoringGlobal(ScoringGeometry):
-    """\"All\" scoring geometry. Scores on the whole defined space."""
+    r"""\"All\" scoring geometry. Scores on the whole defined space."""
+
     name: str
 
     template: str = """Geometry All

@@ -5,7 +5,9 @@ from os import path
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
 from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
-from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh, ScoringZone
+from converter.shieldhit.scoring_geometries import (
+    ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh, ScoringZone
+)
 from converter.shieldhit.beam import BeamConfig
 import converter.solid_figures as solid_figures
 
@@ -123,7 +125,8 @@ class ShieldhitParser(DummmyParser):
 
         raise ValueError(f"No zone with uuid \"{uuid}\".")
 
-    def _parse_scoring_filters(self, json: dict) -> list[ScoringFilter]:
+    @staticmethod
+    def _parse_scoring_filters(json: dict) -> list[ScoringFilter]:
         """Parses scoring filters from the input json."""
         filters = [ScoringFilter(
             name=filter_dict["name"],
@@ -197,6 +200,8 @@ class ShieldhitParser(DummmyParser):
         for scoring_filter in self.detect_config.scoring_filters:
             if scoring_filter.uuid == uuid:
                 return scoring_filter.name
+
+        raise ValueError(f"No scoring filter with uuid {uuid} in materials {self.detect_config.scoring_filters}.")
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
