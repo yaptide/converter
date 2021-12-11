@@ -20,26 +20,26 @@ END
 
 _Detect_str = """Geometry Cyl
     Name CylZ_Mesh
-    R  0.0  10.0    1
-    Z  0.0  20.0    400
+    R 0 10 1
+    Z 0 20 400
 
 Geometry Mesh
     Name YZ_Mesh
-    X -0.5  0.5    1
-    Y -2.0  2.0    80
-    Z  0.0  20.0   400
+    X -0.5 0.5 1
+    Y -2 2 80
+    Z 0 20 400
 
 
 Output
     Filename cylz.bdo
     Geo CylZ_Mesh
-    Quantity DoseGy
+    Quantity DoseGy 
 
 Output
     Filename yzmsh.bdo
     Geo YZ_Mesh
-    Quantity DoseGy
-    """
+    Quantity DoseGy 
+"""
 
 _Geo_str = """
     0    0          Unnamed geometry

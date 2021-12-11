@@ -121,7 +121,7 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
         p4=format_float(height_vect[0], 10),
         p5=format_float(height_vect[1], 10),
         p6=format_float(height_vect[2], 10),
-        p7=format_float(cylinder.radius_bottom, 10),
+        p7=format_float(cylinder.radius_top, 10),
     )
 
 
@@ -140,6 +140,8 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 @ dataclass
 class Zone():
     """Dataclass mapping for SH12A zones."""
+
+    uuid: str
 
     id: int = 1
     figures_operators: list[set[int]] = field(default_factory=lambda: [{1}])
@@ -168,42 +170,45 @@ class GeoMatConfig:
             radius_bottom=10.,
             height=20.,
             rotation=(90., 0., 0.)
-            ),
+        ),
         CylinderFigure(
             position=(0., 0., 7.5),
             radius_top=15.,
             radius_bottom=15.,
             height=25.,
             rotation=(90., 0., 0.)
-            ),
+        ),
         CylinderFigure(
             position=(0., 0., 5.),
             radius_top=20.,
             radius_bottom=20.,
             height=30.,
             rotation=(90., 0., 0.)
-            ),
-        ]
+        ),
+    ]
     )
     zones: list[Zone] = field(default_factory=lambda: [
         Zone(
+            uuid="",
             id=1,
             figures_operators=[{1, }],
             material="1",
         ),
         Zone(
+            uuid="",
             id=2,
             figures_operators=[{-1, 2}],
             material="1000",
         ),
         Zone(
+            uuid="",
             id=3,
             figures_operators=[{-2, 3}],
             material="0",
         ),
-        ]
+    ]
     )
-    materials: list[str] = field(default_factory=lambda: [276])
+    materials: list[tuple[str, str]] = field(default_factory=lambda: [("", 276)])
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
@@ -243,5 +248,6 @@ END
     def get_mat_string(self) -> str:
         """Generate mat.dat config."""
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
-        material_strings = [self.material_template.format(idx=idx+1, mat=mat) for idx, mat in enumerate(self.materials)]
+        material_strings = [
+            self.material_template.format(idx=idx+1, mat=mat[1])for idx, mat in enumerate(self.materials)]
         return "".join(material_strings)

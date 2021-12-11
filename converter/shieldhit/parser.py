@@ -4,113 +4,15 @@ from dataclasses import dataclass, field
 from os import path
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
+from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
+from converter.shieldhit.scoring_geometries import (
+    ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh, ScoringZone
+)
+from converter.shieldhit.beam import BeamConfig
 import converter.solid_figures as solid_figures
 
 BLACK_HOLE_MATERIAL = 0
 VACUUM_MATERIAL = 1000
-
-
-@dataclass(frozen=True)
-class Geometry(ABC):
-    """Abstract geometry dataclass for DetectConfig."""
-
-
-@dataclass(order=True, frozen=True)
-class Cylinder(Geometry):
-    """Cylinder geometry dataclass used in DetectConfig."""
-
-    sort_index: int = field(init=False)
-
-    id: str
-    radius: int = 1
-    height: int = 400
-
-    template: str = """Geometry Cyl
-    Name ScoringCylinder
-    R 0.0 10.0 {cyl_nr:d}
-    Z 0.0 30.0 {cyl_nz:d}"""
-
-    def __post_init__(self):
-        object.__setattr__(self, 'sort_index', self.id)
-
-    def __str__(self) -> str:
-        return self.template.format(cyl_nr=self.radius, cyl_nz=self.height)
-
-
-@dataclass(order=True, frozen=True)
-class Mesh(Geometry):
-    """Mesh geometry dataclass used in DetectConfig."""
-
-    sort_index: int = field(init=False)
-
-    id: str
-    x: int = 1
-    y: int = 100
-    z: int = 300
-
-    template: str = """Geometry Mesh
-    Name MyMesh_YZ
-    X -5.0  5.0    {mesh_nx:d}
-    Y -5.0  5.0    {mesh_ny:d}
-    Z  0.0  30.0   {mesh_nz:d}"""
-
-    def __post_init__(self):
-        object.__setattr__(self, 'sort_index', self.id)
-
-    def __str__(self) -> str:
-        return self.template.format(mesh_nx=self.x, mesh_ny=self.y, mesh_nz=self.z)
-
-
-@dataclass
-class BeamConfig:
-    """Class mapping of the beam.dat config file."""
-
-    energy: float = 150.
-    nstat: int = 10000
-
-    beam_template: str = """
-RNDSEED      	89736501     ! Random seed
-JPART0       	2            ! Incident particle type
-TMAX0      	{energy:3.1f}  1.5       ! Incident energy; (MeV/nucl)
-NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
-STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
-MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
-NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
-"""
-
-    def __str__(self) -> str:
-        return self.beam_template.format(energy=self.energy, nstat=self.nstat)
-
-
-@dataclass
-class DetectConfig:
-    """Class mapping of the detect.dat config file."""
-
-    detect_template = """Geometry Cyl
-    Name CylZ_Mesh
-    R  0.0  10.0    1
-    Z  0.0  20.0    400
-
-Geometry Mesh
-    Name YZ_Mesh
-    X -0.5  0.5    1
-    Y -2.0  2.0    80
-    Z  0.0  20.0   400
-
-
-Output
-    Filename cylz.bdo
-    Geo CylZ_Mesh
-    Quantity DoseGy
-
-Output
-    Filename yzmsh.bdo
-    Geo YZ_Mesh
-    Quantity DoseGy
-    """
-
-    def __str__(self):
-        return self.detect_template
 
 
 class DummmyParser(Parser):
@@ -165,6 +67,141 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
+        self.detect_config.scoring_geometries = self._parse_scoring_geometries(json)
+        self.detect_config.scoring_filters = self._parse_scoring_filters(json)
+        self.detect_config.scoring_outputs = self._parse_scoring_outputs(json)
+
+    def _parse_scoring_geometries(self, json: dict) -> list[ScoringGeometry]:
+        """Parses scoring geometries from the input json."""
+        geometries = []
+        for geometry_dict in json["detectManager"]["detectGeometries"]:
+            if geometry_dict["type"] == "Cyl":
+                geometries.append(ScoringCylinder(
+                    uuid=geometry_dict["uuid"],
+                    name=geometry_dict["name"],
+                    r_min=geometry_dict["data"]["innerRadius"],
+                    r_max=geometry_dict["data"]["radius"],
+                    r_bins=geometry_dict["data"]["radialSegments"],
+                    h_min=geometry_dict["position"][2]-geometry_dict["data"]["depth"]/2,
+                    h_max=geometry_dict["position"][2]+geometry_dict["data"]["depth"]/2,
+                    h_bins=geometry_dict["data"]["zSegments"],
+
+                ))
+            elif geometry_dict["type"] == "Mesh":
+                geometries.append(ScoringMesh(
+                    uuid=geometry_dict["uuid"],
+                    name=geometry_dict["name"],
+                    x_min=geometry_dict["position"][0]-geometry_dict["data"]["width"]/2,
+                    x_max=geometry_dict["position"][0]+geometry_dict["data"]["width"]/2,
+                    x_bins=geometry_dict["data"]["xSegments"],
+                    y_min=geometry_dict["position"][1]-geometry_dict["data"]["height"]/2,
+                    y_max=geometry_dict["position"][1]+geometry_dict["data"]["height"]/2,
+                    y_bins=geometry_dict["data"]["ySegments"],
+                    z_min=geometry_dict["position"][2]-geometry_dict["data"]["depth"]/2,
+                    z_max=geometry_dict["position"][2]+geometry_dict["data"]["depth"]/2,
+                    z_bins=geometry_dict["data"]["zSegments"],
+                ))
+            elif geometry_dict["type"] == "Zone":
+                geometries.append(ScoringZone(
+                    uuid=geometry_dict["uuid"],
+                    name=geometry_dict["name"],
+                    first_zone_id=self._get_zone_index_by_uuid(geometry_dict["data"]["zoneUuid"]),
+                ))
+            elif geometry_dict["type"] == "All":
+                geometries.append(ScoringGlobal(
+                    uuid=geometry_dict["uuid"],
+                    name=geometry_dict["name"],
+                ))
+            else:
+                raise ValueError("Invalid ScoringGeometry type \"{0}\".".format(geometry_dict["type"]))
+
+        return geometries
+
+    def _get_zone_index_by_uuid(self, uuid: str) -> int:
+        """Finds zone in the geo_mat_config object by its uuid and returns its simmulation index."""
+        for idx, zone in enumerate(self.geo_mat_config.zones):
+            if zone.uuid == uuid:
+                return idx+1
+
+        raise ValueError(f"No zone with uuid \"{uuid}\".")
+
+    @staticmethod
+    def _parse_scoring_filters(json: dict) -> list[ScoringFilter]:
+        """Parses scoring filters from the input json."""
+        filters = [ScoringFilter(
+            name=filter_dict["name"],
+            rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
+                   for rule_dict in filter_dict["rules"]],
+        ) for filter_dict in json["detectManager"]["filters"]]
+
+        return filters
+
+    def _parse_scoring_outputs(self, json: dict) -> list[ScoringOutput]:
+        """Parses scoring outputs from the input json."""
+        outputs = [ScoringOutput(
+            filename=output_dict["name"],
+            fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
+            geometry=self._get_scoring_geometry_bu_uuid(
+                output_dict["detectGeometry"]) if 'detectGeometry' in output_dict else None,
+            medium=output_dict["medium"] if 'medium' in output_dict else None,
+            offset=output_dict["offset"] if 'offset' in output_dict else None,
+            primaries=output_dict["primaries"] if 'primaries' in output_dict else None,
+            quantities=[self._parse_output_quantity(quantity)
+                        for quantity in output_dict["quantities"]["active"]] if 'quantities' in output_dict else [],
+            rescale=output_dict["rescale"] if 'rescale' in output_dict else None,
+        ) for output_dict in json["scoringManager"]["scoringOutputs"]]
+
+        return outputs
+
+    def _get_scoring_geometry_bu_uuid(self, uuid: str) -> str:
+        """Finds scoring geometry in the detect_config object by its uuid and returns its simmulation name."""
+        for scoring_geometry in self.detect_config.scoring_geometries:
+            if scoring_geometry.uuid == uuid:
+                return scoring_geometry.name
+
+        raise ValueError(f"No scoring geometry with uuid \"{uuid}\".")
+
+    def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
+        """Parse a single output quantity."""
+        diff1 = None
+        diff1_t = None
+        diff2 = None
+        diff2_t = None
+
+        if len(quantity_dict["modifiers"]) >= 1:
+            diff1 = (
+                quantity_dict["modifiers"][0]["lowerLimit"],
+                quantity_dict["modifiers"][0]["upperLimit"],
+                quantity_dict["modifiers"][0]["binsNumber"],
+                quantity_dict["modifiers"][0]["isLog"],
+            )
+            diff1_t = quantity_dict["modifiers"][0]["diffType"]
+
+        if len(quantity_dict["modifiers"]) >= 2:
+            diff2 = (
+                quantity_dict["modifiers"][1]["lowerLimit"],
+                quantity_dict["modifiers"][1]["upperLimit"],
+                quantity_dict["modifiers"][1]["binsNumber"],
+                quantity_dict["modifiers"][1]["isLog"],
+            )
+            diff2_t = quantity_dict["modifiers"][1]["diffType"]
+
+        return OutputQuantity(
+            detector_type=quantity_dict["keyword"],
+            filter_name=self._get_scoring_filter_by_uuid(quantity_dict["filter"]) if filter in quantity_dict else "",
+            diff1=diff1,
+            diff1_t=diff1_t,
+            diff2=diff2,
+            diff2_t=diff2_t,
+        )
+
+    def _get_scoring_filter_by_uuid(self, uuid: str) -> str:
+        """Finds scoring filter in the detect_config object by its uuid and returns its simmulation name."""
+        for scoring_filter in self.detect_config.scoring_filters:
+            if scoring_filter.uuid == uuid:
+                return scoring_filter.name
+
+        raise ValueError(f"No scoring filter with uuid {uuid} in materials {self.detect_config.scoring_filters}.")
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
@@ -174,22 +211,31 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
-        self.geo_mat_config.materials = [material["data"]["id"] for material in json["materialsManager"]]
+        self.geo_mat_config.materials = [(material["uuid"], material["icru"])
+                                         for material in json["materialManager"]["materials"]]
 
     def _parse_figures(self, json: dict) -> None:
         """Parse figures from JSON"""
         self.geo_mat_config.figures = [solid_figures.parse_figure(
             figure_dict) for figure_dict in json["scene"]["object"].get('children')]
 
+    def _get_material_id(self, uuid: str) -> int:
+        """Find material by uuid and retun its id."""
+        for idx, item in enumerate(self.geo_mat_config.materials):
+            if item[0] == uuid:
+                return idx+1
+
+        raise ValueError(f"No material with uuid {uuid} in materials {self.geo_mat_config.materials}.")
+
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""
         self.geo_mat_config.zones = [
             Zone(
+                uuid=zone["uuid"],
                 # lists are numbered from 0, but shieldhit zones are numbered from 1
                 id=idx+1,
                 figures_operators=self._parse_csg_operations(zone["unionOperations"]),
-                # lists are numbered from 0, but shieldhit materials are numbered from 1
-                material=self.geo_mat_config.materials.index(zone["materialData"]["id"])+1,
+                material=self._get_material_id(zone["materialUuid"]),
             ) for idx, zone in enumerate(json["zoneManager"]["zones"])
         ]
 
@@ -204,6 +250,7 @@ class ShieldhitParser(DummmyParser):
 
         self.geo_mat_config.zones.append(
             Zone(
+                uuid="",
                 id=len(self.geo_mat_config.zones)+1,
                 # slightly larger world zone - world zone
                 figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)),
@@ -225,6 +272,7 @@ class ShieldhitParser(DummmyParser):
         last_figure_idx = len(self.geo_mat_config.figures)
         self.geo_mat_config.zones.append(
             Zone(
+                uuid="",
                 id=len(self.geo_mat_config.zones)+1,
                 # slightly larger world zone - world zone
                 figures_operators=[{last_figure_idx, -(last_figure_idx-1)}],
@@ -273,5 +321,8 @@ class ShieldhitParser(DummmyParser):
 
     def _get_figure_index_by_uuid(self, uuid: str) -> int:
         """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
-        figure = [figure for figure in self.geo_mat_config.figures if figure.uuid == uuid][0]
-        return self.geo_mat_config.figures.index(figure)
+        for idx, figure in enumerate(self.geo_mat_config.figures):
+            if figure.uuid == uuid:
+                return idx
+
+        raise ValueError(f"No figure with uuid \"{uuid}\".")
