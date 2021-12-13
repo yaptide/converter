@@ -10,6 +10,7 @@ NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
+BEAMPOS 0 0 0 ! Position of the beam
 """
 
 _Beam_template_default = _Beam_template.format(energy=150, nstat=10000)
