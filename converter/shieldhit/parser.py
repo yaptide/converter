@@ -140,7 +140,7 @@ class ShieldhitParser(DummmyParser):
     def _parse_scoring_outputs(self, json: dict) -> list[ScoringOutput]:
         """Parses scoring outputs from the input json."""
         outputs = [ScoringOutput(
-            filename=output_dict["name"],
+            filename=output_dict["name"]+".bdo",
             fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
             geometry=self._get_scoring_geometry_bu_uuid(
                 output_dict["detectGeometry"]) if 'detectGeometry' in output_dict else None,
