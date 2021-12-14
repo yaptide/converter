@@ -92,7 +92,7 @@ class ScoringZone(ScoringGeometry):
     template: str = """Geometry Zone
     Name {name}
     Zone {first_zone} {last_zone}
-    Volume {volume:d}
+    Volume {volume:f}
 """
 
     def __str__(self) -> str:
