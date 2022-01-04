@@ -8,6 +8,7 @@ class BeamConfig:
     energy: float = 150.
     nstat: int = 10000
     beampos: tuple[float, float, float] = (0, 0, 0)
+    beamdir: tuple[float, float, float] = (0, 0, 1)
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
@@ -18,10 +19,12 @@ STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
+BEAMDIR {dir_x} {dir_y} {dir_z} ! Direction of the beam
 """
 
     def __str__(self) -> str:
         return self.beam_template.format(
             energy=self.energy, nstat=self.nstat,
-            pos_x=self.beampos[0], pos_y=self.beampos[1], pos_z=self.beampos[2]
+            pos_x=self.beampos[0], pos_y=self.beampos[1], pos_z=self.beampos[2],
+            dir_x=self.beamdir[0], dir_y=self.beamdir[1], dir_z=self.beamdir[2]
         )

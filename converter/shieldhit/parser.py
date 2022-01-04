@@ -65,6 +65,7 @@ class ShieldhitParser(DummmyParser):
         """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
         self.beam_config.beampos = tuple(json["beam"]["position"])
+        self.beam_config.beamdir = tuple(json["beam"]["direction"])
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
