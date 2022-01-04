@@ -1,6 +1,5 @@
-import pytest
-from converter.shieldhit.parser import BeamConfig, DetectConfig
 from converter.shieldhit.geo import GeoMatConfig
+from converter.shieldhit.parser import BeamConfig, DetectConfig
 
 _Beam_template = """
 RNDSEED      	89736501     ! Random seed

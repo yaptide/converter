@@ -1,7 +1,7 @@
 from os import path
 from converter.shieldhit import DEFALUT_MATERIALS
 from converter.common import Parser
-from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
+from converter.shieldhit.geo import GeoMatConfig, Zone
 from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
 from converter.shieldhit.scoring_geometries import (
     ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh, ScoringZone
