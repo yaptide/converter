@@ -1,9 +1,8 @@
 from converter.solid_figures import SolidFigure, BoxFigure, CylinderFigure, SphereFigure
-from abc import ABC
+from converter.shieldhit import DEFALUT_MATERIALS
 from dataclasses import dataclass, field
 from math import log10, ceil, isclose
 from scipy.spatial.transform import Rotation as R
-from converter.shieldhit import DEFALUT_MATERIALS
 
 
 def format_float(number: float, n: int) -> float:

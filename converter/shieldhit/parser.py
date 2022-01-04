@@ -1,6 +1,3 @@
-from abc import ABC
-from functools import reduce
-from dataclasses import dataclass, field
 from os import path
 from converter.shieldhit import DEFALUT_MATERIALS
 from converter.common import Parser
