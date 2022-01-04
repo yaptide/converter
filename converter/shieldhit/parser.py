@@ -237,7 +237,7 @@ class ShieldhitParser(DummmyParser):
                 # lists are numbered from 0, but shieldhit zones are numbered from 1
                 id=idx+1,
                 figures_operators=self._parse_csg_operations(zone["unionOperations"]),
-                material=self._get_material_id(zone["materialUuid"]),
+                material=self._get_material_id(zone["materialUuid"])
             ) for idx, zone in enumerate(json["zoneManager"]["zones"])
         ]
 
@@ -247,27 +247,26 @@ class ShieldhitParser(DummmyParser):
     def _parse_world_zone(self, json: dict) -> None:
         """Parse the world zone and add it to the zone list"""
         # Add bounding figure to figures
-        world_figure = solid_figures.parse_figure(json["zoneManager"]["worldZone"])
+        world_zone = json["zoneManager"]["worldZone"]
+        world_figure = solid_figures.parse_figure(world_zone)
         self.geo_mat_config.figures.append(world_figure)
 
         self.geo_mat_config.zones.append(
             Zone(
                 uuid="",
                 id=len(self.geo_mat_config.zones)+1,
-                # slightly larger world zone - world zone
+                # world zone defined by bounding figure and contained zones
                 figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)),
-                # the last material is the black hole
-                material=VACUUM_MATERIAL
+                # the material of the world zone is usually defined as vacuum
+                material=self._get_material_id(world_zone["materialUuid"])
             )
         )
 
         # Add the figure that will serve as a black hole wrapper around the world zone
-        # Take the world zone figure
-        world_figure = solid_figures.parse_figure(json["zoneManager"]["worldZone"])
         # Make the figure slightly bigger. It will form the black hole wrapper around the simulation.
-        world_figure.expand(1.)
+        black_hole_figure = solid_figures.parse_figure(world_zone).expand(1.)
         self.geo_mat_config.figures.append(
-            world_figure
+            black_hole_figure
         )
 
         # Add the black hole wrapper

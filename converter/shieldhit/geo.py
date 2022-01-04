@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from math import log10, ceil, isclose
 from scipy.spatial.transform import Rotation as R
 
+PREDEVINED_MATERIALS = [0, 1000]
+
 
 def format_float(number: float, n: int) -> float:
     """
@@ -249,5 +251,7 @@ END
         """Generate mat.dat config."""
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
         material_strings = [
-            self.material_template.format(idx=idx+1, mat=mat[1])for idx, mat in enumerate(self.materials)]
+            self.material_template.format(idx=idx+1, mat=mat[1])
+            for idx, mat in enumerate(self.materials)
+            if mat[1] not in PREDEVINED_MATERIALS]
         return "".join(material_strings)
