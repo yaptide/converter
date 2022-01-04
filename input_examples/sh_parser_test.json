@@ -22,7 +22,24 @@
             "type": "PerspectiveCamera",
             "name": "Camera",
             "layers": 1,
-            "matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 5, 10, 1],
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                5,
+                10,
+                1
+            ],
             "fov": 50,
             "zoom": 1,
             "near": 0.01,
@@ -138,7 +155,24 @@
             "type": "Scene",
             "name": "Figures",
             "layers": 1,
-            "matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            "matrix": [
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
             "children": [
                 {
                     "uuid": "48EE4307-80C7-47AA-BF01-9132898B2B5A",
@@ -147,8 +181,16 @@
                     "userData": {
                         "id": 860,
                         "geometryType": "CylinderGeometry",
-                        "position": [0, 0, 10],
-                        "rotation": [90, 0, 0],
+                        "position": [
+                            0,
+                            0,
+                            10
+                        ],
+                        "rotation": [
+                            90,
+                            0,
+                            0
+                        ],
                         "parameters": {
                             "radiusTop": 10,
                             "height": 20
@@ -219,8 +261,16 @@
                     "height": 22,
                     "depth": 22
                 },
-                "position": [0, 0, 0],
-                "rotation": [0, 0, 0]
+                "position": [
+                    0,
+                    0,
+                    0
+                ],
+                "rotation": [
+                    0,
+                    0,
+                    0
+                ]
             }
         }
     },
@@ -238,7 +288,11 @@
                     "zSegments": 400
                 },
                 "type": "Cyl",
-                "position": [0, 0, 10],
+                "position": [
+                    0,
+                    0,
+                    10
+                ],
                 "name": "CylZ_Mesh",
                 "colorHex": 65535
             },
@@ -253,7 +307,11 @@
                     "zSegments": 400
                 },
                 "type": "Mesh",
-                "position": [0, 0, 10],
+                "position": [
+                    0,
+                    0,
+                    10
+                ],
                 "name": "YZ_Mesh",
                 "colorHex": 65535
             }
@@ -261,8 +319,16 @@
         "filters": []
     },
     "beam": {
-        "position": [0, 0, 0],
-        "direction": [0, 0, 1],
+        "position": [
+            0,
+            0,
+            0
+        ],
+        "direction": [
+            0,
+            0,
+            1
+        ],
         "energy": 150,
         "energySpread": 1.5,
         "divergence": {
@@ -302,7 +368,7 @@
         "name": "Outputs",
         "scoringOutputs": [
             {
-                "name": "cylz.bdo",
+                "name": "cylz",
                 "uuid": "11985E99-1ABC-4EDE-839F-7EA66A48394D",
                 "quantities": {
                     "active": [
@@ -319,7 +385,7 @@
                 "trace": false
             },
             {
-                "name": "yzmsh.bdo",
+                "name": "yzmsh",
                 "uuid": "11985E99-1ABC-4EDE-839F-7EA66A48394D",
                 "quantities": {
                     "active": [

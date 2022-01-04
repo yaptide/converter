@@ -2,6 +2,7 @@ from abc import ABC
 from functools import reduce
 from dataclasses import dataclass, field
 from os import path
+from converter.shieldhit import DEFALUT_MATERIALS
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
 from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
@@ -10,9 +11,6 @@ from converter.shieldhit.scoring_geometries import (
 )
 from converter.shieldhit.beam import BeamConfig
 import converter.solid_figures as solid_figures
-
-BLACK_HOLE_MATERIAL = 0
-VACUUM_MATERIAL = 1000
 
 
 class DummmyParser(Parser):
@@ -225,6 +223,10 @@ class ShieldhitParser(DummmyParser):
         """Find material by uuid and retun its id."""
         for idx, item in enumerate(self.geo_mat_config.materials):
             if item[0] == uuid:
+                # If the material is a DEFALUT_MATERIAL then we need the value not its index
+                if item[1] in list(DEFALUT_MATERIALS.values()):
+                    return item[1]
+
                 return idx+1
 
         raise ValueError(f"No material with uuid {uuid} in materials {self.geo_mat_config.materials}.")
@@ -237,7 +239,7 @@ class ShieldhitParser(DummmyParser):
                 # lists are numbered from 0, but shieldhit zones are numbered from 1
                 id=idx+1,
                 figures_operators=self._parse_csg_operations(zone["unionOperations"]),
-                material=self._get_material_id(zone["materialUuid"])
+                material=self._get_material_id(zone["materialUuid"]),
             ) for idx, zone in enumerate(json["zoneManager"]["zones"])
         ]
 
@@ -263,8 +265,10 @@ class ShieldhitParser(DummmyParser):
         )
 
         # Add the figure that will serve as a black hole wrapper around the world zone
+        black_hole_figure = solid_figures.parse_figure(world_zone)
         # Make the figure slightly bigger. It will form the black hole wrapper around the simulation.
-        black_hole_figure = solid_figures.parse_figure(world_zone).expand(1.)
+        black_hole_figure.expand(1.)
+
         self.geo_mat_config.figures.append(
             black_hole_figure
         )
@@ -278,7 +282,7 @@ class ShieldhitParser(DummmyParser):
                 # slightly larger world zone - world zone
                 figures_operators=[{last_figure_idx, -(last_figure_idx-1)}],
                 # the last material is the black hole
-                material=BLACK_HOLE_MATERIAL
+                material=DEFALUT_MATERIALS["BLACK_HOLE_MATERIAL"]
             )
         )
 

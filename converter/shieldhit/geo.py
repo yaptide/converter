@@ -3,8 +3,7 @@ from abc import ABC
 from dataclasses import dataclass, field
 from math import log10, ceil, isclose
 from scipy.spatial.transform import Rotation as R
-
-PREDEVINED_MATERIALS = [0, 1000]
+from converter.shieldhit import DEFALUT_MATERIALS
 
 
 def format_float(number: float, n: int) -> float:
@@ -237,6 +236,7 @@ END
 
     def get_geo_string(self) -> str:
         """Generate geo.dat config."""
+        print(self.figures)
         return self.geo_template.format(
             jdbg1=self.jdbg1,
             jdbg2=self.jdbg2,
@@ -253,5 +253,5 @@ END
         material_strings = [
             self.material_template.format(idx=idx+1, mat=mat[1])
             for idx, mat in enumerate(self.materials)
-            if mat[1] not in PREDEVINED_MATERIALS]
+            if mat[1] not in list(DEFALUT_MATERIALS.values())]
         return "".join(material_strings)
