@@ -1,18 +1,13 @@
-from abc import ABC
-from functools import reduce
-from dataclasses import dataclass, field
 from os import path
+from converter.shieldhit import DEFALUT_MATERIALS
 from converter.common import Parser
-from converter.shieldhit.geo import GeoMatConfig, Zone, parse_figure
+from converter.shieldhit.geo import GeoMatConfig, Zone
 from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
 from converter.shieldhit.scoring_geometries import (
     ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh, ScoringZone
 )
 from converter.shieldhit.beam import BeamConfig
 import converter.solid_figures as solid_figures
-
-BLACK_HOLE_MATERIAL = 0
-VACUUM_MATERIAL = 1000
 
 
 class DummmyParser(Parser):
@@ -65,6 +60,7 @@ class ShieldhitParser(DummmyParser):
         """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
         self.beam_config.beampos = tuple(json["beam"]["position"])
+        self.beam_config.beamdir = tuple(json["beam"]["direction"])
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
@@ -140,7 +136,7 @@ class ShieldhitParser(DummmyParser):
     def _parse_scoring_outputs(self, json: dict) -> list[ScoringOutput]:
         """Parses scoring outputs from the input json."""
         outputs = [ScoringOutput(
-            filename=output_dict["name"],
+            filename=output_dict["name"]+".bdo",
             fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
             geometry=self._get_scoring_geometry_bu_uuid(
                 output_dict["detectGeometry"]) if 'detectGeometry' in output_dict else None,
@@ -224,6 +220,10 @@ class ShieldhitParser(DummmyParser):
         """Find material by uuid and retun its id."""
         for idx, item in enumerate(self.geo_mat_config.materials):
             if item[0] == uuid:
+                # If the material is a DEFALUT_MATERIAL then we need the value not its index
+                if item[1] in list(DEFALUT_MATERIALS.values()):
+                    return item[1]
+
                 return idx+1
 
         raise ValueError(f"No material with uuid {uuid} in materials {self.geo_mat_config.materials}.")
@@ -246,27 +246,28 @@ class ShieldhitParser(DummmyParser):
     def _parse_world_zone(self, json: dict) -> None:
         """Parse the world zone and add it to the zone list"""
         # Add bounding figure to figures
-        world_figure = solid_figures.parse_figure(json["zoneManager"]["worldZone"])
+        world_zone = json["zoneManager"]["worldZone"]
+        world_figure = solid_figures.parse_figure(world_zone)
         self.geo_mat_config.figures.append(world_figure)
 
         self.geo_mat_config.zones.append(
             Zone(
                 uuid="",
                 id=len(self.geo_mat_config.zones)+1,
-                # slightly larger world zone - world zone
+                # world zone defined by bounding figure and contained zones
                 figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)),
-                # the last material is the black hole
-                material=VACUUM_MATERIAL
+                # the material of the world zone is usually defined as vacuum
+                material=self._get_material_id(world_zone["materialUuid"])
             )
         )
 
         # Add the figure that will serve as a black hole wrapper around the world zone
-        # Take the world zone figure
-        world_figure = solid_figures.parse_figure(json["zoneManager"]["worldZone"])
+        black_hole_figure = solid_figures.parse_figure(world_zone)
         # Make the figure slightly bigger. It will form the black hole wrapper around the simulation.
-        world_figure.expand(1.)
+        black_hole_figure.expand(1.)
+
         self.geo_mat_config.figures.append(
-            world_figure
+            black_hole_figure
         )
 
         # Add the black hole wrapper
@@ -278,7 +279,7 @@ class ShieldhitParser(DummmyParser):
                 # slightly larger world zone - world zone
                 figures_operators=[{last_figure_idx, -(last_figure_idx-1)}],
                 # the last material is the black hole
-                material=BLACK_HOLE_MATERIAL
+                material=DEFALUT_MATERIALS["BLACK_HOLE_MATERIAL"]
             )
         )
 

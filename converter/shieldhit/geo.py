@@ -1,5 +1,5 @@
 from converter.solid_figures import SolidFigure, BoxFigure, CylinderFigure, SphereFigure
-from abc import ABC
+from converter.shieldhit import DEFALUT_MATERIALS
 from dataclasses import dataclass, field
 from math import log10, ceil, isclose
 from scipy.spatial.transform import Rotation as R
@@ -235,6 +235,7 @@ END
 
     def get_geo_string(self) -> str:
         """Generate geo.dat config."""
+        print(self.figures)
         return self.geo_template.format(
             jdbg1=self.jdbg1,
             jdbg2=self.jdbg2,
@@ -249,5 +250,7 @@ END
         """Generate mat.dat config."""
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
         material_strings = [
-            self.material_template.format(idx=idx+1, mat=mat[1])for idx, mat in enumerate(self.materials)]
+            self.material_template.format(idx=idx+1, mat=mat[1])
+            for idx, mat in enumerate(self.materials)
+            if mat[1] not in list(DEFALUT_MATERIALS.values())]
         return "".join(material_strings)
