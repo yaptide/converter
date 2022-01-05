@@ -105,7 +105,7 @@ def _parse_box(box: BoxFigure, number: int) -> str:
 def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
     """Parse a CylinderFigure into a str representation of SH12A input file."""
     rotation = R.from_euler('xyz', cylinder.rotation, degrees=True)
-    height_vect = rotation.apply([0, cylinder.height, 0])
+    height_vect = rotation.apply([0, 0, cylinder.height])
     lower_base_position = (
         cylinder.position[0] - height_vect[0]/2,
         cylinder.position[1] - height_vect[1]/2,
@@ -235,7 +235,6 @@ END
 
     def get_geo_string(self) -> str:
         """Generate geo.dat config."""
-        print(self.figures)
         return self.geo_template.format(
             jdbg1=self.jdbg1,
             jdbg2=self.jdbg2,
