@@ -1,8 +1,13 @@
 from converter.solid_figures import SolidFigure, BoxFigure, CylinderFigure, SphereFigure
-from converter.shieldhit import DEFALUT_MATERIALS
 from dataclasses import dataclass, field
 from math import log10, ceil, isclose
 from scipy.spatial.transform import Rotation as R
+from enum import IntEnum
+
+
+class DefaultMaterial(IntEnum):
+    BLACK_HOLE = 0
+    VACUUM = 1000
 
 
 def format_float(number: float, n: int) -> float:
@@ -251,5 +256,5 @@ END
         material_strings = [
             self.material_template.format(idx=idx+1, mat=mat[1])
             for idx, mat in enumerate(self.materials)
-            if mat[1] not in list(DEFALUT_MATERIALS.values())]
+            if mat[1] not in DefaultMaterial._value2member_map_]
         return "".join(material_strings)

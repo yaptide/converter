@@ -1,5 +1,5 @@
 from os import path
-from converter.shieldhit import DEFALUT_MATERIALS
+from converter.shieldhit.geo import DefaultMaterial
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone
 from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
@@ -220,8 +220,8 @@ class ShieldhitParser(DummmyParser):
         """Find material by uuid and retun its id."""
         for idx, item in enumerate(self.geo_mat_config.materials):
             if item[0] == uuid:
-                # If the material is a DEFALUT_MATERIAL then we need the value not its index
-                if item[1] in list(DEFALUT_MATERIALS.values()):
+                # If the material is a DefaultMaterial then we need the value not its index
+                if item[1] in DefaultMaterial._value2member_map_:
                     return item[1]
 
                 return idx+1
@@ -279,7 +279,7 @@ class ShieldhitParser(DummmyParser):
                 # slightly larger world zone - world zone
                 figures_operators=[{last_figure_idx, -(last_figure_idx-1)}],
                 # the last material is the black hole
-                material=DEFALUT_MATERIALS["BLACK_HOLE_MATERIAL"]
+                material=DefaultMaterial.BLACK_HOLE
             )
         )
 
