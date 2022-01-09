@@ -6,6 +6,12 @@ from enum import IntEnum
 
 
 class DefaultMaterial(IntEnum):
+    """
+    List of special material ids that are not refering to the `mat` and have a separete
+    meaining. E.g. Asigning id=1000 to a zone in `geo` file would mean, that the zone is made out
+    of vacuum, not that it refers to the 1000th item in `mat` file.
+    """
+
     BLACK_HOLE = 0
     VACUUM = 1000
 
