@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import math as m
 
 
 @dataclass
@@ -19,12 +20,27 @@ STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
-BEAMDIR {dir_x} {dir_y} {dir_z} ! Direction of the beam
+BEAMDIR {theta} {phi} ! Direction of the beam
 """
 
     def __str__(self) -> str:
+        
+        theta, phi, _ = self.cartesian2spherical(self.beamdir)
         return self.beam_template.format(
             energy=self.energy, nstat=self.nstat,
             pos_x=self.beampos[0], pos_y=self.beampos[1], pos_z=self.beampos[2],
-            dir_x=self.beamdir[0], dir_y=self.beamdir[1], dir_z=self.beamdir[2]
+            theta=theta, phi=phi,
         )
+
+    def cartesian2spherical(self, vector: tuple[float, float, float]) -> tuple[float, float, float]:
+        """
+        Transform cartesian coordinates to spherical coordinates.
+
+        :param vector: cartesian coordinates
+        :return: spherical coordinates
+        """
+        x, y, z = vector
+        r = m.sqrt(x**2 + y**2 + z**2)
+        theta = m.degrees(m.acos(z / r))
+        phi = m.degrees(m.atan2(y, x))
+        return [theta, phi, r]

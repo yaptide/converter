@@ -7,6 +7,8 @@ from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringCylin
 class ScoringFilter():
     """Dataclass storing information about simulation output. Used in DetectConfig dataclass."""
 
+    uuid: str
+
     name: str
     rules: list[tuple[str, str, int]]
 

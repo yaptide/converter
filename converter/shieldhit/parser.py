@@ -126,6 +126,7 @@ class ShieldhitParser(DummmyParser):
     def _parse_scoring_filters(json: dict) -> list[ScoringFilter]:
         """Parses scoring filters from the input json."""
         filters = [ScoringFilter(
+            uuid=filter_dict["uuid"],
             name=filter_dict["name"],
             rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
                    for rule_dict in filter_dict["rules"]],
@@ -160,6 +161,7 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
+
         diff1 = None
         diff1_t = None
         diff2 = None
@@ -185,7 +187,7 @@ class ShieldhitParser(DummmyParser):
 
         return OutputQuantity(
             detector_type=quantity_dict["keyword"],
-            filter_name=self._get_scoring_filter_by_uuid(quantity_dict["filter"]) if filter in quantity_dict else "",
+            filter_name=self._get_scoring_filter_by_uuid(quantity_dict["filter"]) if "filter" in quantity_dict else "",
             diff1=diff1,
             diff1_t=diff1_t,
             diff2=diff2,
@@ -261,8 +263,19 @@ class ShieldhitParser(DummmyParser):
             figures_operators=list([operation]),
             # the material of the world zone is usually defined as vacuum
             material=self._get_material_id(world_zone["materialUuid"])
-        )) for operation in enumerate(operations)]
-
+        )) for operation in operations]
+        
+        # self.geo_mat_config.zones.append(
+        #     Zone(
+        #         uuid="",
+        #         id=len(self.geo_mat_config.zones)+1,
+        #         # world zone defined by bounding figure and contained zones
+        #         figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)),
+        #         # the material of the world zone is usually defined as vacuum
+        #         material=self._get_material_id(world_zone["materialUuid"])
+        #     )
+        # )
+                
         # Add the figure that will serve as a black hole wrapper around the world zone
         black_hole_figure = solid_figures.parse_figure(world_zone)
         # Make the figure slightly bigger. It will form the black hole wrapper around the simulation.
