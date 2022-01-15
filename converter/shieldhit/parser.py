@@ -224,7 +224,7 @@ class ShieldhitParser(DummmyParser):
                 # the _value2member_map_ returns a map of values and members that allows us to check if
                 # a given value is defined within the DefaultMaterial enum.
                 if item[1] in DefaultMaterial._value2member_map_:
-                    return item[1]
+                    return int(item[1])
 
                 return idx+1
 
@@ -252,16 +252,16 @@ class ShieldhitParser(DummmyParser):
         world_figure = solid_figures.parse_figure(world_zone)
         self.geo_mat_config.figures.append(world_figure)
 
-        self.geo_mat_config.zones.append(
-            Zone(
-                uuid="",
-                id=len(self.geo_mat_config.zones)+1,
-                # world zone defined by bounding figure and contained zones
-                figures_operators=self._calculate_world_zone_operations(len(self.geo_mat_config.figures)),
-                # the material of the world zone is usually defined as vacuum
-                material=self._get_material_id(world_zone["materialUuid"])
-            )
-        )
+        operations = self._calculate_world_zone_operations(len(self.geo_mat_config.figures))
+        # add zone to zones for every operation in operations
+        [self.geo_mat_config.zones.append(Zone(
+            uuid='',
+            id=len(self.geo_mat_config.zones)+1,
+            # world zone defined by bounding figure and contained zones
+            figures_operators=list([operation]),
+            # the material of the world zone is usually defined as vacuum
+            material=self._get_material_id(world_zone["materialUuid"])
+        )) for operation in enumerate(operations)]
 
         # Add the figure that will serve as a black hole wrapper around the world zone
         black_hole_figure = solid_figures.parse_figure(world_zone)
