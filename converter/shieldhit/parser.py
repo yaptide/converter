@@ -1,3 +1,4 @@
+import itertools
 from os import path
 from converter.shieldhit.geo import DefaultMaterial
 from converter.common import Parser
@@ -333,6 +334,9 @@ class ShieldhitParser(DummmyParser):
                 for figure in figure_set:
                     new_world_zone.append({*w_figure_set, -figure})
             world_zone = new_world_zone
+            
+        # filter out sets containing oposite pairs of values
+        world_zone = filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone)
 
         return world_zone
 
