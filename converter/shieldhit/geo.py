@@ -240,12 +240,21 @@ END
 
     def _get_zone_material_string(self) -> str:
         """Generate material_id, zone_id pairs string (for geo.dat)."""
-        zone_ids = "".join(['{0:>5}'.format(zone.id) for zone in self.zones])
-        material_ids = "".join(['{0:>5}'.format(zone.material) for zone in self.zones])
-        return "\n".join([zone_ids, material_ids])
+
+        # Cut lists into chunks of max size 14
+        zone_ids = ["".join(['{0:>5}'.format(id) for id in row])
+                    for row in self._split_zones_to_rows([zone.id for zone in self.zones])]
+        material_ids = ["".join(['{0:>5}'.format(mat) for mat in row])
+                        for row in self._split_zones_to_rows([zone.material for zone in self.zones])]
+        return "\n".join([*zone_ids, *material_ids])
+
+    def _split_zones_to_rows(self, zones: list[Zone], max_size=14) -> list[list[Zone]]:
+        # Split list every 14 elements
+        return [zones[i:min(i+max_size, len(zones))] for i in range(0, len(zones), max_size)]
 
     def get_geo_string(self) -> str:
         """Generate geo.dat config."""
+
         return self.geo_template.format(
             jdbg1=self.jdbg1,
             jdbg2=self.jdbg2,
