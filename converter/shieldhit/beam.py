@@ -23,16 +23,8 @@ BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
 BEAMDIR {theta} {phi} ! Direction of the beam
 """
 
-    def __str__(self) -> str:
-        
-        theta, phi, _ = self.cartesian2spherical(self.beamdir)
-        return self.beam_template.format(
-            energy=self.energy, nstat=self.nstat,
-            pos_x=self.beampos[0], pos_y=self.beampos[1], pos_z=self.beampos[2],
-            theta=theta, phi=phi,
-        )
-
-    def cartesian2spherical(self, vector: tuple[float, float, float]) -> tuple[float, float, float]:
+    @staticmethod
+    def cartesian2spherical(vector: tuple[float, float, float]) -> tuple[float, float, float]:
         """
         Transform cartesian coordinates to spherical coordinates.
 
@@ -43,4 +35,17 @@ BEAMDIR {theta} {phi} ! Direction of the beam
         r = m.sqrt(x**2 + y**2 + z**2)
         theta = m.degrees(m.acos(z / r))
         phi = m.degrees(m.atan2(y, x))
-        return [theta, phi, r]
+        return theta, phi, r
+
+    def __str__(self) -> str:
+
+        theta, phi, _ = BeamConfig.cartesian2spherical(self.beamdir)
+        return self.beam_template.format(
+            energy=self.energy,
+            nstat=self.nstat,
+            pos_x=self.beampos[0],
+            pos_y=self.beampos[1],
+            pos_z=self.beampos[2],
+            theta=theta,
+            phi=phi,
+        )
