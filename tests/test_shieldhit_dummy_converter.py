@@ -12,7 +12,7 @@ STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS 0 0 0 ! Position of the beam
-BEAMDIR 0 0 1 ! Direction of the beam
+BEAMDIR 0.0 0.0 ! Direction of the beam
 """
 
 _Mat_str = """MEDIUM 1
@@ -45,11 +45,11 @@ Output
 
 _Geo_str = """
     0    0          Unnamed geometry
-  RCC    1       0.0       0.0       0.0       0.0       0.0      20.0
+  RCC    1       0.0      10.0      10.0       0.0     -20.0       0.0
                 10.0
-  RCC    2       0.0       0.0      -5.0       0.0       0.0      25.0
+  RCC    2       0.0      12.5       7.5       0.0     -25.0       0.0
                 15.0
-  RCC    3       0.0       0.0     -10.0       0.0       0.0      30.0
+  RCC    3       0.0      15.0       5.0       0.0     -30.0       0.0
                 20.0
   END
   001          +1

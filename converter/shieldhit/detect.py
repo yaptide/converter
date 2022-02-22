@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
-from enum import Enum, auto
-from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringCylinder, ScoringMesh, ScoringZone
+from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringCylinder, ScoringMesh
 
 
 @dataclass
-class ScoringFilter():
+class ScoringFilter:
     """Dataclass storing information about simulation output. Used in DetectConfig dataclass."""
+
+    uuid: str
 
     name: str
     rules: list[tuple[str, str, int]]
@@ -17,14 +18,12 @@ class ScoringFilter():
     Name {name}{rules}"""
 
     def __str__(self) -> str:
-        return self.template.format(
-            name=self.name,
-            rules=''.join([self.rule_template.format(*rule) for rule in self.rules])
-        )
+        return self.template.format(name=self.name,
+                                    rules=''.join([self.rule_template.format(*rule) for rule in self.rules]))
 
 
 @dataclass
-class OutputQuantity():
+class OutputQuantity:
     """Class for storing output quantities used in detect."""
 
     detector_type: str
@@ -43,15 +42,17 @@ class OutputQuantity():
     def __str__(self) -> str:
         return ''.join([
             self.quantity_template.format(detector_type=self.detector_type, filter_name=self.filter_name),
-            self.diff_template.format(1, self.diff1[0], self.diff1[1],
-                                      self.diff1[2], log=self.diff1[3], diff_t=self.diff1_t) if self.diff1 else "",
-            self.diff_template.format(2, self.diff2[0], self.diff2[1],
-                                      self.diff2[2], log=self.diff2[3], diff_t=self.diff2_t) if self.diff2 else "",
+            self.diff_template.format(
+                1, self.diff1[0], self.diff1[1], self.diff1[2], log=self.diff1[3], diff_t=self.diff1_t)
+            if self.diff1 else "",
+            self.diff_template.format(
+                2, self.diff2[0], self.diff2[1], self.diff2[2], log=self.diff2[3], diff_t=self.diff2_t)
+            if self.diff2 else "",
         ])
 
 
 @dataclass
-class ScoringOutput():
+class ScoringOutput:
     """Dataclass storing information about shieldhit scoring outputs."""
 
     filename: str = None
@@ -87,10 +88,9 @@ class ScoringOutput():
             self.geometry_str_template.format(geometry=self.geometry) if self.geometry else "",
             self.medium_str_template.format(medium=self.medium) if self.medium else "",
             self.offset_str_template.format(offset=self.offset) if self.offset else "",
-            self.primaries_str_template.format(primaries=self.primaries) if self.primaries else "",
-            ''.join([str(quantity) for quantity in self.quantities]),
-            self.rescale_str_template.format(rescale=self.rescale) if self.rescale else "",
-            "\n"
+            self.primaries_str_template.format(primaries=self.primaries) if self.primaries else "", ''.join(
+                [str(quantity) for quantity in self.quantities]),
+            self.rescale_str_template.format(rescale=self.rescale) if self.rescale else "", "\n"
         ]))
 
 
