@@ -36,18 +36,15 @@ class OutputQuantity:
     quantity_template: str = """
     Quantity {detector_type} {filter_name}"""
     diff_template = """
-    Diff{0} {args}
-    Diff{0} {diff_t}"""
+    Diff{0} {d[0]} {d[1]} {d[2]} {log}
+    Diff{0}Type {diff_t}"""
 
     def __str__(self) -> str:
         return ''.join([
             self.quantity_template.format(detector_type=self.detector_type, filter_name=self.filter_name),
-            self.diff_template.format(
-                1, self.diff1[0], self.diff1[1], self.diff1[2], log=self.diff1[3], diff_t=self.diff1_t)
+            self.diff_template.format(1, d=self.diff1, diff_t=self.diff1_t, log=("log" if self.diff1[3] else ""))
             if self.diff1 else "",
-            self.diff_template.format(
-                2, self.diff2[0], self.diff2[1], self.diff2[2], log=self.diff2[3], diff_t=self.diff2_t)
-            if self.diff2 else "",
+            self.diff_template.format(2, d=self.diff2, diff_t=self.diff2_t) if self.diff2 else "",
         ])
 
 
