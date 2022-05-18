@@ -69,5 +69,10 @@ jobs:
         with:
           name: executables
           path: ./dist
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          
       - name: Install package
         run: python3 -m pip install dist/*whl
