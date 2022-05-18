@@ -70,7 +70,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: packages
-          path: ./dist
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
