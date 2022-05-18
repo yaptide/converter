@@ -70,6 +70,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: packages
+
+      - name: Inspect what has been downloaded
+        run: | 
+          ls -al
+          find .
+
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -80,5 +86,7 @@ jobs:
 
       - name: Test package
         run: |
+         yaptide-converter -h
+         yaptide-converter ./input_examples/sh_parser_test.json
          python3 -m converter.main -h
          python3 -m converter.main ./input_examples/sh_parser_test.json
