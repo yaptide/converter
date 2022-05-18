@@ -18,11 +18,11 @@ def convert(output_format: str, input_json: dict, output_dir: str, silent: bool)
     api.run_parser(json_parser, json.load(input_json), output_dir, silent=silent)
 
 
-def main(args):
+def main(args=None):
     """Function for running parser as a script."""
-    arg_parser = argparse.ArgumentParser(
-        description='Parse a json file and return input files for a particle simulator.')
-    arg_parser.add_argument('script_path', type=argparse.FileType())
+    if args is None:
+        args = sys.argv[1:]
+    arg_parser = argparse.ArgumentParser(description='Parse a json file and return MC simulator input files.')
     arg_parser.add_argument('input_json', type=argparse.FileType('r'))
     arg_parser.add_argument('output_dir', nargs='?', default=os.path.curdir, type=dir_path)
     arg_parser.add_argument('output_format', nargs='?', default='shieldhit', type=str)
@@ -33,4 +33,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    sys.exit(main(sys.argv))
