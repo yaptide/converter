@@ -50,3 +50,24 @@ jobs:
 
       - name: Make package
         run: python3 -m build
+
+      - name: Archive package as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: packages
+          path: ./dist
+
+  test-package:
+    runs-on: ubuntu-latest
+    strategy:
+       matrix:
+         python-version: ['3.9', '3.10']
+    needs: make-package
+    steps:
+      - name: Fetch package as artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: executables
+          path: ./dist
+      - name: Install package
+        run: python3 -m pip install dist/*whl
