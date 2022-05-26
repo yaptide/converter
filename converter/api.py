@@ -19,7 +19,7 @@ def get_parser_from_str(parser_type: str) -> Parser:
 
 def run_parser(parser: Parser, input_data: dict, output_dir: str = None, silent: bool = True) -> dict:
     """
-    Convert the configs and return a dict representation of the config 
+    Convert the configs and return a dict representation of the config
     files. Can save them in the output_dir directory if specified.
     """
     parser.parse_configs(input_data)
@@ -31,5 +31,5 @@ def run_parser(parser: Parser, input_data: dict, output_dir: str = None, silent:
 
     if output_dir:
         parser.save_configs(output_dir)
-    
+
     return parser.get_configs_json()
