@@ -17,8 +17,11 @@ def get_parser_from_str(parser_type: str) -> Parser:
     raise ValueError("Parser type must be either 'sh_dummy', 'shieldhit' or 'topas'")
 
 
-def run_parser(parser: Parser, input_data: dict, output_dir: str = None, silent: bool = True) -> None:
-    """Convert the configs and save them in the output_dir directory."""
+def run_parser(parser: Parser, input_data: dict, output_dir: str = None, silent: bool = True) -> dict:
+    """
+    Convert the configs and return a dict representation of the config
+    files. Can save them in the output_dir directory if specified.
+    """
     parser.parse_configs(input_data)
 
     if not silent:
@@ -28,3 +31,5 @@ def run_parser(parser: Parser, input_data: dict, output_dir: str = None, silent:
 
     if output_dir:
         parser.save_configs(output_dir)
+
+    return parser.get_configs_json()
