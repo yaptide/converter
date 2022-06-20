@@ -259,6 +259,6 @@ END
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
         material_strings = [
             self.material_template.format(idx=idx + 1, mat=mat_value)
-            for idx, [_, mat_value] in enumerate(self.materials) if not DefaultMaterial.is_default_material(mat_value)
+            for idx, [_, mat_value] in enumerate([material for material in self.materials if not DefaultMaterial.is_default_material(material[1])])
         ]
         return "".join(material_strings)
