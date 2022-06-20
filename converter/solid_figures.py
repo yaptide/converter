@@ -51,7 +51,7 @@ class CylinderFigure(SolidFigure):
         """
         self.radius_top += margin
         self.radius_bottom += margin
-        self.height += margin*2
+        self.height += margin * 2
 
 
 @dataclass(frozen=False)
@@ -73,37 +73,39 @@ class BoxFigure(SolidFigure):
         Increases figures weight, depth and height by 2 * `margin` to achieve the same
         expansion (1 * `margin`) on each side.
         """
-        self.x_edge_length += margin*2
-        self.y_edge_length += margin*2
-        self.z_edge_length += margin*2
+        self.x_edge_length += margin * 2
+        self.y_edge_length += margin * 2
+        self.z_edge_length += margin * 2
 
 
 def parse_figure(figure_dict: dict) -> SolidFigure:
     """Parse json containing information about figure to figure."""
-    figure_type = figure_dict["userData"]["geometryType"]
+    figure_type = figure_dict["geometryData"]["geometryType"]
     if figure_type == "CylinderGeometry":
-        return CylinderFigure(uuid=figure_dict["uuid"],
-                              position=tuple(figure_dict["userData"]["position"]),
-                              rotation=tuple(figure_dict["userData"]["rotation"]),
-                              radius_top=figure_dict["userData"]['parameters']["radiusTop"],
-                              radius_bottom=figure_dict["userData"]['parameters']["radiusBottom"]
-                              if "radiusBottom" in figure_dict["userData"]['parameters'] else 0,
-                              height=figure_dict["userData"]['parameters']["height"],
-                              )
+        return CylinderFigure(
+            uuid=figure_dict["uuid"],
+            position=tuple(figure_dict["geometryData"]["position"]),
+            rotation=tuple(figure_dict["geometryData"]["rotation"]),
+            radius_top=figure_dict["geometryData"]['parameters']["radius"],
+            radius_bottom=figure_dict["geometryData"]['parameters']["radius"],
+            height=figure_dict["geometryData"]['parameters']["depth"],
+        )
     if figure_type == "BoxGeometry":
-        return BoxFigure(uuid=figure_dict["uuid"],
-                         position=tuple(figure_dict["userData"]["position"]),
-                         rotation=tuple(figure_dict["userData"]["rotation"]),
-                         y_edge_length=figure_dict["userData"]['parameters']["height"],
-                         x_edge_length=figure_dict["userData"]['parameters']["width"],
-                         z_edge_length=figure_dict["userData"]['parameters']["depth"],
-                         )
+        return BoxFigure(
+            uuid=figure_dict["uuid"],
+            position=tuple(figure_dict["geometryData"]["position"]),
+            rotation=tuple(figure_dict["geometryData"]["rotation"]),
+            y_edge_length=figure_dict["geometryData"]['parameters']["height"],
+            x_edge_length=figure_dict["geometryData"]['parameters']["width"],
+            z_edge_length=figure_dict["geometryData"]['parameters']["depth"],
+        )
     if figure_type == "SphereGeometry":
-        return SphereFigure(uuid=figure_dict["uuid"],
-                            position=tuple(figure_dict["userData"]["position"]),
-                            rotation=tuple(figure_dict["userData"]["rotation"]),
-                            radius=figure_dict["userData"]['parameters']["radius"],
-                            )
+        return SphereFigure(
+            uuid=figure_dict["uuid"],
+            position=tuple(figure_dict["geometryData"]["position"]),
+            rotation=tuple(figure_dict["geometryData"]["rotation"]),
+            radius=figure_dict["geometryData"]['parameters']["radius"],
+        )
 
     print(f"Invalid figure type \"{figure_type}\".")
     raise ValueError("Parser type must be either 'CylinderGeometry', 'BoxGeometry' or 'SphereGeometry'")

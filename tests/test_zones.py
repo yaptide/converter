@@ -5,7 +5,7 @@ from converter import solid_figures
 _Box_test_cases = [
     ({
         "uuid": "CBE326F9-48BB-4E5D-83CC-4F85B057AE00",
-                "userData": {
+                "geometryData": {
                     "id": 941,
                     "geometryType": "BoxGeometry",
                     "position": [1, 2, 3],
@@ -24,15 +24,14 @@ _Box_test_cases = [
 _Cylinder_test_cases = [
     ({
         "uuid": "3A594908-17F2-4858-A16E-EE20BD387C26",
-                "userData": {
+                "geometryData": {
                     "id": 940,
                     "geometryType": "CylinderGeometry",
                     "position": [1, 2, 3],
                     "rotation": [0, 0, 0],
                     "parameters": {
-                        "radiusTop": 1,
-                        "radiusBottom": 1,
-                        "height": 1
+                        "radius": 1,
+                        "depth": 1
                     }
                 },
     }, """
@@ -43,7 +42,7 @@ _Cylinder_test_cases = [
 _Sphere_test_cases = [
     ({
         "uuid": "B0568AB3-A8F8-4615-8FF1-6121B506456F",
-                "userData": {
+                "geometryData": {
                     "id": 1113,
                     "geometryType": "SphereGeometry",
                     "position": [1, 2, 3],
