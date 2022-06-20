@@ -26,6 +26,8 @@ class DummmyParser(Parser):
         Save the configs as text files in the target_dir.
         The files are: beam.dat, mat.dat, detect.dat and geo.dat.
         """
+        if not path.exists(target_dir):
+            raise ValueError("Target directory does not exist.")
         target_dir = path.abspath(target_dir)
 
         for file_name, content in self.get_configs_json().items():
@@ -216,9 +218,8 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_title(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
-        title = json["project"]["title"]
-        if (title != ""):
-            self.geo_mat_config.title = title
+        if "title" in json["project"] and json["project"]["title"].length > 0:
+            self.geo_mat_config.title = json["project"]["title"]
 
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
@@ -280,7 +281,7 @@ class ShieldhitParser(DummmyParser):
                     # the material of the world zone is usually defined as vacuum
                     material=material))
 
-        if (material != DefaultMaterial.BLACK_HOLE.value):
+        if material != DefaultMaterial.BLACK_HOLE.value:
             # Add the figure that will serve as a black hole wrapper around the world zone
             black_hole_figure = solid_figures.parse_figure(world_zone)
 
