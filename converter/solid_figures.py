@@ -59,7 +59,7 @@ class BoxFigure(SolidFigure):
     """
     A rectangular box (cuboid). The figure can be rotated (meaning its walls don't have
     to be aligned with the axes of the coordinate system). The edge lengths are the final lengths of
-    each edge, not the distance from the center of the figure (meaning they are full-size not hageometryDatalf-size,
+    each edge, not the distance from the center of the figure (meaning they are full-size not half-size,
     for example: the edge lengths 1, 1, 1 will result in a 1 by 1 by 1 cube).
     """
 
