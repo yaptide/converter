@@ -1,4 +1,5 @@
 import itertools
+from pathlib import Path
 from os import path
 from converter.shieldhit.geo import DefaultMaterial
 from converter.common import Parser
@@ -26,12 +27,11 @@ class DummmyParser(Parser):
         Save the configs as text files in the target_dir.
         The files are: beam.dat, mat.dat, detect.dat and geo.dat.
         """
-        if not path.exists(target_dir):
+        if not Path(target_dir).exists():
             raise ValueError("Target directory does not exist.")
-        target_dir = path.abspath(target_dir)
 
         for file_name, content in self.get_configs_json().items():
-            with open(path.join(target_dir, file_name), 'w') as conf_f:
+            with open(Path(target_dir, file_name), 'w') as conf_f:
                 conf_f.write(content)
 
     def get_configs_json(self) -> dict:
@@ -218,7 +218,7 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_title(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
-        if "title" in json["project"] and json["project"]["title"].length > 0:
+        if "title" in json["project"] and len(json["project"]["title"]) > 0:
             self.geo_mat_config.title = json["project"]["title"]
 
     def _parse_materials(self, json: dict) -> None:
@@ -281,7 +281,10 @@ class ShieldhitParser(DummmyParser):
                     # the material of the world zone is usually defined as vacuum
                     material=material))
 
+        # Adding Black Hole wrapper outside of the World Zone is redundant
+        # if the World Zone already is made of Black Hole
         if material != DefaultMaterial.BLACK_HOLE.value:
+
             # Add the figure that will serve as a black hole wrapper around the world zone
             black_hole_figure = solid_figures.parse_figure(world_zone)
 
