@@ -235,21 +235,21 @@ class ShieldhitParser(DummmyParser):
         """Find material by uuid and retun its id."""
         offset = 0
         for idx, [mat_uuid, mat_value] in enumerate(self.geo_mat_config.materials):
-            
+
             # If the material is a DefaultMaterial then we need the value not its index,
             # the _value2member_map_ returns a map of values and members that allows us to check if
             # a given value is defined within the DefaultMaterial enum.
             if DefaultMaterial.is_default_material(mat_value):
-                
+
                 if mat_uuid == uuid:
                     return int(mat_value)
 
                 # We need to count all DefaultMaterials prior to the searched one.
                 offset += 1
-            
+
             elif mat_uuid == uuid:
-                    # Only materials defined in mat.dat file are indexed.
-                    return idx + 1 - offset
+                # Only materials defined in mat.dat file are indexed.
+                return idx + 1 - offset
 
         raise ValueError(f"No material with uuid {uuid} in materials {self.geo_mat_config.materials}.")
 
