@@ -33,8 +33,11 @@ BEAMDIR {theta} {phi} ! Direction of the beam
         """
         x, y, z = vector
         r = m.sqrt(x**2 + y**2 + z**2)
-        theta = m.degrees(m.acos(z / r))
-        phi = m.degrees(m.atan2(y, x))
+        theta = m.degrees(m.acos(z / r))  # acos returns the angle in radians between 0 and pi
+        phi = m.degrees(m.atan2(y, x))  # atan2 returns the angle in radians between -pi and pi
+        # lets ensure the angle in degrees is always between 0 and 360, as SHIELD-HIT12A requires
+        if phi < 0.:
+            phi += 360.
         return theta, phi, r
 
     def __str__(self) -> str:
