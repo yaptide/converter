@@ -49,7 +49,7 @@ class DummmyParser(Parser):
 
 
 class ShieldhitParser(DummmyParser):
-    """A regular shieldhit parser"""
+    """A regular SHIELD-HIT12A parser"""
 
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
@@ -114,7 +114,7 @@ class ShieldhitParser(DummmyParser):
                     name=geometry_dict["name"],
                 ))
             else:
-                raise ValueError("Invalid ScoringGeometry type \"{0}\".".format(geometry_dict["type"]))
+                raise ValueError(f"Invalid ScoringGeometry type: {geometry_dict['type']}")
 
         return geometries
 
@@ -165,7 +165,7 @@ class ShieldhitParser(DummmyParser):
             if scoring_geometry.uuid == uuid:
                 return scoring_geometry.name
 
-        raise ValueError(f"No scoring geometry with uuid \"{uuid}\".")
+        raise ValueError(f"No scoring geometry with uuid {uuid}")
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
@@ -330,7 +330,7 @@ class ShieldhitParser(DummmyParser):
             elif operation["mode"] == "intersection":
                 parsed_operations[-1].add(figure_id)
             else:
-                raise ValueError("Unexpected CSG operation: {1}".format(operation["mode"]))
+                raise ValueError(f"Unexpected CSG operation: {operation['mode']}")
 
         return parsed_operations
 
