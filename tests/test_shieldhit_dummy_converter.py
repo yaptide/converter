@@ -13,6 +13,8 @@ MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS 0 0 0 ! Position of the beam
 BEAMDIR 0.0 0.0 ! Direction of the beam
+BEAMSIGMA  -0.1 0.1  ! Beam extension
+DELTAE   0.03   ! relative mean energy loss per transportation step
 """
 
 _Mat_str = """MEDIUM 1

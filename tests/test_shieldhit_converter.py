@@ -7,13 +7,15 @@ import json
 _Beam_str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
-TMAX0      	150.0  1.5       ! Incident energy; (MeV/nucl)
+TMAX0      	150  1.5       ! Incident energy; (MeV/nucl)
 NSTAT       10000    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS 0 0 0 ! Position of the beam
 BEAMDIR 0.0 0.0 ! Direction of the beam
+BEAMSIGMA  -0.1 0.1  ! Beam extension
+DELTAE   0.03   ! relative mean energy loss per transportation step
 """
 
 _Mat_str = """MEDIUM 1

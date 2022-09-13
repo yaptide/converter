@@ -10,6 +10,7 @@ class BeamConfig:
     energy_spread: float = 1.5
     beam_ext_x: float = -0.1
     beam_ext_y: float = 0.1
+    delta_e: float = 0.03
     nstat: int = 10000
     beampos: tuple[float, float, float] = (0, 0, 0)
     beamdir: tuple[float, float, float] = (0, 0, 1)
@@ -59,4 +60,5 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             beam_ext_y=self.beam_ext_y,
             theta=theta,
             phi=phi,
+            delta_e=self.delta_e
         )
