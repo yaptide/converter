@@ -1,5 +1,4 @@
 import itertools
-import subprocess
 from pathlib import Path
 from converter.shieldhit.geo import DefaultMaterial
 from converter.common import Parser
@@ -60,7 +59,8 @@ class ShieldhitParser(DummmyParser):
 
     def __init__(self) -> None:
         super().__init__()
-        version = "unknown" #Add version variable to deploy script
+        #Add version variable to deploy script
+        version = "unknown"
         self.info = {
             "version": version,
             "label": "development",
