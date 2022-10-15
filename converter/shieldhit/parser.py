@@ -21,7 +21,7 @@ class DummmyParser(Parser):
         self.info = {
                     "version": "not implemented",
                     "label": "placeholder",
-                    "simulator": "Shieldhit",
+                    "simulator": "shieldhit",
                 }
 
     def parse_configs(self, json: dict):
@@ -64,7 +64,7 @@ class ShieldhitParser(DummmyParser):
         self.info = {
             "version": version,
             "label": "development",
-            "simulator": "Shieldhit",
+            "simulator": "shieldhit",
         }
 
     def parse_configs(self, json: dict) -> None:
