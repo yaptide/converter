@@ -18,7 +18,7 @@ class BeamConfig:
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
-TMAX0      	{energy}  {energy_spread}       ! Incident energy; (MeV/nucl)
+TMAX0      	{energy}  {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
