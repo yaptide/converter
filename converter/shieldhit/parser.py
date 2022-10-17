@@ -59,7 +59,7 @@ class ShieldhitParser(DummmyParser):
 
     def __init__(self) -> None:
         super().__init__()
-        #Add version variable to deploy script
+        # Add version variable to deploy script
         version = "unknown"
         self.info = {
             "version": version,
