@@ -17,6 +17,11 @@ class DummmyParser(Parser):
         self.beam_config = BeamConfig()
         self.detect_config = DetectConfig()
         self.geo_mat_config = GeoMatConfig()
+        self.info = {
+                    "version": "not implemented",
+                    "label": "placeholder",
+                    "simulator": "shieldhit",
+                }
 
     def parse_configs(self, json: dict):
         """Basicaly do nothing since we work on defaults in this parser."""
@@ -39,6 +44,7 @@ class DummmyParser(Parser):
         the config files name as key and its content as value.
         """
         configs_json = {
+            "info.json": str(self.info),
             "beam.dat": str(self.beam_config),
             "mat.dat": self.geo_mat_config.get_mat_string(),
             "detect.dat": str(self.detect_config),
@@ -50,6 +56,16 @@ class DummmyParser(Parser):
 
 class ShieldhitParser(DummmyParser):
     """A regular SHIELD-HIT12A parser"""
+
+    def __init__(self) -> None:
+        super().__init__()
+        # Add version variable to deploy script
+        version = "unknown"
+        self.info = {
+            "version": version,
+            "label": "development",
+            "simulator": "shieldhit",
+        }
 
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
