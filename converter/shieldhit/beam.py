@@ -7,6 +7,10 @@ class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
     energy: float = 150.
+    energy_spread: float = 1.5
+    beam_ext_x: float = -0.1
+    beam_ext_y: float = 0.1
+    delta_e: float = 0.03
     nstat: int = 10000
     beampos: tuple[float, float, float] = (0, 0, 0)
     beamdir: tuple[float, float, float] = (0, 0, 1)
@@ -14,13 +18,15 @@ class BeamConfig:
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
-TMAX0      	{energy:3.1f}  1.5       ! Incident energy; (MeV/nucl)
+TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
 BEAMDIR {theta} {phi} ! Direction of the beam
+BEAMSIGMA  {beam_ext_x} {beam_ext_y}  ! Beam extension
+DELTAE   {delta_e}   ! relative mean energy loss per transportation step
 """
 
     @staticmethod
@@ -44,11 +50,15 @@ BEAMDIR {theta} {phi} ! Direction of the beam
 
         theta, phi, _ = BeamConfig.cartesian2spherical(self.beamdir)
         return self.beam_template.format(
-            energy=self.energy,
+            energy=float(self.energy),
+            energy_spread=float(self.energy_spread),
             nstat=self.nstat,
             pos_x=self.beampos[0],
             pos_y=self.beampos[1],
             pos_z=self.beampos[2],
+            beam_ext_x=self.beam_ext_x,
+            beam_ext_y=self.beam_ext_y,
             theta=theta,
             phi=phi,
+            delta_e=self.delta_e
         )
