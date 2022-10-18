@@ -4,11 +4,11 @@ from converter.shieldhit.parser import Parser
 from converter.api import get_parser_from_str, run_parser
 import json
 
-_Beam_str = """
+_Beam_template = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
-TMAX0      	150  1.5       ! Incident energy and energy spread; both in (MeV/nucl)
-NSTAT       10000    0       ! NSTAT, Step of saving
+TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
+NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
@@ -17,6 +17,8 @@ BEAMDIR 0.0 0.0 ! Direction of the beam
 BEAMSIGMA  -0.1 0.1  ! Beam extension
 DELTAE   0.03   ! relative mean energy loss per transportation step
 """
+
+_Beam_str = _Beam_template.format(energy=150., energy_spread=1.5, nstat=10000)
 
 _Mat_str = """MEDIUM 1
 ICRU 276
