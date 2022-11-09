@@ -81,18 +81,19 @@ class ShieldhitParser(DummmyParser):
         self.beam_config.beampos = tuple(json["beam"]["position"])
         self.beam_config.beamdir = tuple(json["beam"]["direction"])
 
-        beam_type = json["beam"]["sigma"]["type"]
-        if beam_type == "Gaussian":
-            self.beam_config.beam_ext_x = abs(json["beam"]["sigma"]["x"])
-            self.beam_config.beam_ext_y = abs(json["beam"]["sigma"]["y"])
-        elif beam_type == "Flat square":
-            self.beam_config.beam_ext_x = -abs(json["beam"]["sigma"]["x"])
-            self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
-        elif beam_type == "Flat circular":
-            self.beam_config.beam_ext_x = 1.0 # to generate a circular beam x value must be greater than 0
-            self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
-        
+        if "sigma" in json["beam"]:
+            beam_type = json["beam"]["sigma"]["type"]
 
+            if beam_type == "Gaussian":
+                self.beam_config.beam_ext_x = abs(json["beam"]["sigma"]["x"])
+                self.beam_config.beam_ext_y = abs(json["beam"]["sigma"]["y"])
+            elif beam_type == "Flat square":
+                self.beam_config.beam_ext_x = -abs(json["beam"]["sigma"]["x"])
+                self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
+            elif beam_type == "Flat circular":
+                self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
+                self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
+     
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
         self.detect_config.scoring_geometries = self._parse_scoring_geometries(json)
