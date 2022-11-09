@@ -93,7 +93,7 @@ class ShieldhitParser(DummmyParser):
             elif beam_type == "Flat circular":
                 self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
-     
+
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
         self.detect_config.scoring_geometries = self._parse_scoring_geometries(json)
