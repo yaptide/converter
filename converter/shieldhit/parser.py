@@ -1,5 +1,6 @@
 import itertools
 from pathlib import Path
+import uuid
 from converter.shieldhit.geo import DefaultMaterial
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone
@@ -8,6 +9,7 @@ from converter.shieldhit.scoring_geometries import (ScoringGeometry, ScoringGlob
                                                     ScoringZone)
 from converter.shieldhit.beam import BeamConfig
 import converter.solid_figures as solid_figures
+from converter.shieldhit.geo import Material
 
 
 class DummmyParser(Parser):
@@ -253,7 +255,7 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
-        self.geo_mat_config.materials = [(material["uuid"], material["icru"])
+        self.geo_mat_config.materials = [Material(material["uuid"], material["icru"])
                                          for material in json["materialManager"]["materials"]]
 
     def _parse_figures(self, json: dict) -> None:
@@ -262,23 +264,35 @@ class ShieldhitParser(DummmyParser):
             solid_figures.parse_figure(figure_dict) for figure_dict in json["scene"]["object"].get('children')
         ]
 
+    def _add_overridden_material(self, material: Material) -> None:
+        """Parse materials from JSON"""
+        self.geo_mat_config.materials.append(material)
+
+    def _get_material_by_uuid(self, uuid: str) -> Material:
+        """Finds material in the geo_mat_config object by its uuid and returns it."""
+        for material in self.geo_mat_config.materials:
+            if material.uuid == uuid:
+                return material
+
+        raise ValueError(f"No material with uuid {uuid}.")
+
     def _get_material_id(self, uuid: str) -> int:
         """Find material by uuid and retun its id."""
         offset = 0
-        for idx, [mat_uuid, mat_value] in enumerate(self.geo_mat_config.materials):
+        for idx, material in enumerate(self.geo_mat_config.materials):
 
             # If the material is a DefaultMaterial then we need the value not its index,
             # the _value2member_map_ returns a map of values and members that allows us to check if
             # a given value is defined within the DefaultMaterial enum.
-            if DefaultMaterial.is_default_material(mat_value):
+            if DefaultMaterial.is_default_material(material.icru):
 
-                if mat_uuid == uuid:
-                    return int(mat_value)
+                if material.uuid == uuid:
+                    return int(material.icru)
 
                 # We need to count all DefaultMaterials prior to the searched one.
                 offset += 1
 
-            elif mat_uuid == uuid:
+            elif material.uuid == uuid:
                 # Only materials defined in mat.dat file are indexed.
                 return idx + 1 - offset
 
@@ -286,15 +300,33 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""
+
         self.geo_mat_config.zones = [
-            Zone(
-                uuid=zone["uuid"],
-                # lists are numbered from 0, but shieldhit zones are numbered from 1
-                id=idx + 1,
-                figures_operators=self._parse_csg_operations(zone["unionOperations"]),
-                material=self._get_material_id(zone["materialUuid"]),
-            ) for idx, zone in enumerate(json["zoneManager"]["zones"])
         ]
+
+        for idx, zone in enumerate(json["zoneManager"]["zones"]):
+            if 'materialPropertiesOverrides' in zone:
+                if 'density' in zone['materialPropertiesOverrides']:
+                    density = zone['materialPropertiesOverrides']['density']
+                    current_material = self._get_material_by_uuid(zone["materialUuid"])
+                    overridden_material = Material(uuid=zone['materialUuid'], icru=current_material.icru, density=density)
+
+                    new_uuid = str(uuid.uuid4())
+                    overridden_material.uuid = new_uuid
+                    zone["materialUuid"] = new_uuid
+                    self._add_overridden_material(overridden_material)
+               
+
+            self.geo_mat_config.zones.append(
+                Zone(
+                    uuid=zone["uuid"],
+                    # lists are numbered from 0, but shieldhit zones are numbered from 1
+                    id=idx + 1,
+                    figures_operators=self._parse_csg_operations(zone["unionOperations"]),
+                    material=self._get_material_id(zone["materialUuid"]),
+                    material_override=zone['materialPropertiesOverrides'] if 'materialPropertiesOverrides' in zone else None,
+                )
+            )
 
         if "worldZone" in json["zoneManager"]:
             self._parse_world_zone(json)

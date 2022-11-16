@@ -154,6 +154,26 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 
 
 @dataclass
+class Material:
+    """Dataclass mapping for SH12A materials."""
+    uuid: str
+    icru: int
+    density: float = None
+    idx: int = 0
+
+    property_template = """{name} {value}\n"""
+
+    def __str__(self) -> str:
+        result = self.property_template.format(name="MEDIUM", value=self.idx)
+        result += self.property_template.format(name="ICRU", value=self.icru)
+        if self.density is not None:
+            result += self.property_template.format(name="RHO", value=format_float(self.density, 10))
+
+        result += "END\n"
+        return result
+
+
+@dataclass
 class Zone:
     """Dataclass mapping for SH12A zones."""
 
@@ -162,6 +182,7 @@ class Zone:
     id: int = 1
     figures_operators: list[set[int]] = field(default_factory=lambda: [{1}])
     material: str = "0"
+    material_override: dict[str, str] = field(default_factory=dict)
 
     zone_template: str = """
   {id:03d}       {operators}"""
@@ -205,15 +226,10 @@ class GeoMatConfig:
             material="0",
         ),
     ])
-    materials: list[tuple[str, str]] = field(default_factory=lambda: [("", 276)])
+    materials: list[Material] = field(default_factory=lambda: [Material('', 276)])
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
-
-    material_template: str = """MEDIUM {idx:d}
-ICRU {mat}
-END
-"""
 
     geo_template: str = """
 {jdbg1:>5}{jdbg1:>5}          {title}
@@ -257,8 +273,9 @@ END
     def get_mat_string(self) -> str:
         """Generate mat.dat config."""
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
-        material_strings = [
-            self.material_template.format(idx=idx + 1, mat=mat_value) for idx, [_, mat_value] in enumerate(
-                filter(lambda x: not DefaultMaterial.is_default_material(x[1]), self.materials))
-        ]
+        material_strings = []
+        for idx, material in enumerate(filter(lambda x: not DefaultMaterial.is_default_material(x.icru), self.materials)):
+            material.idx = idx + 1
+            material_strings.append(str(material))
+
         return "".join(material_strings)
