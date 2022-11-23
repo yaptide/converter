@@ -305,17 +305,13 @@ class ShieldhitParser(DummmyParser):
         ]
 
         for idx, zone in enumerate(json["zoneManager"]["zones"]):
-            if 'materialPropertiesOverrides' in zone:
-                if 'density' in zone['materialPropertiesOverrides']:
-                    density = zone['materialPropertiesOverrides']['density']
-                    current_material = self._get_material_by_uuid(zone["materialUuid"])
-                    overridden_material = Material(uuid=zone['materialUuid'], icru=current_material.icru, density=density)
+            if 'customMaterial' in zone and zone['customMaterial'] is not None:
+                overridden_material = Material(
+                    uuid=zone['customMaterial']['uuid'],
+                    icru=zone['customMaterial']['icru'],
+                    density=zone['customMaterial']['density'])
 
-                    new_uuid = str(uuid.uuid4())
-                    overridden_material.uuid = new_uuid
-                    zone["materialUuid"] = new_uuid
-                    self._add_overridden_material(overridden_material)
-               
+                self._add_overridden_material(overridden_material)
 
             self.geo_mat_config.zones.append(
                 Zone(
