@@ -98,10 +98,10 @@ def _parse_box(box: BoxFigure, number: int) -> str:
         box.position[1] - diagonal_vect[1] / 2,
         box.position[2] - diagonal_vect[2] / 2,
     )
-
-    return """
+    box_template = """
   BOX {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
-          {p7:>10}{p8:>10}{p9:>10}{p10:>10}{p11:>10}{p12:>10}""".format(
+          {p7:>10}{p8:>10}{p9:>10}{p10:>10}{p11:>10}{p12:>10}"""
+    return box_template.format(
         number=number,
         p1=format_float(start_position[0], 10),
         p2=format_float(start_position[1], 10),
@@ -127,9 +127,10 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
         cylinder.position[1] - height_vect[1] / 2,
         cylinder.position[2] - height_vect[2] / 2,
     )
-    return """
+    rcc_template = """
   RCC {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
-          {p7:>10}""".format(
+          {p7:>10}"""
+    return rcc_template.format(
         number=number,
         p1=format_float(lower_base_position[0], 10),
         p2=format_float(lower_base_position[1], 10),
