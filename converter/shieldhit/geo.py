@@ -274,7 +274,8 @@ class GeoMatConfig:
         """Generate mat.dat config."""
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
         material_strings = []
-        for idx, material in enumerate(filter(lambda x: not DefaultMaterial.is_default_material(x.icru), self.materials)):
+        materials_filtered = filter(lambda x: not DefaultMaterial.is_default_material(x.icru), self.materials)
+        for idx, material in enumerate(materials_filtered):
             material.idx = idx + 1
             material_strings.append(str(material))
 

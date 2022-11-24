@@ -319,7 +319,7 @@ class ShieldhitParser(DummmyParser):
                     id=idx + 1,
                     figures_operators=self._parse_csg_operations(zone["unionOperations"]),
                     material=self._get_material_id(zone["materialUuid"]),
-                    material_override=zone['materialPropertiesOverrides'] if 'materialPropertiesOverrides' in zone else None,
+                    material_override=zone.get('materialPropertiesOverrides', None),
                 )
             )
 
@@ -412,10 +412,10 @@ class ShieldhitParser(DummmyParser):
 
         return world_zone
 
-    def _get_figure_index_by_uuid(self, uuid: str) -> int:
+    def _get_figure_index_by_uuid(self, figure_uuid: str) -> int:
         """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
         for idx, figure in enumerate(self.geo_mat_config.figures):
-            if figure.uuid == uuid:
+            if figure.uuid == figure_uuid:
                 return idx
 
-        raise ValueError(f"No figure with uuid \"{uuid}\".")
+        raise ValueError(f"No figure with uuid \"{figure_uuid}\".")
