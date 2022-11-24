@@ -268,15 +268,15 @@ class ShieldhitParser(DummmyParser):
         """Parse materials from JSON"""
         self.geo_mat_config.materials.append(material)
 
-    def _get_material_by_uuid(self, uuid: str) -> Material:
+    def _get_material_by_uuid(self, material_uuid: str) -> Material:
         """Finds first material in the geo_mat_config object with corresponding uuid and returns it."""
         for material in self.geo_mat_config.materials:
-            if material.uuid == uuid:
+            if material.uuid == material_uuid:
                 return material
 
-        raise ValueError(f"No material with uuid {uuid}.")
+        raise ValueError(f"No material with uuid {material_uuid}.")
 
-    def _get_material_id(self, uuid: str) -> int:
+    def _get_material_id(self, material_uuid: str) -> int:
         """Find material by uuid and retun its id."""
         offset = 0
         for idx, material in enumerate(self.geo_mat_config.materials):
@@ -286,17 +286,17 @@ class ShieldhitParser(DummmyParser):
             # a given value is defined within the DefaultMaterial enum.
             if DefaultMaterial.is_default_material(material.icru):
 
-                if material.uuid == uuid:
+                if material.uuid == material_uuid:
                     return int(material.icru)
 
                 # We need to count all DefaultMaterials prior to the searched one.
                 offset += 1
 
-            elif material.uuid == uuid:
+            elif material.uuid == material_uuid:
                 # Only materials defined in mat.dat file are indexed.
                 return idx + 1 - offset
 
-        raise ValueError(f"No material with uuid {uuid} in materials {self.geo_mat_config.materials}.")
+        raise ValueError(f"No material with uuid {material_uuid} in materials {self.geo_mat_config.materials}.")
 
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""

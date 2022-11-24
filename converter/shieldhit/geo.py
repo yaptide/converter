@@ -83,7 +83,7 @@ def parse_figure(figure: SolidFigure, number: int) -> str:
     if type(figure) is SphereFigure:
         return _parse_sphere(figure, number)
 
-    raise ValueError("Unexpected solid figure type: {}".format(figure))
+    raise ValueError(f"Unexpected solid figure type: {figure}")
 
 
 def _parse_box(box: BoxFigure, number: int) -> str:
@@ -156,6 +156,7 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 @dataclass
 class Material:
     """Dataclass mapping for SH12A materials."""
+    
     uuid: str
     icru: int
     density: float = None
@@ -191,7 +192,7 @@ class Zone:
         return self.zone_template.format(
             id=self.id,
             operators='OR'.join(
-                ['  '.join(['{0:+5}'.format(id) for id in figure_set]) for figure_set in self.figures_operators]),
+                ['  '.join([f'{id:+5}' for id in figure_set]) for figure_set in self.figures_operators]),
         )
 
 
@@ -249,11 +250,11 @@ class GeoMatConfig:
         """Generate material_id, zone_id pairs string (for geo.dat)."""
         # Cut lists into chunks of max size 14
         zone_ids = [
-            "".join(['{0:>5}'.format(id) for id in row])
+            "".join([f'{id:>5}' for id in row])
             for row in GeoMatConfig._split_zones_to_rows([zone.id for zone in self.zones])
         ]
         material_ids = [
-            "".join(['{0:>5}'.format(mat) for mat in row])
+            "".join([f'{mat:>5}' for mat in row])
             for row in GeoMatConfig._split_zones_to_rows([zone.material for zone in self.zones])
         ]
         return "\n".join([*zone_ids, *material_ids])
