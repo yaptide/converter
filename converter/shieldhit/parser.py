@@ -300,7 +300,6 @@ class ShieldhitParser(DummmyParser):
 
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""
-
         self.geo_mat_config.zones = [
         ]
 
