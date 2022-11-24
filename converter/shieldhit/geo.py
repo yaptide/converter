@@ -156,7 +156,7 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 @dataclass
 class Material:
     """Dataclass mapping for SH12A materials."""
-    
+
     uuid: str
     icru: int
     density: float = None
