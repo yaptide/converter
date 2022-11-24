@@ -150,13 +150,13 @@ class ShieldhitParser(DummmyParser):
 
         return geometries
 
-    def _get_zone_index_by_uuid(self, uuid: str) -> int:
+    def _get_zone_index_by_uuid(self, zone_uuid: str) -> int:
         """Finds zone in the geo_mat_config object by its uuid and returns its simmulation index."""
         for idx, zone in enumerate(self.geo_mat_config.zones):
-            if zone.uuid == uuid:
+            if zone.uuid == zone_uuid:
                 return idx + 1
 
-        raise ValueError(f"No zone with uuid \"{uuid}\".")
+        raise ValueError(f"No zone with uuid \"{zone_uuid}\".")
 
     @staticmethod
     def _parse_scoring_filters(json: dict) -> list[ScoringFilter]:
@@ -191,13 +191,13 @@ class ShieldhitParser(DummmyParser):
 
         return outputs
 
-    def _get_scoring_geometry_bu_uuid(self, uuid: str) -> str:
+    def _get_scoring_geometry_bu_uuid(self, geo_uuid: str) -> str:
         """Finds scoring geometry in the detect_config object by its uuid and returns its simmulation name."""
         for scoring_geometry in self.detect_config.scoring_geometries:
-            if scoring_geometry.uuid == uuid:
+            if scoring_geometry.uuid == geo_uuid:
                 return scoring_geometry.name
 
-        raise ValueError(f"No scoring geometry with uuid {uuid}")
+        raise ValueError(f"No scoring geometry with uuid {geo_uuid}")
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
@@ -233,13 +233,13 @@ class ShieldhitParser(DummmyParser):
             diff2_t=diff2_t,
         )
 
-    def _get_scoring_filter_by_uuid(self, uuid: str) -> str:
+    def _get_scoring_filter_by_uuid(self, filter_uuid: str) -> str:
         """Finds scoring filter in the detect_config object by its uuid and returns its simmulation name."""
         for scoring_filter in self.detect_config.scoring_filters:
-            if scoring_filter.uuid == uuid:
+            if scoring_filter.uuid == filter_uuid:
                 return scoring_filter.name
 
-        raise ValueError(f"No scoring filter with uuid {uuid} in materials {self.detect_config.scoring_filters}.")
+        raise ValueError(f"No scoring filter with uuid {filter_uuid} in {self.detect_config.scoring_filters}.")
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
