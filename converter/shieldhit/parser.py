@@ -1,6 +1,5 @@
 import itertools
 from pathlib import Path
-import uuid
 from converter.shieldhit.geo import DefaultMaterial
 from converter.common import Parser
 from converter.shieldhit.geo import GeoMatConfig, Zone

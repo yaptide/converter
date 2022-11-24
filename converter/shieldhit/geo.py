@@ -143,8 +143,9 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
 
 def _parse_sphere(sphere: SphereFigure, number: int) -> str:
     """Parse a SphereFigure into a str representation of SH12A input file."""
-    return """
-  SPH {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}""".format(
+    sphere_entry_template = """
+  SPH {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}"""
+    return sphere_entry_template.format(
         number=number,
         p1=format_float(sphere.position[0], 10),
         p2=format_float(sphere.position[1], 10),
