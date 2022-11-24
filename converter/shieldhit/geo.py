@@ -83,7 +83,7 @@ def parse_figure(figure: SolidFigure, number: int) -> str:
     if type(figure) is SphereFigure:
         return _parse_sphere(figure, number)
 
-    raise ValueError("Unexpected solid figure type: {}".format(figure))
+    raise ValueError(f"Unexpected solid figure type: {figure}")
 
 
 def _parse_box(box: BoxFigure, number: int) -> str:
@@ -98,10 +98,10 @@ def _parse_box(box: BoxFigure, number: int) -> str:
         box.position[1] - diagonal_vect[1] / 2,
         box.position[2] - diagonal_vect[2] / 2,
     )
-
-    return """
+    box_template = """
   BOX {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
-          {p7:>10}{p8:>10}{p9:>10}{p10:>10}{p11:>10}{p12:>10}""".format(
+          {p7:>10}{p8:>10}{p9:>10}{p10:>10}{p11:>10}{p12:>10}"""
+    return box_template.format(
         number=number,
         p1=format_float(start_position[0], 10),
         p2=format_float(start_position[1], 10),
@@ -127,9 +127,10 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
         cylinder.position[1] - height_vect[1] / 2,
         cylinder.position[2] - height_vect[2] / 2,
     )
-    return """
+    rcc_template = """
   RCC {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
-          {p7:>10}""".format(
+          {p7:>10}"""
+    return rcc_template.format(
         number=number,
         p1=format_float(lower_base_position[0], 10),
         p2=format_float(lower_base_position[1], 10),
@@ -143,14 +144,36 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
 
 def _parse_sphere(sphere: SphereFigure, number: int) -> str:
     """Parse a SphereFigure into a str representation of SH12A input file."""
-    return """
-  SPH {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}""".format(
+    sphere_entry_template = """
+  SPH {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}"""
+    return sphere_entry_template.format(
         number=number,
         p1=format_float(sphere.position[0], 10),
         p2=format_float(sphere.position[1], 10),
         p3=format_float(sphere.position[2], 10),
         p4=format_float(sphere.radius, 10),
     )
+
+
+@dataclass
+class Material:
+    """Dataclass mapping for SH12A materials."""
+
+    uuid: str
+    icru: int
+    density: float = None
+    idx: int = 0
+
+    property_template = """{name} {value}\n"""
+
+    def __str__(self) -> str:
+        result = self.property_template.format(name="MEDIUM", value=self.idx)
+        result += self.property_template.format(name="ICRU", value=self.icru)
+        if self.density is not None:
+            result += self.property_template.format(name="RHO", value=format_float(self.density, 10))
+
+        result += "END\n"
+        return result
 
 
 @dataclass
@@ -162,6 +185,7 @@ class Zone:
     id: int = 1
     figures_operators: list[set[int]] = field(default_factory=lambda: [{1}])
     material: str = "0"
+    material_override: dict[str, str] = field(default_factory=dict)
 
     zone_template: str = """
   {id:03d}       {operators}"""
@@ -170,7 +194,7 @@ class Zone:
         return self.zone_template.format(
             id=self.id,
             operators='OR'.join(
-                ['  '.join(['{0:+5}'.format(id) for id in figure_set]) for figure_set in self.figures_operators]),
+                ['  '.join([f'{id:+5}' for id in figure_set]) for figure_set in self.figures_operators]),
         )
 
 
@@ -205,15 +229,10 @@ class GeoMatConfig:
             material="0",
         ),
     ])
-    materials: list[tuple[str, str]] = field(default_factory=lambda: [("", 276)])
+    materials: list[Material] = field(default_factory=lambda: [Material('', 276)])
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
-
-    material_template: str = """MEDIUM {idx:d}
-ICRU {mat}
-END
-"""
 
     geo_template: str = """
 {jdbg1:>5}{jdbg1:>5}          {title}
@@ -233,11 +252,11 @@ END
         """Generate material_id, zone_id pairs string (for geo.dat)."""
         # Cut lists into chunks of max size 14
         zone_ids = [
-            "".join(['{0:>5}'.format(id) for id in row])
+            "".join([f'{id:>5}' for id in row])
             for row in GeoMatConfig._split_zones_to_rows([zone.id for zone in self.zones])
         ]
         material_ids = [
-            "".join(['{0:>5}'.format(mat) for mat in row])
+            "".join([f'{mat:>5}' for mat in row])
             for row in GeoMatConfig._split_zones_to_rows([zone.material for zone in self.zones])
         ]
         return "\n".join([*zone_ids, *material_ids])
@@ -257,8 +276,10 @@ END
     def get_mat_string(self) -> str:
         """Generate mat.dat config."""
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
-        material_strings = [
-            self.material_template.format(idx=idx + 1, mat=mat_value) for idx, [_, mat_value] in enumerate(
-                filter(lambda x: not DefaultMaterial.is_default_material(x[1]), self.materials))
-        ]
+        material_strings = []
+        materials_filtered = filter(lambda x: not DefaultMaterial.is_default_material(x.icru), self.materials)
+        for idx, material in enumerate(materials_filtered):
+            material.idx = idx + 1
+            material_strings.append(str(material))
+
         return "".join(material_strings)
