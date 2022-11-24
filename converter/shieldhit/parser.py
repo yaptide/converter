@@ -269,7 +269,7 @@ class ShieldhitParser(DummmyParser):
         self.geo_mat_config.materials.append(material)
 
     def _get_material_by_uuid(self, uuid: str) -> Material:
-        """Finds material in the geo_mat_config object by its uuid and returns it."""
+        """Finds first material in the geo_mat_config object with corresponding uuid and returns it."""
         for material in self.geo_mat_config.materials:
             if material.uuid == uuid:
                 return material
