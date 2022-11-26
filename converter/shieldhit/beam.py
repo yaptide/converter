@@ -30,7 +30,7 @@ class BeamConfig:
 
     cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
     definition_type: DefinitionType = DefinitionType.SIMPLE
-    definition_file: str = None
+    definition_file: Optional[str] = None
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
