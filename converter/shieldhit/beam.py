@@ -1,13 +1,23 @@
 from dataclasses import dataclass
 import math as m
+from enum import Enum
 from typing import Optional
+
+
+class DefinitionType(Enum):
+
+    SIMPLE = "simple"
+
+    FILE = "file"
+
+
 
 
 @dataclass
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 150.  # [MeV]
+    energy: float = 150.  # [MeV]0
     energy_spread: float = 1.5  # [MeV]
     energy_low_cutoff: Optional[float] = None  # [MeV]
     energy_high_cutoff: Optional[float] = None  # [MeV]
@@ -19,6 +29,8 @@ class BeamConfig:
     delta_e: float = 0.03  # [a.u.]
 
     cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
+    definition_type: DefinitionType = DefinitionType.SIMPLE
+    definition_file: str = None
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
@@ -61,7 +73,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
                 energy_low_cutoff=self.energy_low_cutoff,
                 energy_high_cutoff=self.energy_high_cutoff
             )
-        return self.beam_template.format(
+        result = self.beam_template.format(
             energy=float(self.energy),
             energy_spread=float(self.energy_spread),
             optional_energy_cut_off_line=cutoff_line,
@@ -75,3 +87,8 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             phi=phi,
             delta_e=self.delta_e
         )
+
+        if self.definition_type == DefinitionType.FILE:
+            result += "USECBEAM   sobp.dat   ! Filename of beam sourcefile"
+
+        return result

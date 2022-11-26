@@ -6,7 +6,7 @@ from converter.shieldhit.geo import GeoMatConfig, Zone
 from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
 from converter.shieldhit.scoring_geometries import (ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh,
                                                     ScoringZone)
-from converter.shieldhit.beam import BeamConfig
+from converter.shieldhit.beam import BeamConfig, DefinitionType
 import converter.solid_figures as solid_figures
 from converter.shieldhit.geo import Material
 
@@ -49,7 +49,7 @@ class DummmyParser(Parser):
             "beam.dat": str(self.beam_config),
             "mat.dat": self.geo_mat_config.get_mat_string(),
             "detect.dat": str(self.detect_config),
-            "geo.dat": self.geo_mat_config.get_geo_string(),
+            "geo.dat": self.geo_mat_config.get_geo_string()
         }
 
         return configs_json
@@ -99,6 +99,11 @@ class ShieldhitParser(DummmyParser):
             elif beam_type == "Flat circular":
                 self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
+
+        if "definitionType" in json["beam"] and json["beam"]["definitionType"] == 'file':
+            self.beam_config.definition_type = DefinitionType.FILE
+            self.beam_config.definition_file = json["beam"]["definitionFile"]
+            print("sobp.dat : ", json["beam"]["definitionFile"])
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
@@ -423,3 +428,11 @@ class ShieldhitParser(DummmyParser):
                 return idx
 
         raise ValueError(f"No figure with uuid \"{figure_uuid}\".")
+
+    def get_configs_json(self) -> dict:
+        configs_json = super().get_configs_json()
+
+        if self.beam_config.definition_type == DefinitionType.FILE:
+            configs_json["sobp.dat"] = self.beam_config.definition_file['value']
+
+        return configs_json
