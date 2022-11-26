@@ -78,6 +78,11 @@ class ShieldhitParser(DummmyParser):
         """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
         self.beam_config.energy_spread = json["beam"]["energySpread"]
+        # we use get here to avoid KeyError if the cutoffs are not defined
+        # in that case None will be inserted into the beam config
+        # which is well handled by the converter
+        self.beam_config.energy_low_cutoff = json["beam"].get("energyLowCutoff")
+        self.beam_config.energy_high_cutoff = json["beam"].get("energyHighCutoff")
         self.beam_config.nstat = json["beam"].get("numberOfParticles", self.beam_config.nstat)
         self.beam_config.beampos = tuple(json["beam"]["position"])
         self.beam_config.beamdir = tuple(json["beam"]["direction"])
