@@ -1,24 +1,30 @@
 from dataclasses import dataclass
 import math as m
+from typing import Optional
 
 
 @dataclass
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 150.
-    energy_spread: float = 1.5
-    beam_ext_x: float = -0.1
-    beam_ext_y: float = 0.1
-    delta_e: float = 0.03
+    energy: float = 150.  # [MeV]
+    energy_spread: float = 1.5  # [MeV]
+    energy_low_cutoff: Optional[float] = None  # [MeV]
+    energy_high_cutoff: Optional[float] = None  # [MeV]
+    beam_ext_x: float = -0.1  # [cm]
+    beam_ext_y: float = 0.1  # [cm]
     nstat: int = 10000
-    beampos: tuple[float, float, float] = (0, 0, 0)
-    beamdir: tuple[float, float, float] = (0, 0, 1)
+    beampos: tuple[float, float, float] = (0, 0, 0)  # [cm]
+    beamdir: tuple[float, float, float] = (0, 0, 1)  # [cm]
+    delta_e: float = 0.03  # [a.u.]
+
+    cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
 
     beam_template: str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
+{optional_energy_cut_off_line}
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
@@ -49,9 +55,16 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
     def __str__(self) -> str:
 
         theta, phi, _ = BeamConfig.cartesian2spherical(self.beamdir)
+        cutoff_line = "! no energy cutoffs"
+        if self.energy_low_cutoff is not None and self.energy_high_cutoff is not None:
+            cutoff_line = BeamConfig.cutoff_template.format(
+                energy_low_cutoff=self.energy_low_cutoff,
+                energy_high_cutoff=self.energy_high_cutoff
+            )
         return self.beam_template.format(
             energy=float(self.energy),
             energy_spread=float(self.energy_spread),
+            optional_energy_cut_off_line=cutoff_line,
             nstat=self.nstat,
             pos_x=self.beampos[0],
             pos_y=self.beampos[1],
