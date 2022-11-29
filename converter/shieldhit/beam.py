@@ -3,6 +3,7 @@ import math as m
 from enum import Enum, unique
 from typing import Optional
 
+
 @unique
 class BeamSourceType(Enum):
     """Beam source type"""
