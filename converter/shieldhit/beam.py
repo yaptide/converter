@@ -5,6 +5,7 @@ from typing import Optional
 
 
 class DefinitionType(Enum):
+    """Beam source type"""
 
     SIMPLE = "simple"
 

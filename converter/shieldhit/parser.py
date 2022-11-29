@@ -430,6 +430,7 @@ class ShieldhitParser(DummmyParser):
         raise ValueError(f"No figure with uuid \"{figure_uuid}\".")
 
     def get_configs_json(self) -> dict:
+        """Get JSON data for configs"""
         configs_json = super().get_configs_json()
 
         if self.beam_config.definition_type == DefinitionType.FILE:
