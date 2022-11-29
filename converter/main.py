@@ -18,6 +18,9 @@ def convert(output_format: str, json_file: Path, output_dir: Path, silent: bool)
     json_parser = api.get_parser_from_str(output_format)
     try:
         input_data = {}
+        if not json_file.exists():
+            print(f'File {json_file} does not exist.')
+            raise FileNotFoundError(json_file)
         with open(json_file, 'r') as file:
             input_data = json.load(file)
         api.run_parser(json_parser, input_data, output_dir, silent=silent)
@@ -37,7 +40,11 @@ def main(args=None):
     arg_parser.add_argument('-s', '--silent', action='store_true')
     parsed_args = arg_parser.parse_args(args)
 
-    convert(parsed_args.output_format, parsed_args.input_json_file, parsed_args.output_dir, parsed_args.silent)
+    try:
+        convert(parsed_args.output_format, parsed_args.input_json_file, parsed_args.output_dir, parsed_args.silent)
+    except FileNotFoundError as e:
+        print(f'File {e} does not exist.')
+        sys.exit(1)
 
 
 if __name__ == '__main__':
