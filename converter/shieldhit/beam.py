@@ -11,8 +11,6 @@ class DefinitionType(Enum):
     FILE = "file"
 
 
-
-
 @dataclass
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
