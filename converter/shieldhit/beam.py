@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import math as m
+from dataclasses import dataclass
 from enum import Enum, unique
 from typing import Optional
 
@@ -9,7 +9,6 @@ class BeamSourceType(Enum):
     """Beam source type"""
 
     SIMPLE = "simple"
-
     FILE = "file"
 
 
@@ -28,11 +27,11 @@ class BeamConfig:
     beamdir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
 
-    cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
-    definition_type: BeamSourceType = BeamSourceType.SIMPLE
-    definition_file: Optional[str] = None
+    energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
+    beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
+    beam_source_file: Optional[str] = None
 
-    beam_template: str = """
+    beam_dat_template: str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
@@ -65,15 +64,20 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
         return theta, phi, r
 
     def __str__(self) -> str:
+        """Return the beam.dat config file as a string."""
 
         theta, phi, _ = BeamConfig.cartesian2spherical(self.beamdir)
+
+        # if energy cutoffs are defined, add them to the template
         cutoff_line = "! no energy cutoffs"
         if self.energy_low_cutoff is not None and self.energy_high_cutoff is not None:
-            cutoff_line = BeamConfig.cutoff_template.format(
+            cutoff_line = BeamConfig.energy_cutoff_template.format(
                 energy_low_cutoff=self.energy_low_cutoff,
                 energy_high_cutoff=self.energy_high_cutoff
             )
-        result = self.beam_template.format(
+
+        # prepare main template
+        result = self.beam_dat_template.format(
             energy=float(self.energy),
             energy_spread=float(self.energy_spread),
             optional_energy_cut_off_line=cutoff_line,
@@ -88,7 +92,8 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             delta_e=self.delta_e
         )
 
-        if self.definition_type == BeamSourceType.FILE:
+        # if beam source type is file, add the file name to the template
+        if self.beam_source_type == BeamSourceType.FILE:
             result += "USECBEAM   sobp.dat   ! Use custom beam source file"
 
         return result

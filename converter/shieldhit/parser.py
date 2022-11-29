@@ -100,10 +100,9 @@ class ShieldhitParser(DummmyParser):
                 self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
 
-        if json["beam"].get("definitionType", "") == BeamSourceType.FILE.value:
-            self.beam_config.definition_type = BeamSourceType.FILE
-            self.beam_config.definition_file = json["beam"]["definitionFile"]
-            print("sobp.dat : ", json["beam"]["definitionFile"])
+        if json["beam"].get("beamSourceType", "") == BeamSourceType.FILE.value:
+            self.beam_config.beam_source_type = BeamSourceType.FILE
+            self.beam_config.beam_source_file = json["beam"].get("beamSourceFile", '')
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
@@ -433,7 +432,7 @@ class ShieldhitParser(DummmyParser):
         """Get JSON data for configs"""
         configs_json = super().get_configs_json()
 
-        if self.beam_config.definition_type == BeamSourceType.FILE:
-            configs_json["sobp.dat"] = self.beam_config.definition_file['value']
+        if self.beam_config.beam_source_type == BeamSourceType.FILE:
+            configs_json["sobp.dat"] = self.beam_config.beam_source_file['value']
 
         return configs_json
