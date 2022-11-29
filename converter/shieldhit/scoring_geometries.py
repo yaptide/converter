@@ -7,6 +7,7 @@ class ScoringGeometry(ABC):
     """Abstract geometry dataclass for DetectConfig."""
 
     uuid: str
+    name: str
 
 
 @dataclass(frozen=True)
