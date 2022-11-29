@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 
 class Parser(ABC):
@@ -9,7 +10,7 @@ class Parser(ABC):
         """Convert the json dict to the 4 config dataclasses."""
 
     @abstractmethod
-    def save_configs(self, target_dir: str) -> None:
+    def save_configs(self, target_dir: Path) -> None:
         """
         Save the configs as text files in the target_dir.
         The files are: beam.dat, mat.dat, detect.dat and geo.dat.
