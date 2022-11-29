@@ -6,7 +6,7 @@ from converter.shieldhit.geo import GeoMatConfig, Zone
 from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
 from converter.shieldhit.scoring_geometries import (ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh,
                                                     ScoringZone)
-from converter.shieldhit.beam import BeamConfig, DefinitionType
+from converter.shieldhit.beam import BeamConfig, BeamSourceType
 import converter.solid_figures as solid_figures
 from converter.shieldhit.geo import Material
 
@@ -100,8 +100,8 @@ class ShieldhitParser(DummmyParser):
                 self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
 
-        if "definitionType" in json["beam"] and json["beam"]["definitionType"] == 'file':
-            self.beam_config.definition_type = DefinitionType.FILE
+        if json["beam"].get("definitionType", "") == BeamSourceType.FILE.value:
+            self.beam_config.definition_type = BeamSourceType.FILE
             self.beam_config.definition_file = json["beam"]["definitionFile"]
             print("sobp.dat : ", json["beam"]["definitionFile"])
 

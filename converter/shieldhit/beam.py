@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 import math as m
-from enum import Enum
+from enum import Enum, unique
 from typing import Optional
 
-
-class DefinitionType(Enum):
+@unique
+class BeamSourceType(Enum):
     """Beam source type"""
 
     SIMPLE = "simple"
@@ -16,7 +16,7 @@ class DefinitionType(Enum):
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 150.  # [MeV]0
+    energy: float = 150.  # [MeV]
     energy_spread: float = 1.5  # [MeV]
     energy_low_cutoff: Optional[float] = None  # [MeV]
     energy_high_cutoff: Optional[float] = None  # [MeV]
@@ -28,7 +28,7 @@ class BeamConfig:
     delta_e: float = 0.03  # [a.u.]
 
     cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
-    definition_type: DefinitionType = DefinitionType.SIMPLE
+    definition_type: BeamSourceType = BeamSourceType.SIMPLE
     definition_file: Optional[str] = None
 
     beam_template: str = """
@@ -87,7 +87,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             delta_e=self.delta_e
         )
 
-        if self.definition_type == DefinitionType.FILE:
-            result += "USECBEAM   sobp.dat   ! Filename of beam sourcefile"
+        if self.definition_type == BeamSourceType.FILE:
+            result += "USECBEAM   sobp.dat   ! Use custom beam source file"
 
         return result
