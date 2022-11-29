@@ -433,7 +433,7 @@ class ShieldhitParser(DummmyParser):
         """Get JSON data for configs"""
         configs_json = super().get_configs_json()
 
-        if self.beam_config.definition_type == DefinitionType.FILE:
+        if self.beam_config.definition_type == BeamSourceType.FILE:
             configs_json["sobp.dat"] = self.beam_config.definition_file['value']
 
         return configs_json
