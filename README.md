@@ -12,9 +12,10 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-To run the unit tests run the following command in the project directory:
+To run the unit tests run the following command in the project directory (inside virtual environment):
 
 ```bash
+pip install -r test_requirements.txt
 pytest
 ```
 
