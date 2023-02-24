@@ -22,11 +22,12 @@ class StragglingModel(Enum):
 
     @staticmethod
     def from_str(value: str) -> "StragglingModel":
+        """Documentation needed"""
         for model in StragglingModel:
             if model.value == value:
                 return model
 
-        raise ValueError("Straggle not recognized:{}".format(value))
+        raise ValueError(f"Straggle not recognized:{value}")
 
 
 @unique
@@ -39,6 +40,7 @@ class MultipleScatteringMode(Enum):
 
     @staticmethod
     def from_str(value: str) -> "MultipleScatteringMode":
+        """Documentation needed"""
         for model in MultipleScatteringMode:
             if model.value == value:
                 return model
@@ -102,6 +104,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
 
     @staticmethod
     def _parse_straggle(value: StragglingModel) -> int:
+        """Documentation needed"""
 
         if value == StragglingModel.GAUSSIAN:
             return 1
@@ -115,6 +118,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
 
     @staticmethod
     def _parse_multiple_scattering(value: MultipleScatteringMode) -> int:
+        """Documentation needed"""
 
         if value == MultipleScatteringMode.GAUSSIAN:
             return 1
