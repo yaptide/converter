@@ -100,22 +100,24 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             phi += 360.
         return theta, phi, r
 
-    def _parse_straggle(self, value: StragglingModel) -> int:
+    @staticmethod
+    def _parse_straggle(value: StragglingModel) -> int:
 
         if value == StragglingModel.GAUSSIAN:
             return 1
-        elif value == StragglingModel.VAVILOV:
+        if value == StragglingModel.VAVILOV:
             return 2
-        elif value == StragglingModel.NO_STRAGGLING:
+        if value == StragglingModel.NO_STRAGGLING:
             return 0
 
-    def _parse_multiple_scattering(self, value: MultipleScatteringMode) -> int:
+    @staticmethod
+    def _parse_multiple_scattering(value: MultipleScatteringMode) -> int:
 
         if value == MultipleScatteringMode.GAUSSIAN:
             return 1
-        elif value == MultipleScatteringMode.MOLIERE:
+        if value == MultipleScatteringMode.MOLIERE:
             return 2
-        elif value == MultipleScatteringMode.NO_SCATTERING:
+        if value == MultipleScatteringMode.NO_SCATTERING:
             return 0
 
     def __str__(self) -> str:
