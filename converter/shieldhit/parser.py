@@ -15,7 +15,6 @@ from converter.shieldhit.scoring_geometries import (ScoringCylinder,
                                                     ScoringZone)
 
 
-
 class DummmyParser(Parser):
     """A simple placeholder parser that ignores the json input and prints example (default) configs."""
 
