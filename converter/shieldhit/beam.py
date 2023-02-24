@@ -12,6 +12,40 @@ class BeamSourceType(Enum):
     FILE = "file"
 
 
+@unique
+class StraggleModel(Enum):
+    """Straggle model"""
+
+    GAUSSIAN = "Gaussian"
+    VAVILOV = "Vavilov"
+    NO_STRAGGLING = "no straggling"
+
+    @staticmethod
+    def from_str(value: str) -> "StraggleModel":
+        for model in StraggleModel:
+            if model.value == value:
+                return model
+
+        raise ValueError("Straggle not recognized:{}".format(value))
+
+
+@unique
+class MultipleScatteringMode(Enum):
+    """Multiple scattering mode"""
+
+    GAUSSIAN = "Gaussian"
+    MOLIERE = "Moliere"
+    NO_SCATTERING = "no scattering"
+
+    @staticmethod
+    def from_str(value: str) -> "MultipleScatteringMode":
+        for model in MultipleScatteringMode:
+            if model.value == value:
+                return model
+
+        raise ValueError("Multiple scattering mode not recognized:{}".format(value))
+
+
 @dataclass
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
@@ -26,6 +60,9 @@ class BeamConfig:
     beampos: tuple[float, float, float] = (0, 0, 0)  # [cm]
     beamdir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
+    nuclear_reactions: bool = True
+    straggle: StraggleModel = StraggleModel.VAVILOV
+    multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
@@ -37,9 +74,9 @@ JPART0       	2            ! Incident particle type
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 {optional_energy_cut_off_line}
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
-STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
-MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
-NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
+STRAGG          {straggle}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
+MSCAT           {multiple_scattering}            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
+NUCRE           {nuclear_reactions}            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
 BEAMDIR {theta} {phi} ! Direction of the beam
 BEAMSIGMA  {beam_ext_x} {beam_ext_y}  ! Beam extension
@@ -62,6 +99,24 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
         if phi < 0.:
             phi += 360.
         return theta, phi, r
+
+    def _parse_straggle(self, straggle: StraggleModel) -> int:
+
+        if straggle == StraggleModel.GAUSSIAN:
+            return 1
+        elif straggle == StraggleModel.VAVILOV:
+            return 2
+        elif straggle == StraggleModel.NO_STRAGGLING:
+            return 0
+
+    def _parse_multiple_scattering(self, multiple_scattering: MultipleScatteringMode) -> int:
+
+        if multiple_scattering == MultipleScatteringMode.GAUSSIAN:
+            return 1
+        elif multiple_scattering == MultipleScatteringMode.MOLIERE:
+            return 2
+        elif multiple_scattering == MultipleScatteringMode.NO_SCATTERING:
+            return 0
 
     def __str__(self) -> str:
         """Return the beam.dat config file as a string."""
@@ -88,7 +143,10 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             beam_ext_y=self.beam_ext_y,
             theta=theta,
             phi=phi,
-            delta_e=self.delta_e
+            delta_e=self.delta_e,
+            nuclear_reactions=1 if self.nuclear_reactions else 0,
+            straggle=self._parse_straggle(self.straggle),
+            multiple_scattering=self._parse_multiple_scattering(self.multiple_scattering)
         )
 
         # if beam source type is file, add the file name to the template

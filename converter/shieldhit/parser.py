@@ -1,14 +1,19 @@
 import itertools
 from pathlib import Path
-from converter.shieldhit.geo import DefaultMaterial
-from converter.common import Parser
-from converter.shieldhit.geo import GeoMatConfig, Zone
-from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput
-from converter.shieldhit.scoring_geometries import (ScoringGeometry, ScoringGlobal, ScoringCylinder, ScoringMesh,
-                                                    ScoringZone)
-from converter.shieldhit.beam import BeamConfig, BeamSourceType
+
 import converter.solid_figures as solid_figures
-from converter.shieldhit.geo import Material
+from converter.common import Parser
+from converter.shieldhit.beam import (BeamConfig, BeamSourceType,
+                                      MultipleScatteringMode, StraggleModel)
+from converter.shieldhit.detect import (DetectConfig, OutputQuantity,
+                                        ScoringFilter, ScoringOutput)
+from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material,
+                                     Zone)
+from converter.shieldhit.scoring_geometries import (ScoringCylinder,
+                                                    ScoringGeometry,
+                                                    ScoringGlobal, ScoringMesh,
+                                                    ScoringZone)
+
 
 
 class DummmyParser(Parser):
@@ -103,6 +108,15 @@ class ShieldhitParser(DummmyParser):
         if json["beam"].get("beamSourceType", "") == BeamSourceType.FILE.value:
             self.beam_config.beam_source_type = BeamSourceType.FILE
             self.beam_config.beam_source_file = json["beam"].get("beamSourceFile", '')
+
+        if "physic" in json:
+            self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
+            self.beam_config.nuclear_reactions = json["physic"].get(
+                "enableNuclearReactions", self.beam_config.nuclear_reactions)
+            self.beam_config.straggle = StraggleModel.form_str(
+                json["physic"].get("energyModelStraggle", self.beam_config.straggle.value))
+            self.beam_config.multiple_scattering = MultipleScatteringMode.form_str(
+                json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
