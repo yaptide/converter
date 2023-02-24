@@ -13,7 +13,7 @@ class BeamSourceType(Enum):
 
 
 @unique
-class StraggleModel(Enum):
+class StragglingModel(Enum):
     """Straggle model"""
 
     GAUSSIAN = "Gaussian"
@@ -21,8 +21,8 @@ class StraggleModel(Enum):
     NO_STRAGGLING = "no straggling"
 
     @staticmethod
-    def from_str(value: str) -> "StraggleModel":
-        for model in StraggleModel:
+    def from_str(value: str) -> "StragglingModel":
+        for model in StragglingModel:
             if model.value == value:
                 return model
 
@@ -61,7 +61,7 @@ class BeamConfig:
     beamdir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
     nuclear_reactions: bool = True
-    straggle: StraggleModel = StraggleModel.VAVILOV
+    straggling: StragglingModel = StragglingModel.VAVILOV
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
@@ -74,7 +74,7 @@ JPART0       	2            ! Incident particle type
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 {optional_energy_cut_off_line}
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
-STRAGG          {straggle}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
+STRAGG          {straggling}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           {multiple_scattering}            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           {nuclear_reactions}            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
@@ -100,22 +100,22 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             phi += 360.
         return theta, phi, r
 
-    def _parse_straggle(self, straggle: StraggleModel) -> int:
+    def _parse_straggle(self, value: StragglingModel) -> int:
 
-        if straggle == StraggleModel.GAUSSIAN:
+        if value == StragglingModel.GAUSSIAN:
             return 1
-        elif straggle == StraggleModel.VAVILOV:
+        elif value == StragglingModel.VAVILOV:
             return 2
-        elif straggle == StraggleModel.NO_STRAGGLING:
+        elif value == StragglingModel.NO_STRAGGLING:
             return 0
 
-    def _parse_multiple_scattering(self, multiple_scattering: MultipleScatteringMode) -> int:
+    def _parse_multiple_scattering(self, value: MultipleScatteringMode) -> int:
 
-        if multiple_scattering == MultipleScatteringMode.GAUSSIAN:
+        if value == MultipleScatteringMode.GAUSSIAN:
             return 1
-        elif multiple_scattering == MultipleScatteringMode.MOLIERE:
+        elif value == MultipleScatteringMode.MOLIERE:
             return 2
-        elif multiple_scattering == MultipleScatteringMode.NO_SCATTERING:
+        elif value == MultipleScatteringMode.NO_SCATTERING:
             return 0
 
     def __str__(self) -> str:
@@ -145,7 +145,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             phi=phi,
             delta_e=self.delta_e,
             nuclear_reactions=1 if self.nuclear_reactions else 0,
-            straggle=self._parse_straggle(self.straggle),
+            straggling=self._parse_straggle(self.straggling),
             multiple_scattering=self._parse_multiple_scattering(self.multiple_scattering)
         )
 

@@ -4,7 +4,7 @@ from pathlib import Path
 import converter.solid_figures as solid_figures
 from converter.common import Parser
 from converter.shieldhit.beam import (BeamConfig, BeamSourceType,
-                                      MultipleScatteringMode, StraggleModel)
+                                      MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity,
                                         ScoringFilter, ScoringOutput)
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material,
@@ -113,8 +113,8 @@ class ShieldhitParser(DummmyParser):
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
             self.beam_config.nuclear_reactions = json["physic"].get(
                 "enableNuclearReactions", self.beam_config.nuclear_reactions)
-            self.beam_config.straggle = StraggleModel.form_str(
-                json["physic"].get("energyModelStraggle", self.beam_config.straggle.value))
+            self.beam_config.straggling = StragglingModel.form_str(
+                json["physic"].get("energyModelStraggling", self.beam_config.straggling.value))
             self.beam_config.multiple_scattering = MultipleScatteringMode.form_str(
                 json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
 
