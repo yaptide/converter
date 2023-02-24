@@ -45,7 +45,7 @@ class MultipleScatteringMode(Enum):
             if model.value == value:
                 return model
 
-        raise ValueError("Multiple scattering mode not recognized:{}".format(value))
+        raise ValueError(f"Multiple scattering mode not recognized:{value}")
 
 
 @dataclass
@@ -105,7 +105,6 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
     @staticmethod
     def _parse_straggle(value: StragglingModel) -> int:
         """Documentation needed"""
-
         if value == StragglingModel.GAUSSIAN:
             return 1
         if value == StragglingModel.VAVILOV:
@@ -119,7 +118,6 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
     @staticmethod
     def _parse_multiple_scattering(value: MultipleScatteringMode) -> int:
         """Documentation needed"""
-
         if value == MultipleScatteringMode.GAUSSIAN:
             return 1
         if value == MultipleScatteringMode.MOLIERE:
