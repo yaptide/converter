@@ -12,6 +12,42 @@ class BeamSourceType(Enum):
     FILE = "file"
 
 
+@unique
+class StragglingModel(Enum):
+    """Straggle model"""
+
+    GAUSSIAN = "Gaussian"
+    VAVILOV = "Vavilov"
+    NO_STRAGGLING = "no straggling"
+
+    @staticmethod
+    def from_str(value: str) -> "StragglingModel":
+        """Documentation needed"""
+        for model in StragglingModel:
+            if model.value == value:
+                return model
+
+        raise ValueError(f"Straggle not recognized:{value}")
+
+
+@unique
+class MultipleScatteringMode(Enum):
+    """Multiple scattering mode"""
+
+    GAUSSIAN = "Gaussian"
+    MOLIERE = "Moliere"
+    NO_SCATTERING = "no scattering"
+
+    @staticmethod
+    def from_str(value: str) -> "MultipleScatteringMode":
+        """Documentation needed"""
+        for model in MultipleScatteringMode:
+            if model.value == value:
+                return model
+
+        raise ValueError(f"Multiple scattering mode not recognized:{value}")
+
+
 @dataclass
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
@@ -26,6 +62,9 @@ class BeamConfig:
     beampos: tuple[float, float, float] = (0, 0, 0)  # [cm]
     beamdir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
+    nuclear_reactions: bool = True
+    straggling: StragglingModel = StragglingModel.VAVILOV
+    multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
@@ -37,9 +76,9 @@ JPART0       	2            ! Incident particle type
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 {optional_energy_cut_off_line}
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
-STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
-MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
-NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
+STRAGG          {straggling}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
+MSCAT           {multiple_scattering}            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
+NUCRE           {nuclear_reactions}            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
 BEAMDIR {theta} {phi} ! Direction of the beam
 BEAMSIGMA  {beam_ext_x} {beam_ext_y}  ! Beam extension
@@ -62,6 +101,32 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
         if phi < 0.:
             phi += 360.
         return theta, phi, r
+
+    @staticmethod
+    def _parse_straggle(value: StragglingModel) -> int:
+        """Documentation needed"""
+        if value == StragglingModel.GAUSSIAN:
+            return 1
+        if value == StragglingModel.VAVILOV:
+            return 2
+        if value == StragglingModel.NO_STRAGGLING:
+            return 0
+
+        # return default value if no reasonable value is provided
+        return 2
+
+    @staticmethod
+    def _parse_multiple_scattering(value: MultipleScatteringMode) -> int:
+        """Documentation needed"""
+        if value == MultipleScatteringMode.GAUSSIAN:
+            return 1
+        if value == MultipleScatteringMode.MOLIERE:
+            return 2
+        if value == MultipleScatteringMode.NO_SCATTERING:
+            return 0
+
+        # return default value if no reasonable value is provided
+        return 2
 
     def __str__(self) -> str:
         """Return the beam.dat config file as a string."""
@@ -88,7 +153,10 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             beam_ext_y=self.beam_ext_y,
             theta=theta,
             phi=phi,
-            delta_e=self.delta_e
+            delta_e=self.delta_e,
+            nuclear_reactions=1 if self.nuclear_reactions else 0,
+            straggling=self._parse_straggle(self.straggling),
+            multiple_scattering=self._parse_multiple_scattering(self.multiple_scattering)
         )
 
         # if beam source type is file, add the file name to the template
