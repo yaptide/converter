@@ -113,7 +113,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             return 0
 
         # return default value if no reasonable value is provided
-        return StragglingModel.VAVILOV
+        return 2
 
     @staticmethod
     def _parse_multiple_scattering(value: MultipleScatteringMode) -> int:
@@ -126,7 +126,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             return 0
 
         # return default value if no reasonable value is provided
-        return MultipleScatteringMode.MOLIERE
+        return 2
 
     def __str__(self) -> str:
         """Return the beam.dat config file as a string."""
