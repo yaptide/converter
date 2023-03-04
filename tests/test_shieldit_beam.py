@@ -51,7 +51,7 @@ def test_generated_beam_dat(project_json, sh12a_parser, output_dir) -> None:
     run_parser(sh12a_parser, project_json, output_dir)
     with open(output_dir / 'beam.dat') as f:
         input_text = f.read()
-        assert input_text>
+        assert input_text
         assert "STRAGG          1" in input_text
         assert "MSCAT           0" in input_text
         assert "NUCRE           0" in input_text
