@@ -112,9 +112,9 @@ class ShieldhitParser(DummmyParser):
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
             self.beam_config.nuclear_reactions = json["physic"].get(
                 "enableNuclearReactions", self.beam_config.nuclear_reactions)
-            self.beam_config.straggling = StragglingModel.form_str(
+            self.beam_config.straggling = StragglingModel.from_str(
                 json["physic"].get("energyModelStraggling", self.beam_config.straggling.value))
-            self.beam_config.multiple_scattering = MultipleScatteringMode.form_str(
+            self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
                 json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
 
     def _parse_detect(self, json: dict) -> None:
