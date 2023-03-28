@@ -58,6 +58,8 @@ class BeamConfig:
     energy_high_cutoff: Optional[float] = None  # [MeV]
     beam_ext_x: float = -0.1  # [cm]
     beam_ext_y: float = 0.1  # [cm]
+    beam_sad_x: Optional[float] = None  # [cm]
+    beam_sad_y: Optional[float] = None  # [cm]
     nstat: int = 10000
     beampos: tuple[float, float, float] = (0, 0, 0)  # [cm]
     beamdir: tuple[float, float, float] = (0, 0, 1)  # [cm]
@@ -67,6 +69,7 @@ class BeamConfig:
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
+    beam_sad_template = "BEAMSAD {beam_sad_x} {beam_sad_y}  ! BEAMSAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
     beam_source_file: Optional[str] = None
 
@@ -82,6 +85,7 @@ NUCRE           {nuclear_reactions}            ! Nucl.Reac. switcher: 1-ON, 0-OF
 BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
 BEAMDIR {theta} {phi} ! Direction of the beam
 BEAMSIGMA  {beam_ext_x} {beam_ext_y}  ! Beam extension
+{optional_beam_sad_parameter_line}
 DELTAE   {delta_e}   ! relative mean energy loss per transportation step
 """
 
@@ -140,11 +144,18 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
                 energy_high_cutoff=self.energy_high_cutoff
             )
 
+        # if beamsad was defined, add it to the template
+        beam_sad_line = "! no BEAMSAD value"
+        if self.beam_sad_x is not None or self.beam_sad_y is not None:
+            beam_sad_y_value = self.beam_sad_y if self.beam_sad_y is not None else ""
+            beam_sad_line = BeamConfig.beam_sad_template.format(beam_sad_x=self.beam_sad_x, beam_sad_y=beam_sad_y_value)
+
         # prepare main template
         result = self.beam_dat_template.format(
             energy=float(self.energy),
             energy_spread=float(self.energy_spread),
             optional_energy_cut_off_line=cutoff_line,
+            optional_beam_sad_parameter_line=beam_sad_line,
             nstat=self.nstat,
             pos_x=self.beampos[0],
             pos_y=self.beampos[1],
