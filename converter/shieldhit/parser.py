@@ -108,14 +108,14 @@ class ShieldhitParser(DummmyParser):
             beam_type = json["beam"]["sad"]["type"]
 
             if beam_type == "double":
-                self.beam_config.beam_sad_x = json["beam"]["sad"]["x"]
-                self.beam_config.beam_sad_y = json["beam"]["sad"]["y"]
+                self.beam_config.sad_x = json["beam"]["sad"]["x"]
+                self.beam_config.sad_y = json["beam"]["sad"]["y"]
             elif beam_type == "single":
-                self.beam_config.beam_sad_x = json["beam"]["sad"]["x"]
-                self.beam_config.beam_sad_y = None
+                self.beam_config.sad_x = json["beam"]["sad"]["x"]
+                self.beam_config.sad_y = None
             else:
-                self.beam_config.beam_sad_x = None
-                self.beam_config.beam_sad_y = None
+                self.beam_config.sad_x = None
+                self.beam_config.sad_y = None
 
         if json["beam"].get("beamSourceType", "") == BeamSourceType.FILE.value:
             self.beam_config.beam_source_type = BeamSourceType.FILE
