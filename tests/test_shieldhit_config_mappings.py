@@ -16,7 +16,7 @@ NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS 0 0 0 ! Position of the beam
 BEAMDIR 0.0 0.0 ! Direction of the beam
 BEAMSIGMA  -0.1 0.1  ! Beam extension
-! no BEAMSAD value
+! no SAD value
 DELTAE   0.03   ! relative mean energy loss per transportation step
 """
 
@@ -114,6 +114,6 @@ def test_beamsad_parameter(value_x: Optional[float], value_y: Optional[float]) -
     if value_x is None and value_y is None:    
         assert "! no BEAMSAD value" in str(beam)
     elif value_x is not None and  value_y is None:
-        assert f"BEAMSAD {value_x}   ! BEAMSAD value [cm]" in str(beam)
+        assert f"SAD {value_x}   ! SAD value [cm]" in str(beam)
     elif value_x is not None and value_y is not None:
-        assert f"BEAMSAD {value_x} {value_y}  ! BEAMSAD value [cm]" in str(beam)
+        assert f"SAD {value_x} {value_y}  ! SAD value [cm]" in str(beam)

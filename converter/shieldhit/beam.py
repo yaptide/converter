@@ -145,7 +145,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             )
 
         # if beamsad was defined, add it to the template
-        beam_sad_line = "! no BEAMSAD value"
+        beam_sad_line = "! no SAD value"
         if self.beam_sad_x is not None or self.beam_sad_y is not None:
             beam_sad_y_value = self.beam_sad_y if self.beam_sad_y is not None else ""
             beam_sad_line = BeamConfig.beam_sad_template.format(beam_sad_x=self.beam_sad_x, beam_sad_y=beam_sad_y_value)
