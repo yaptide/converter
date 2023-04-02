@@ -69,7 +69,7 @@ class BeamConfig:
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
-    beam_sad_template = "BEAMSAD {beam_sad_x} {beam_sad_y}  ! BEAMSAD value [cm]"
+    beam_sad_template = "SAD {beam_sad_x} {beam_sad_y}  ! SAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
     beam_source_file: Optional[str] = None
 
