@@ -101,19 +101,20 @@ def test_energy_cutoff() -> None:
     beam.energy_high_cutoff = None
     assert "TCUT0" not in str(beam)
 
-@pytest.mark.parametrize('value_x, value_y',[
+
+@pytest.mark.parametrize('sad_x, sad_y', [
     (None, None),
-    (2, None),
-    (1, 2),
+    (200, None),
+    (210, 250),
 ])
-def test_beamsad_parameter(value_x: Optional[float], value_y: Optional[float]) -> None:
-    """Test if the BEAMSAD values are correctly set."""
+def test_sad_parameter(sad_x: Optional[float], sad_y: Optional[float]) -> None:
+    """Test if the SAD values are correctly set."""
     beam = BeamConfig()
-    beam.beam_sad_x =  value_x
-    beam.beam_sad_y = value_y
-    if value_x is None and value_y is None:    
-        assert "! no BEAMSAD value" in str(beam)
-    elif value_x is not None and  value_y is None:
-        assert f"SAD {value_x}   ! SAD value [cm]" in str(beam)
-    elif value_x is not None and value_y is not None:
-        assert f"SAD {value_x} {value_y}  ! SAD value [cm]" in str(beam)
+    beam.sad_x = sad_x
+    beam.sad_y = sad_y
+    if sad_x is None and sad_y is None:
+        assert "! no SAD value" in str(beam)
+    elif sad_x is not None and sad_y is None:
+        assert f"SAD {sad_x}   ! SAD value [cm]" in str(beam)
+    elif sad_x is not None and sad_y is not None:
+        assert f"SAD {sad_x} {sad_y}  ! SAD value [cm]" in str(beam)
