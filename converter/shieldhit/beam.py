@@ -69,7 +69,7 @@ class BeamConfig:
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
-    sad_template = "SAD {sad_x} {sad_y}  ! SAD value [cm]"
+    sad_template = "BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
     beam_source_file: Optional[str] = None
 
@@ -145,7 +145,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             )
 
         # if sad was defined, add it to the template
-        sad_line = "! no SAD value"
+        sad_line = "! no BEAMSAD value"
         if self.sad_x is not None or self.sad_y is not None:
             sad_y_value = self.sad_y if self.sad_y is not None else ""
             sad_line = BeamConfig.sad_template.format(sad_x=self.sad_x, sad_y=sad_y_value)
