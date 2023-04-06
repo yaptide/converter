@@ -104,6 +104,19 @@ class ShieldhitParser(DummmyParser):
                 self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
 
+        if "sad" in json["beam"]:
+            beam_type = json["beam"]["sad"]["type"]
+
+            if beam_type == "double":
+                self.beam_config.sad_x = json["beam"]["sad"]["x"]
+                self.beam_config.sad_y = json["beam"]["sad"]["y"]
+            elif beam_type == "single":
+                self.beam_config.sad_x = json["beam"]["sad"]["x"]
+                self.beam_config.sad_y = None
+            else:
+                self.beam_config.sad_x = None
+                self.beam_config.sad_y = None
+
         if json["beam"].get("beamSourceType", "") == BeamSourceType.FILE.value:
             self.beam_config.beam_source_type = BeamSourceType.FILE
             self.beam_config.beam_source_file = json["beam"].get("beamSourceFile", '')

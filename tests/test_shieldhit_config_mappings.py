@@ -1,3 +1,6 @@
+from typing import Optional
+import pytest
+
 from converter.shieldhit.geo import GeoMatConfig
 from converter.shieldhit.parser import BeamConfig, DetectConfig
 
@@ -13,6 +16,7 @@ NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 BEAMPOS 0 0 0 ! Position of the beam
 BEAMDIR 0.0 0.0 ! Direction of the beam
 BEAMSIGMA  -0.1 0.1  ! Beam extension
+! no BEAMSAD value
 DELTAE   0.03   ! relative mean energy loss per transportation step
 """
 
@@ -96,3 +100,21 @@ def test_energy_cutoff() -> None:
 
     beam.energy_high_cutoff = None
     assert "TCUT0" not in str(beam)
+
+
+@pytest.mark.parametrize('sad_x, sad_y', [
+    (None, None),
+    (200, None),
+    (210, 250),
+])
+def test_sad_parameter(sad_x: Optional[float], sad_y: Optional[float]) -> None:
+    """Test if the BEAMSAD values are correctly set."""
+    beam = BeamConfig()
+    beam.sad_x = sad_x
+    beam.sad_y = sad_y
+    if sad_x is None and sad_y is None:
+        assert "! no BEAMSAD value" in str(beam)
+    elif sad_x is not None and sad_y is None:
+        assert f"BEAMSAD {sad_x}   ! BEAMSAD value [cm]" in str(beam)
+    elif sad_x is not None and sad_y is not None:
+        assert f"BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]" in str(beam)
