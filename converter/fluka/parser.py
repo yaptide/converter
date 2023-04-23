@@ -87,7 +87,6 @@ class FlukaParser(Parser):
         for file_name, content in self.get_configs_json().items():
             with open(Path(target_dir, file_name), "w") as conf_f:
                 conf_f.write(content)
-        
     def get_configs_json(self) -> dict:
         """
         Return a dict representation of the config files. Each element has
