@@ -75,7 +75,7 @@ class FlukaParser(Parser):
         }
 
     def parse_configs(self, json: dict) -> None:
-         """Basicaly do nothing since we work on defaults in this parser."""
+        """Basicaly do nothing since we work on defaults in this parser."""
 
     def save_configs(self, target_dir: Path) -> None:
         """
@@ -84,7 +84,6 @@ class FlukaParser(Parser):
         """
         if not Path(target_dir).exists():
             raise FileNotFoundError("Target directory doest not exist.")
-        
         for file_name, content in self.get_configs_json().items():
             with open(Path(target_dir, file_name), "w") as conf_f:
                 conf_f.write(content)
