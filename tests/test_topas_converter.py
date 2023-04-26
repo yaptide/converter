@@ -1,7 +1,9 @@
+import pytest
+from os import path
+from converter.api import get_parser_from_str, run_parser
 from converter.common import Parser
-from pathlib import Path
 
-DEFAULT_CONFIG = """s:Ge/MyBox/Type     = "TsBox"
+_Config_str = """s:Ge/MyBox/Type     = "TsBox"
 s:Ge/MyBox/Material = "Air"
 s:Ge/MyBox/Parent   = "World"
 d:Ge/MyBox/HLX      = 2.5 m
@@ -62,38 +64,23 @@ s:Ge/WaterPhantom/Color             = "skyblue"
 sv:Ph/Default/Modules = 1 "g4em-standard_opt0"
 """
 
+_Test_dir = './test_runs'
 
-class TopasParser(Parser):
-    """A simple placeholder parser that ignores the json input and prints example (default) configs."""
+@pytest.fixture
+def parser() -> Parser:
+    """Just a parser fixture."""
+    return get_parser_from_str('topas')
 
-    def __init__(self) -> None:
-        super().__init__()
-        version = "unknown"
-        self.info = {
-            "version": version,
-            "label": "development",
-            "simulator": "topas",
-        }
 
-    def parse_configs(self, json: dict) -> None:
-        """Basicaly do nothing since we work on defaults in this parser."""
+@pytest.fixture
+def output_dir(tmp_path_factory, parser) -> str:
+    """Fixture that creates a temporary dir for testing converter output and runs the conversion there."""
+    output_dir = tmp_path_factory.mktemp(_Test_dir)
+    run_parser(parser, {}, output_dir)
+    return output_dir
 
-    def save_configs(self, target_dir: str) -> None:
-        """Save the configs as text files in the target_dir in file topas_config.txt."""
-        if not Path(target_dir).exists():
-            raise ValueError("Target directory does not exist.")
 
-        for file_name, content in self.get_configs_json().items():
-            with open(Path(target_dir, file_name), 'w') as conf_f:
-                conf_f.write(content)
-
-    def get_configs_json(self) -> dict:
-        """
-        Return a dict representation of the config files. Each element has
-        the config files name as key and its content as value.
-        """
-        configs_json = {
-            "topas_config.txt": DEFAULT_CONFIG
-        }
-
-        return configs_json
+def test_if_beam_created(output_dir) -> None:
+    """Check if topas_config.txt file created"""
+    with open(path.join(output_dir, 'topas_config.txt')) as f:
+        assert f.read() == _Config_str

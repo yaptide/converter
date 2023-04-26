@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union
 from converter.shieldhit.parser import DummmyParser as SHDummyParser, ShieldhitParser
-from converter.topas.parser import DummmyParser as TopasDummyParser
+from converter.topas.parser import TopasParser
 from converter.common import Parser
 from converter.fluka.parser import FlukaParser
 
@@ -14,7 +14,7 @@ def get_parser_from_str(parser_type: str) -> Parser:
     if parser_type.lower() == 'shieldhit':
         return ShieldhitParser()
     if parser_type.lower() == 'topas':
-        return TopasDummyParser()
+        return TopasParser()
     if parser_type.lower() == 'fluka':
         return FlukaParser()
 
