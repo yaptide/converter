@@ -1,10 +1,16 @@
-import pytest
-from os import path
-from converter.api import get_parser_from_str, run_parser
-from converter.common import Parser
-import json
+import math as m
+from dataclasses import dataclass
+from typing import Optional
 
-_Config_str = """s:Ge/MyBox/Type     = "TsBox"
+
+@dataclass
+class Config:
+    """Class mapping of the beam.dat config file."""
+
+    energy: float = 150.  # [MeV]
+    num_histories: int = 10000
+    
+    config_template: str = """s:Ge/MyBox/Type     = "TsBox"
 s:Ge/MyBox/Material = "Air"
 s:Ge/MyBox/Parent   = "World"
 d:Ge/MyBox/HLX      = 2.5 m
@@ -20,7 +26,7 @@ d:Ge/MyBox/RotZ     = 0. deg
 s:So/Demo/Type = "Beam"
 s:So/Demo/Component = "BeamPosition"
 s:So/Demo/BeamParticle = "proton"
-d:So/Demo/BeamEnergy = 1694.23 MeV
+d:So/Demo/BeamEnergy = {energy} MeV
 u:So/Demo/BeamEnergySpread = 0.757504
 s:So/Demo/BeamPositionDistribution = "Gaussian"
 s:So/Demo/BeamPositionCutoffShape = "Ellipse"
@@ -33,8 +39,8 @@ d:So/Demo/BeamAngularCutoffX = 90. deg
 d:So/Demo/BeamAngularCutoffY = 90. deg
 d:So/Demo/BeamAngularSpreadX = 0.0032 rad
 d:So/Demo/BeamAngularSpreadY = 0.0032 rad
-i:So/Demo/NumberOfHistoriesInRun = 10000
-i:Ts/ShowHistoryCountAtInterval = 100
+i:So/Demo/NumberOfHistoriesInRun = {num_histories}
+i:Ts/ShowHistoryCountAtInterval = {histories_interval}
 
 s:Ge/BeamPosition/Parent="World"
 s:Ge/BeamPosition/Type="Group"
@@ -66,28 +72,16 @@ s:Ge/WaterPhantom/Color             = "skyblue"
 sv:Ph/Default/Modules = 1 "g4em-standard_opt0"
 """
 
-_Test_dir = './test_runs'
+    
+    def __str__(self) -> str:
+        """Return the topas_config.txt config file as a string."""
 
-@pytest.fixture
-def parser() -> Parser:
-    """Just a parser fixture."""
-    return get_parser_from_str('topas')
-
-@pytest.fixture
-def default_json() -> dict:
-    """Creates default json."""
-    with open(path.join(path.abspath("./input_examples"), 'topas_parser_test.json'), 'r') as json_f:
-        return json.load(json_f)
-
-@pytest.fixture
-def output_dir(tmp_path_factory, parser, default_json) -> str:
-    """Fixture that creates a temporary dir for testing converter output and runs the conversion there."""
-    output_dir = tmp_path_factory.mktemp(_Test_dir)
-    run_parser(parser, default_json, output_dir)
-    return output_dir
+        # prepare main template
+        result = self.config_template.format(
+            energy=float(self.energy),
+            num_histories=self.num_histories,
+            histories_interval=self.num_histories//100
+        )
 
 
-def test_if_beam_created(output_dir) -> None:
-    """Check if topas_config.txt file created"""
-    with open(path.join(output_dir, 'topas_config.txt')) as f:
-        assert f.read() == _Config_str
+        return result
