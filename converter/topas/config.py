@@ -1,4 +1,3 @@
-import math as m
 from dataclasses import dataclass
 from typing import Optional
 
@@ -9,7 +8,7 @@ class Config:
 
     energy: float = 150.  # [MeV]
     num_histories: int = 100
-    
+
     config_template: str = """s:Ge/MyBox/Type     = "TsBox"
 s:Ge/MyBox/Material = "Air"
 s:Ge/MyBox/Parent   = "World"
@@ -72,16 +71,12 @@ s:Ge/WaterPhantom/Color             = "skyblue"
 sv:Ph/Default/Modules = 1 "g4em-standard_opt0"
 """
 
-    
     def __str__(self) -> str:
         """Return the topas_config.txt config file as a string."""
-
-        # prepare main template
         result = self.config_template.format(
             energy=float(self.energy),
             num_histories=self.num_histories,
             histories_interval=max(1, self.num_histories//100)
         )
-
 
         return result
