@@ -60,9 +60,9 @@ class BeamConfig:
     beam_ext_y: float = 0.1  # [cm]
     sad_x: Optional[float] = None  # [cm]
     sad_y: Optional[float] = None  # [cm]
-    nstat: int = 10000
-    beampos: tuple[float, float, float] = (0, 0, 0)  # [cm]
-    beamdir: tuple[float, float, float] = (0, 0, 1)  # [cm]
+    n_stat: int = 10000
+    beam_pos: tuple[float, float, float] = (0, 0, 0)  # [cm]
+    beam_dir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
     nuclear_reactions: bool = True
     straggling: StragglingModel = StragglingModel.VAVILOV
@@ -79,7 +79,7 @@ RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 {optional_energy_cut_off_line}
-NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
+NSTAT       {n_stat:d}    0       ! NSTAT, Step of saving
 STRAGG          {straggling}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           {multiple_scattering}            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           {nuclear_reactions}            ! Nucl.Reac. switcher: 1-ON, 0-OFF
@@ -135,7 +135,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
 
     def __str__(self) -> str:
         """Return the beam.dat config file as a string."""
-        theta, phi, _ = BeamConfig.cartesian2spherical(self.beamdir)
+        theta, phi, _ = BeamConfig.cartesian2spherical(self.beam_dir)
 
         # if energy cutoffs are defined, add them to the template
         cutoff_line = "! no energy cutoffs"
@@ -157,10 +157,10 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             energy_spread=float(self.energy_spread),
             optional_energy_cut_off_line=cutoff_line,
             optional_sad_parameter_line=sad_line,
-            nstat=self.nstat,
-            pos_x=self.beampos[0],
-            pos_y=self.beampos[1],
-            pos_z=self.beampos[2],
+            n_stat=self.n_stat,
+            pos_x=self.beam_pos[0],
+            pos_y=self.beam_pos[1],
+            pos_z=self.beam_pos[2],
             beam_ext_x=self.beam_ext_x,
             beam_ext_y=self.beam_ext_y,
             theta=theta,
