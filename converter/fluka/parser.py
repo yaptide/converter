@@ -75,7 +75,7 @@ class FlukaParser(Parser):
         }
 
     def parse_configs(self, json: dict) -> None:
-        """Basicaly do nothing since we work on defaults in this parser."""
+        """Basically do nothing since we work on defaults in this parser."""
 
     def save_configs(self, target_dir: Path) -> None:
         """

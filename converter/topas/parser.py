@@ -76,7 +76,7 @@ class TopasParser(Parser):
         }
 
     def parse_configs(self, json: dict) -> None:
-        """Basicaly do nothing since we work on defaults in this parser."""
+        """Basically do nothing since we work on defaults in this parser."""
 
     def save_configs(self, target_dir: str) -> None:
         """Save the configs as text files in the target_dir in file topas_config.txt."""

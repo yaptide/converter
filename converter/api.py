@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Union
-from converter.shieldhit.parser import DummmyParser as SHDummyParser, ShieldhitParser
+from converter.shieldhit.parser import DummyParser as SHDummyParser, ShieldhitParser
 from converter.topas.parser import TopasParser
 from converter.common import Parser
 from converter.fluka.parser import FlukaParser

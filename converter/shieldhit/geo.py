@@ -34,7 +34,7 @@ def format_float(number: float, n: int) -> float:
 
     length = n
 
-    # Adjust lenght for decimal separator ('.')
+    # Adjust length for decimal separator ('.')
     length -= 1
 
     # Sign messes up the log10 we use do determine how long the number is. We use
@@ -44,7 +44,7 @@ def format_float(number: float, n: int) -> float:
     if result < 0:
         result = abs(result)
         sign = -1
-        # Adjust lenght for the sign
+        # Adjust length for the sign
         length -= 1
 
     whole_length = ceil(log10(result))
@@ -66,7 +66,7 @@ requested length: {n}")
     if not isclose(result, number):
         print(f'WARN: number was truncated when converting: {number} -> {result}')
 
-    # Formatting negative numbers smaller than the desired precission could result in -0.0 or 0.0 randomly.
+    # Formatting negative numbers smaller than the desired precision could result in -0.0 or 0.0 randomly.
     # To avoid this we catch -0.0 and return 0.0.
     if isclose(result, 0.):
         return 0.
@@ -89,14 +89,14 @@ def parse_figure(figure: SolidFigure, number: int) -> str:
 def _parse_box(box: BoxFigure, number: int) -> str:
     """Parse a BoxFigure into a str representation of SH12A input file."""
     rotation = R.from_euler('xyz', box.rotation, degrees=True)
-    x_vect = rotation.apply([box.x_edge_length, 0, 0])
-    y_vect = rotation.apply([0, box.y_edge_length, 0])
-    z_vect = rotation.apply([0, 0, box.z_edge_length])
-    diagonal_vect = x_vect + y_vect + z_vect
+    x_vec = rotation.apply([box.x_edge_length, 0, 0])
+    y_vec = rotation.apply([0, box.y_edge_length, 0])
+    z_vec = rotation.apply([0, 0, box.z_edge_length])
+    diagonal_vec = x_vec + y_vec + z_vec
     start_position = (
-        box.position[0] - diagonal_vect[0] / 2,
-        box.position[1] - diagonal_vect[1] / 2,
-        box.position[2] - diagonal_vect[2] / 2,
+        box.position[0] - diagonal_vec[0] / 2,
+        box.position[1] - diagonal_vec[1] / 2,
+        box.position[2] - diagonal_vec[2] / 2,
     )
     box_template = """
   BOX {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
@@ -106,15 +106,15 @@ def _parse_box(box: BoxFigure, number: int) -> str:
         p1=format_float(start_position[0], 10),
         p2=format_float(start_position[1], 10),
         p3=format_float(start_position[2], 10),
-        p4=format_float(x_vect[0], 10),
-        p5=format_float(x_vect[1], 10),
-        p6=format_float(x_vect[2], 10),
-        p7=format_float(y_vect[0], 10),
-        p8=format_float(y_vect[1], 10),
-        p9=format_float(y_vect[2], 10),
-        p10=format_float(z_vect[0], 10),
-        p11=format_float(z_vect[1], 10),
-        p12=format_float(z_vect[2], 10),
+        p4=format_float(x_vec[0], 10),
+        p5=format_float(x_vec[1], 10),
+        p6=format_float(x_vec[2], 10),
+        p7=format_float(y_vec[0], 10),
+        p8=format_float(y_vec[1], 10),
+        p9=format_float(y_vec[2], 10),
+        p10=format_float(z_vec[0], 10),
+        p11=format_float(z_vec[1], 10),
+        p12=format_float(z_vec[2], 10),
     )
 
 

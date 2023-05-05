@@ -15,7 +15,7 @@ from converter.shieldhit.scoring_geometries import (ScoringCylinder,
                                                     ScoringZone)
 
 
-class DummmyParser(Parser):
+class DummyParser(Parser):
     """A simple placeholder parser that ignores the json input and prints example (default) configs."""
 
     def __init__(self) -> None:
@@ -29,7 +29,7 @@ class DummmyParser(Parser):
         }
 
     def parse_configs(self, json: dict):
-        """Basicaly do nothing since we work on defaults in this parser."""
+        """Basically do nothing since we work on defaults in this parser."""
 
     def save_configs(self, target_dir: str):
         """
@@ -59,7 +59,7 @@ class DummmyParser(Parser):
         return configs_json
 
 
-class ShieldhitParser(DummmyParser):
+class ShieldhitParser(DummyParser):
     """A regular SHIELD-HIT12A parser"""
 
     def __init__(self) -> None:
@@ -87,9 +87,9 @@ class ShieldhitParser(DummmyParser):
         # which is well handled by the converter
         self.beam_config.energy_low_cutoff = json["beam"].get("energyLowCutoff")
         self.beam_config.energy_high_cutoff = json["beam"].get("energyHighCutoff")
-        self.beam_config.nstat = json["beam"].get("numberOfParticles", self.beam_config.nstat)
-        self.beam_config.beampos = tuple(json["beam"]["position"])
-        self.beam_config.beamdir = tuple(json["beam"]["direction"])
+        self.beam_config.n_stat = json["beam"].get("numberOfParticles", self.beam_config.n_stat)
+        self.beam_config.beam_pos = tuple(json["beam"]["position"])
+        self.beam_config.beam_dir = tuple(json["beam"]["direction"])
 
         if "sigma" in json["beam"]:
             beam_type = json["beam"]["sigma"]["type"]
@@ -185,7 +185,7 @@ class ShieldhitParser(DummmyParser):
         return geometries
 
     def _get_zone_index_by_uuid(self, zone_uuid: str) -> int:
-        """Finds zone in the geo_mat_config object by its uuid and returns its simmulation index."""
+        """Finds zone in the geo_mat_config object by its uuid and returns its simulation index."""
         for idx, zone in enumerate(self.geo_mat_config.zones):
             if zone.uuid == zone_uuid:
                 return idx + 1
@@ -226,7 +226,7 @@ class ShieldhitParser(DummmyParser):
         return outputs
 
     def _get_scoring_geometry_bu_uuid(self, geo_uuid: str) -> str:
-        """Finds scoring geometry in the detect_config object by its uuid and returns its simmulation name."""
+        """Finds scoring geometry in the detect_config object by its uuid and returns its simulation name."""
         for scoring_geometry in self.detect_config.scoring_geometries:
             if scoring_geometry.uuid == geo_uuid:
                 return scoring_geometry.name
@@ -268,7 +268,7 @@ class ShieldhitParser(DummmyParser):
         )
 
     def _get_scoring_filter_by_uuid(self, filter_uuid: str) -> str:
-        """Finds scoring filter in the detect_config object by its uuid and returns its simmulation name."""
+        """Finds scoring filter in the detect_config object by its uuid and returns its simulation name."""
         for scoring_filter in self.detect_config.scoring_filters:
             if scoring_filter.uuid == filter_uuid:
                 return scoring_filter.name
@@ -311,7 +311,7 @@ class ShieldhitParser(DummmyParser):
         raise ValueError(f"No material with uuid {material_uuid}.")
 
     def _get_material_id(self, material_uuid: str) -> int:
-        """Find material by uuid and retun its id."""
+        """Find material by uuid and return its id."""
         offset = 0
         for idx, material in enumerate(self.geo_mat_config.materials):
 
@@ -426,7 +426,7 @@ class ShieldhitParser(DummmyParser):
         return parsed_operations
 
     def _calculate_world_zone_operations(self, world_zone_figure: int) -> list[set[int]]:
-        """Calculate the world zone operations. Take the wolrd zone figure and subract all geometries."""
+        """Calculate the world zone operations. Take the world zone figure and subtract all geometries."""
         # Sum all zones
         all_zones = [
             figure_operators for zone in self.geo_mat_config.zones for figure_operators in zone.figures_operators
@@ -441,13 +441,13 @@ class ShieldhitParser(DummmyParser):
                     new_world_zone.append({*w_figure_set, -figure})
             world_zone = new_world_zone
 
-        # filter out sets containing oposite pairs of values
+        # filter out sets containing opposite pairs of values
         world_zone = filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone)
 
         return world_zone
 
     def _get_figure_index_by_uuid(self, figure_uuid: str) -> int:
-        """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
+        """Find the list index of a figure from geo_mat_config.figures by uuid. Useful when parsing CSG operations."""
         for idx, figure in enumerate(self.geo_mat_config.figures):
             if figure.uuid == figure_uuid:
                 return idx
