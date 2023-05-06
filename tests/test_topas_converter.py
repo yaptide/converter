@@ -1,5 +1,5 @@
 import pytest
-from os import path
+from pathlib import Path
 from converter.api import get_parser_from_str, run_parser
 from converter.common import Parser
 import json
@@ -76,7 +76,8 @@ def parser() -> Parser:
 @pytest.fixture
 def default_json() -> dict:
     """Creates default json."""
-    with open(path.join(path.abspath("./input_examples"), 'topas_parser_test.json'), 'r') as json_f:
+    file_path = Path.cwd() / "input_examples" / "topas_parser_test.json"
+    with file_path.open(mode='r') as json_f:
         return json.load(json_f)
 
 @pytest.fixture
@@ -87,7 +88,8 @@ def output_dir(tmp_path_factory, parser, default_json) -> str:
     return output_dir
 
 
-def test_if_beam_created(output_dir) -> None:
+def test_if_config_created(output_dir) -> None:
     """Check if topas_config.txt file created"""
-    with open(path.join(output_dir, 'topas_config.txt')) as f:
+    output_file = output_dir.joinpath('topas_config.txt')
+    with output_file.open(mode='r') as f:
         assert f.read() == _Config_str
