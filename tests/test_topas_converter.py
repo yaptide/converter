@@ -20,7 +20,7 @@ d:Ge/MyBox/RotZ     = 0. deg
 s:So/Demo/Type = "Beam"
 s:So/Demo/Component = "BeamPosition"
 s:So/Demo/BeamParticle = "proton"
-d:So/Demo/BeamEnergy = 1694.23 MeV
+d:So/Demo/BeamEnergy = 150.0 MeV
 u:So/Demo/BeamEnergySpread = 0.757504
 s:So/Demo/BeamPositionDistribution = "Gaussian"
 s:So/Demo/BeamPositionCutoffShape = "Ellipse"
@@ -76,7 +76,7 @@ def parser() -> Parser:
 @pytest.fixture
 def default_json() -> dict:
     """Creates default json."""
-    file_path = Path.cwd() / "input_examples" / "topas_parser_test.json"
+    file_path = Path.cwd() / "input_examples" / "sh_parser_test.json"
     with file_path.open(mode='r') as json_f:
         return json.load(json_f)
 
