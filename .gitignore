@@ -264,7 +264,3 @@ cython_debug/
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,pycharm
-beam.dat
-detect.dat
-geo.dat
-mat.dat
