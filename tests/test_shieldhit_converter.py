@@ -1,3 +1,6 @@
+import logging
+import filecmp
+from pathlib import Path
 import pytest
 from os import path
 from converter.shieldhit.parser import Parser
@@ -74,6 +77,7 @@ _Test_dir = './test_runs'
 def output_dir(tmp_path_factory) -> str:
     """Fixture that creates a temporary dir for testing converter output."""
     output_dir = tmp_path_factory.mktemp(_Test_dir)
+    logging.debug('Created temporary directory for testing converter output: %s', output_dir)
     return output_dir
 
 
@@ -86,13 +90,17 @@ def parser() -> Parser:
 @pytest.fixture
 def default_json() -> dict:
     """Creates default json."""
-    with open(path.join(path.abspath("./input_examples"), 'sh_parser_test.json'), 'r') as json_f:
+    example_json = Path(__file__).parent.parent / 'input_examples' / 'sh_parser_test.json'
+    with open(example_json, 'r') as json_f:
         return json.load(json_f)
 
 
 def test_if_beam_created(parser, default_json, output_dir) -> None:
     """Check if beam.dat file created"""
     run_parser(parser, default_json, output_dir)
+    expected_beam = Path(__file__).parent.parent / 'input_examples' / 'expected_shieldhit_output' / 'beam.dat'
+    assert filecmp.cmp(path.join(output_dir, 'beam.dat'), expected_beam)
+
     with open(path.join(output_dir, 'beam.dat')) as f:
         assert f.read() == _Beam_str
 
