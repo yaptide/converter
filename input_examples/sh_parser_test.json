@@ -265,6 +265,7 @@
         "direction": [0, 0, 1],
         "energy": 150,
         "energySpread": 1.5,
+        "numberOfParticles": 10000,
         "divergence": {
             "x": 0,
             "y": 0,
