@@ -35,7 +35,7 @@ def test_if_expected_files_created(parser: Parser, default_json : dict, tmp_path
 
 @pytest.mark.parametrize('filename', ['geo.dat'])
 @pytest.mark.skip(reason="Something is wrong with geo.dat file.")
-def test_if_expected_files_created(parser: Parser, default_json : dict, tmp_path : Path, filename: str) -> None:
+def test_to_be_fixed(parser: Parser, default_json : dict, tmp_path : Path, filename: str) -> None:
     """Check if all output files are created"""
     logging.info('Checking %s file', filename)
     run_parser(parser, default_json, tmp_path)
