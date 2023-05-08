@@ -11,7 +11,7 @@ from converter.shieldhit.parser import Parser
 
 @pytest.fixture
 def parser() -> Parser:
-    """A parser for SHIELD-HIT12A fixture."""
+    """SHIELD-HIT12A parser fixture"""
     return get_parser_from_str('shieldhit')
 
 
