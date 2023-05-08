@@ -11,7 +11,7 @@ from converter.shieldhit.parser import Parser
 
 @pytest.fixture
 def parser() -> Parser:
-    """Just a praser fixture."""
+    """A parser for SHIELD-HIT12A fixture."""
     return get_parser_from_str('shieldhit')
 
 
@@ -28,9 +28,9 @@ def test_if_expected_files_created(parser: Parser, default_json : dict, tmp_path
     logging.info('Checking %s file', filename)
     run_parser(parser, default_json, tmp_path)
     dir_with_expected_files = Path(__file__).parent.parent / 'input_examples' / 'expected_shieldhit_output'
-    assert (tmp_path / filename).exists() is True
-    assert (dir_with_expected_files / filename).exists() is True
-    assert filecmp.cmp(tmp_path / filename, dir_with_expected_files / filename) is True
+    assert (tmp_path / filename).exists()
+    assert (dir_with_expected_files / filename).exists()
+    assert filecmp.cmp(tmp_path / filename, dir_with_expected_files / filename)
 
 @pytest.mark.parametrize('filename', ['geo.dat'])
 @pytest.mark.skip(reason="Something is wrong with geo.dat file.")
@@ -39,6 +39,6 @@ def test_to_be_fixed(parser: Parser, default_json : dict, tmp_path : Path, filen
     logging.info('Checking %s file', filename)
     run_parser(parser, default_json, tmp_path)
     dir_with_expected_files = Path(__file__).parent.parent / 'input_examples' / 'expected_shieldhit_output'
-    assert (tmp_path / filename).exists() is True
-    assert (dir_with_expected_files / filename).exists() is True
-    assert filecmp.cmp(tmp_path / filename, dir_with_expected_files / filename) is True
+    assert (tmp_path / filename).exists()
+    assert (dir_with_expected_files / filename).exists()
+    assert filecmp.cmp(tmp_path / filename, dir_with_expected_files / filename)
