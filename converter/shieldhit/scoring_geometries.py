@@ -86,7 +86,7 @@ class ScoringZone(ScoringGeometry):
     """Scoring zone dataclass used un DetectConfig."""
 
     name: str
-    first_zone_id: str
+    first_zone_id: int
     last_zone_id: str = ""
     volume: float = 1.
 

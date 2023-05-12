@@ -1,5 +1,6 @@
 import itertools
 from pathlib import Path
+from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
@@ -178,7 +179,7 @@ class ShieldhitParser(Parser):
 
         return outputs
 
-    def _get_scoring_geometry_bu_uuid(self, geo_uuid: str) -> str:
+    def _get_scoring_geometry_bu_uuid(self, geo_uuid: str) -> Optional[str]:
         """Finds scoring geometry in the detect_config object by its uuid and returns its simmulation name."""
         for scoring_geometry in self.detect_config.scoring_geometries:
             if scoring_geometry.uuid == geo_uuid:
