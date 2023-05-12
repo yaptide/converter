@@ -79,8 +79,3 @@ STOP
             # )
             # This may be more resistant to future changes in the template
         )
-
-
-if __name__ == "__main__":
-    input = Input()
-    print(input)

@@ -1,5 +1,6 @@
 import pytest
-from os import path
+import json
+from pathlib import Path
 from converter.fluka.parser import FlukaParser
 from converter.api import get_parser_from_str, run_parser
 
@@ -8,7 +9,7 @@ proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 * beam source
-BEAM           -0.06       0.0       0.0      -2.0      -2.0          PROTON
+BEAM      1.5000E-01                                                  PROTON
 * beam source position
 BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
@@ -59,7 +60,7 @@ USRBIN          -5.0      -0.1       0.0       500         1       500&
 * random number generator settings
 RANDOMIZ                   137
 * number of particles to simulate
-START           1000
+START          10000
 STOP
 """
 
@@ -76,13 +77,20 @@ def output_dir(tmp_path_factory) -> str:
     output_dir = tmp_path_factory.mktemp(_Test_dir)
     return output_dir
 
+@pytest.fixture
+def default_json() -> dict:
+    """Creates default json."""
+    example_json = Path(__file__).parent.parent / 'input_examples' / 'sh_parser_test.json'
+    with open(example_json, 'r') as json_f:
+        return json.load(json_f)
+
 def test_parser(parser) -> None:
     """Check if parser is created correctly."""
     assert parser.info["version"] == "unknown"
     assert parser.info["simulator"] == "fluka"
 
-def test_if_inp_created(parser, output_dir) -> None:
+def test_if_inp_created(parser, default_json, output_dir) -> None:
     """Check if fl_sim.inp file created."""
-    run_parser(parser, {}, output_dir)
-    with open(path.join(output_dir, "fl_sim.inp")) as f:
+    run_parser(parser, default_json, output_dir)
+    with open(Path(output_dir).joinpath("fl_sim.inp")) as f:
         assert f.read() == _Config_content
