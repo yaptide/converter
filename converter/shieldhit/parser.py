@@ -363,9 +363,9 @@ class ShieldhitParser(Parser):
         Parse dict of csg operations to a list of sets. Sets contain a list of intersecting geometries.
         The list contains a union of geometries from sets.
         """
-        operations = [item for ops in operations for item in ops]
+        list_of_operations = [item for ops in operations for item in ops]
         parsed_operations = []
-        for operation in operations:
+        for operation in list_of_operations:
             # lists are numbered from 0, but shieldhit figures are numbered from 1
             figure_id = self._get_figure_index_by_uuid(operation["objectUuid"]) + 1
             if operation["mode"] == "union":

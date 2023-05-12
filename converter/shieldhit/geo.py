@@ -1,3 +1,4 @@
+from typing import Optional
 from converter.solid_figures import SolidFigure, BoxFigure, CylinderFigure, SphereFigure
 from dataclasses import dataclass, field
 from math import log10, ceil, isclose
@@ -161,7 +162,7 @@ class Material:
 
     uuid: str
     icru: int
-    density: float = None
+    density: Optional[float] = None
     idx: int = 0
 
     property_template = """{name} {value}\n"""
@@ -184,7 +185,7 @@ class Zone:
 
     id: int = 1
     figures_operators: list[set[int]] = field(default_factory=lambda: [{1}])
-    material: str = "0"
+    material: int = 0
     material_override: dict[str, str] = field(default_factory=dict)
 
     zone_template: str = """
@@ -214,19 +215,19 @@ class GeoMatConfig:
             figures_operators=[{
                 1,
             }],
-            material="1",
+            material=1,
         ),
         Zone(
             uuid="",
             id=2,
             figures_operators=[{-1, 2}],
-            material="1000",
+            material=1000,
         ),
         Zone(
             uuid="",
             id=3,
             figures_operators=[{-2, 3}],
-            material="0",
+            material=0,
         ),
     ])
     materials: list[Material] = field(default_factory=lambda: [Material('', 276)])
@@ -244,7 +245,7 @@ class GeoMatConfig:
 """
 
     @staticmethod
-    def _split_zones_to_rows(zones: list[Zone], max_size=14) -> list[list[Zone]]:
+    def _split_zones_to_rows(zones: list[int], max_size=14) -> list[list[int]]:
         """Split list of Zones into rows of not more than 14 elements"""
         return [zones[i:min(i + max_size, len(zones))] for i in range(0, len(zones), max_size)]
 

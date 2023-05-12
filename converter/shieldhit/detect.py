@@ -30,9 +30,9 @@ class OutputQuantity:
     detector_type: str
     filter_name: str = ""
     diff1: Optional[tuple[float, float, float, str]] = None
-    diff1_t: str = None
+    diff1_t: Optional[str] = None
     diff2: Optional[tuple[float, float, float, str]] = None
-    diff2_t: str = None
+    diff2_t: Optional[str] = None
 
     quantity_template: str = """
     Quantity {detector_type} {filter_name}"""
