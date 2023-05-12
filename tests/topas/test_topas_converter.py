@@ -76,7 +76,9 @@ def parser() -> Parser:
 @pytest.fixture
 def default_json() -> dict:
     """Creates default json."""
-    file_path = Path.cwd() / "input_examples" / "sh_parser_test.json"
+    this_script_path = Path(__file__).parent
+    main_project_dir = this_script_path.parent.parent
+    file_path = main_project_dir / "input_examples" / "sh_parser_test.json"
     with file_path.open(mode='r') as json_f:
         return json.load(json_f)
 
