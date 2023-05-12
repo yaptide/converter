@@ -71,7 +71,8 @@ class BeamConfig:
     energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
     sad_template = "BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
-    beam_source_file: Optional[str] = None
+    beam_source_filename: Optional[str] = None
+    beam_source_file_content: Optional[str] = None
 
     beam_dat_template: str = """
 RNDSEED      	89736501     ! Random seed

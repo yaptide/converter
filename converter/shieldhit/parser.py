@@ -1,5 +1,4 @@
 import itertools
-from pathlib import Path
 from typing import Optional
 
 import converter.solid_figures as solid_figures
@@ -73,8 +72,10 @@ class ShieldhitParser(Parser):
 
         if json["beam"].get("beamSourceType", "") == BeamSourceType.FILE.value:
             self.beam_config.beam_source_type = BeamSourceType.FILE
-            self.beam_config.beam_source_file = json["beam"].get("beamSourceFile", '')
-
+            if "beamSourceFile" in json["beam"]:
+                self.beam_config.beam_source_filename = json["beam"]["beamSourceFile"].get("name")
+                self.beam_config.beam_source_file_content = json["beam"]["beamSourceFile"].get("value")
+            
         if "physic" in json:
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
             self.beam_config.nuclear_reactions = json["physic"].get(
@@ -396,7 +397,7 @@ class ShieldhitParser(Parser):
             world_zone = new_world_zone
 
         # filter out sets containing oposite pairs of values
-        world_zone = filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone)
+        world_zone = list(filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone))
 
         return world_zone
 
@@ -420,6 +421,9 @@ class ShieldhitParser(Parser):
 
 
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
-            configs_json["sobp.dat"] = self.beam_config.beam_source_file['value']
+            filename_of_beam_source_file : str = 'sobp.dat'
+            if not self.beam_config.beam_source_filename:
+                filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
+            configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)
 
         return configs_json
