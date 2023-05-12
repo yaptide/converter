@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Input:
+    """Class mapping of the fluka input file."""
+
     energy: float = 90.0  # GeV FLUKA specific
     number_of_particles: int = 1000
 
