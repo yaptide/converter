@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class Input:
-    energy: float = 90. # GeV FLUKA specific
+    energy: float = 90.0  # GeV FLUKA specific
     number_of_particles: int = 1000
 
     template: str = """TITLE
@@ -69,8 +69,8 @@ STOP
     def __str__(self):
         """Return fluka input file as string"""
         return self.template.format(
-            energy = self.energy,
-            number_of_particles = self.number_of_particles,
+            energy=self.energy,
+            number_of_particles=self.number_of_particles,
             # Not sure if this is the correct way, but we can also
             # replace line 14 and 65 with {energy} and {number_of_particles}
             # and then use self.template.format(
