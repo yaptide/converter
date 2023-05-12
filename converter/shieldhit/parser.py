@@ -75,7 +75,7 @@ class ShieldhitParser(Parser):
             if "beamSourceFile" in json["beam"]:
                 self.beam_config.beam_source_filename = json["beam"]["beamSourceFile"].get("name")
                 self.beam_config.beam_source_file_content = json["beam"]["beamSourceFile"].get("value")
-            
+
         if "physic" in json:
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
             self.beam_config.nuclear_reactions = json["physic"].get(
@@ -397,9 +397,9 @@ class ShieldhitParser(Parser):
             world_zone = new_world_zone
 
         # filter out sets containing oposite pairs of values
-        world_zone = list(filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone))
+        world_zone = filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone)
 
-        return world_zone
+        return list(world_zone)
 
     def _get_figure_index_by_uuid(self, figure_uuid: str) -> int:
         """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
@@ -418,7 +418,6 @@ class ShieldhitParser(Parser):
             "detect.dat": str(self.detect_config),
             "geo.dat": self.geo_mat_config.get_geo_string()
         }
-
 
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
             filename_of_beam_source_file : str = 'sobp.dat'
