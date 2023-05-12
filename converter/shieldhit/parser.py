@@ -15,62 +15,15 @@ from converter.shieldhit.scoring_geometries import (ScoringCylinder,
                                                     ScoringZone)
 
 
-class DummmyParser(Parser):
-    """A simple placeholder parser that ignores the json input and prints example (default) configs."""
-
-    def __init__(self) -> None:
-        self.beam_config = BeamConfig()
-        self.detect_config = DetectConfig()
-        self.geo_mat_config = GeoMatConfig()
-        self.info = {
-            "version": "not implemented",
-            "label": "placeholder",
-            "simulator": "shieldhit",
-        }
-
-    def parse_configs(self, json: dict):
-        """Basicaly do nothing since we work on defaults in this parser."""
-
-    def save_configs(self, target_dir: str):
-        """
-        Save the configs as text files in the target_dir.
-        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
-        """
-        if not Path(target_dir).exists():
-            raise ValueError("Target directory does not exist.")
-
-        for file_name, content in self.get_configs_json().items():
-            with open(Path(target_dir, file_name), 'w') as conf_f:
-                conf_f.write(content)
-
-    def get_configs_json(self) -> dict:
-        """
-        Return a dict representation of the config files. Each element has
-        the config files name as key and its content as value.
-        """
-        configs_json = {
-            "info.json": str(self.info),
-            "beam.dat": str(self.beam_config),
-            "mat.dat": self.geo_mat_config.get_mat_string(),
-            "detect.dat": str(self.detect_config),
-            "geo.dat": self.geo_mat_config.get_geo_string()
-        }
-
-        return configs_json
-
-
-class ShieldhitParser(DummmyParser):
-    """A regular SHIELD-HIT12A parser"""
+class ShieldhitParser(Parser):
+    """A SHIELD-HIT12A parser"""
 
     def __init__(self) -> None:
         super().__init__()
-        # Add version variable to deploy script
-        version = "unknown"
-        self.info = {
-            "version": version,
-            "label": "development",
-            "simulator": "shieldhit",
-        }
+        self.info['simulator'] = 'shieldhit'
+        self.beam_config = BeamConfig()
+        self.detect_config = DetectConfig()
+        self.geo_mat_config = GeoMatConfig()
 
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
@@ -456,7 +409,14 @@ class ShieldhitParser(DummmyParser):
 
     def get_configs_json(self) -> dict:
         """Get JSON data for configs"""
-        configs_json = super().get_configs_json()
+        configs_json = {
+            "info.json": str(self.info),
+            "beam.dat": str(self.beam_config),
+            "mat.dat": self.geo_mat_config.get_mat_string(),
+            "detect.dat": str(self.detect_config),
+            "geo.dat": self.geo_mat_config.get_geo_string()
+        }
+
 
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
             configs_json["sobp.dat"] = self.beam_config.beam_source_file['value']

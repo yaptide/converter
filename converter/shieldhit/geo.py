@@ -17,7 +17,7 @@ class DefaultMaterial(IntEnum):
 
     @staticmethod
     def is_default_material(material_value: int) -> bool:
-        """Check if the material is one of the predefined materials."""
+        """Check if the material is one of the predefined default materials."""
         return material_value in DefaultMaterial._value2member_map_
 
 
@@ -29,7 +29,7 @@ def format_float(number: float, n: int) -> float:
     """
     result = number
     # If number is zero we just want to get 0.0 (it would mess up the log10 operation below)
-    if isclose(result, 0.):
+    if isclose(result, 0., rel_tol=1e-9):
         return 0.
 
     length = n
@@ -68,14 +68,14 @@ requested length: {n}")
 
     # Formatting negative numbers smaller than the desired precission could result in -0.0 or 0.0 randomly.
     # To avoid this we catch -0.0 and return 0.0.
-    if isclose(result, 0.):
+    if isclose(result, 0., rel_tol=1e-9):
         return 0.
 
     return result
 
 
 def parse_figure(figure: SolidFigure, number: int) -> str:
-    """Parse a SolidFigure into a str representation of SH12A input file."""
+    """Parse a SolidFigure into a string representation of SH12A input file."""
     if type(figure) is BoxFigure:
         return _parse_box(figure, number)
     if type(figure) is CylinderFigure:

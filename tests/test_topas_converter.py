@@ -87,6 +87,13 @@ def output_dir(tmp_path_factory, parser, default_json) -> str:
     run_parser(parser, default_json, output_dir)
     return output_dir
 
+def test_if_parser_created(parser) -> None:
+    """Check if parser created."""
+    assert parser is not None
+    assert parser.info['simulator'] == 'topas'
+    assert parser.info['version'] == ''
+    assert parser.info['label'] == ''
+
 
 def test_if_config_created(output_dir) -> None:
     """Check if topas_config.txt file created"""

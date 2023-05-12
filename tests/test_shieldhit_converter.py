@@ -22,6 +22,13 @@ def default_json() -> dict:
     with open(example_json, 'r') as json_f:
         return json.load(json_f)
 
+def test_if_parser_created(parser: Parser) -> None:
+    """Check if parser is created"""
+    assert parser
+    assert parser.info['version'] == ''
+    assert parser.info['label'] == ''
+    assert parser.info['simulator'] == 'shieldhit'
+
 @pytest.mark.parametrize('filename', ['beam.dat', 'mat.dat', 'detect.dat'])
 def test_if_expected_files_created(parser: Parser, default_json : dict, tmp_path : Path, filename: str) -> None:
     """Check if all output files are created"""

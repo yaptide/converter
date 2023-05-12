@@ -7,12 +7,9 @@ class TopasParser(Parser):
     """A simple placeholder parser that parses energy and number of particles."""
 
     def __init__(self) -> None:
+        super().__init__()
+        self.info['simulator'] = 'topas'
         self.config = Config()
-        self.info = {
-            "version": "unknown",
-            "label": "development",
-            "simulator": "topas",
-        }
 
     def parse_configs(self, json: dict) -> None:
         """Basicaly do nothing since we work on defaults in this parser."""
