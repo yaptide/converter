@@ -15,12 +15,7 @@ def parser() -> Parser:
     return get_parser_from_str('shieldhit')
 
 
-@pytest.fixture
-def default_json() -> dict:
-    """Creates default json."""
-    example_json = Path(__file__).parent.parent / 'input_examples' / 'sh_parser_test.json'
-    with open(example_json, 'r') as json_f:
-        return json.load(json_f)
+
 
 def test_if_parser_created(parser: Parser) -> None:
     """Check if parser is created"""
