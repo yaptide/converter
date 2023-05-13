@@ -1,6 +1,5 @@
 from converter.common import Parser
 from converter.topas.config import Config
-from pathlib import Path
 
 
 class TopasParser(Parser):
