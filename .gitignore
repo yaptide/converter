@@ -266,4 +266,4 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,pycharm
 
 **/*.dat
-!input_examples/expected_shieldhit_output/*.dat
+!tests/shieldhit/resources/expected_shieldhit_output/*.dat
