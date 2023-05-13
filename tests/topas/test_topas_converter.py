@@ -1,3 +1,4 @@
+from pathlib import Path
 import pytest
 from converter.api import get_parser_from_str, run_parser
 from converter.common import Parser
@@ -64,31 +65,24 @@ s:Ge/WaterPhantom/Color             = "skyblue"
 sv:Ph/Default/Modules = 1 "g4em-standard_opt0"
 """
 
-_Test_dir = './test_runs'
 
-@pytest.fixture
-def parser() -> Parser:
+@pytest.fixture(scope='session')
+def topas_parser() -> Parser:
     """Just a parser fixture."""
     return get_parser_from_str('topas')
 
 
-@pytest.fixture
-def output_dir(tmp_path_factory, parser, project_topas_json) -> str:
-    """Fixture that creates a temporary dir for testing converter output and runs the conversion there."""
-    output_dir = tmp_path_factory.mktemp(_Test_dir)
-    run_parser(parser, project_topas_json, output_dir)
-    return output_dir
-
-def test_if_parser_created(parser) -> None:
+def test_if_parser_created(topas_parser: Parser) -> None:
     """Check if parser created."""
-    assert parser is not None
-    assert parser.info['simulator'] == 'topas'
-    assert parser.info['version'] == ''
-    assert parser.info['label'] == ''
+    assert topas_parser is not None
+    assert topas_parser.info['simulator'] == 'topas'
+    assert topas_parser.info['version'] == ''
+    assert topas_parser.info['label'] == ''
 
 
-def test_if_config_created(output_dir) -> None:
+def test_if_config_created(topas_parser: Parser, project_topas_json: dict, tmp_path: Path) -> None:
     """Check if topas_config.txt file created"""
-    output_file = output_dir.joinpath('topas_config.txt')
+    output_file = tmp_path / 'topas_config.txt'
+    run_parser(topas_parser, project_topas_json, tmp_path)
     with output_file.open(mode='r') as f:
         assert f.read() == _Config_str
