@@ -1,8 +1,6 @@
 import pytest
-from pathlib import Path
 from converter.api import get_parser_from_str, run_parser
 from converter.common import Parser
-import json
 
 _Config_str = """s:Ge/MyBox/Type     = "TsBox"
 s:Ge/MyBox/Material = "Air"

@@ -1,5 +1,5 @@
 import pytest
-from converter.shieldhit.geo import Zone, parse_figure
+from converter.shieldhit.geo import Zone
 
 @pytest.fixture(scope='module')
 def water_phantom_zone_dict(project_shieldhit_json):

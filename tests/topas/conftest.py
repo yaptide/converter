@@ -1,6 +1,4 @@
-from pathlib import Path
 import pytest
-import json
 
 @pytest.fixture(scope='session')
 def project_topas_json(project_shieldhit_json) -> dict:

@@ -1,11 +1,10 @@
 import filecmp
-import json
 import logging
 from pathlib import Path
 
 import pytest
 
-from converter.api import get_parser_from_str, run_parser
+from converter.api import run_parser
 from converter.shieldhit.parser import Parser
 
 
