@@ -16,15 +16,6 @@ class TopasParser(Parser):
         self.config.energy = json["beam"]["energy"]
         self.config.num_histories = json["beam"].get("numberOfParticles", self.config.num_histories)
 
-    def save_configs(self, target_dir: str) -> None:
-        """Save the configs as text files in the target_dir in file topas_config.txt."""
-        if not Path(target_dir).exists():
-            raise ValueError("Target directory does not exist.")
-
-        for file_name, content in self.get_configs_json().items():
-            with open(Path(target_dir, file_name), 'w') as conf_f:
-                conf_f.write(content)
-
     def get_configs_json(self) -> dict:
         """
         Return a dict representation of the config files. Each element has

@@ -65,12 +65,9 @@ class FlukaParser(Parser):
     """A simple placeholder that ignores the json input and prints example (default) configs."""
 
     def __init__(self) -> None:
-        version = "unknown"
-        self.info = {
-            "version": version,
-            "label": "development",
-            "simulator": "fluka",
-        }
+        super().__init__()
+        self.info['simulator'] = 'fluka'
+        self.info['version'] = 'unknown'
 
     def parse_configs(self, json: dict) -> None:
         """Basicaly do nothing since we work on defaults in this parser."""
