@@ -73,20 +73,12 @@ def parser() -> Parser:
     """Just a parser fixture."""
     return get_parser_from_str('topas')
 
-@pytest.fixture
-def default_json() -> dict:
-    """Creates default json."""
-    this_script_path = Path(__file__).parent
-    main_project_dir = this_script_path.parent.parent
-    file_path = main_project_dir / "input_examples" / "sh_parser_test.json"
-    with file_path.open(mode='r') as json_f:
-        return json.load(json_f)
 
 @pytest.fixture
-def output_dir(tmp_path_factory, parser, default_json) -> str:
+def output_dir(tmp_path_factory, parser, project_topas_json) -> str:
     """Fixture that creates a temporary dir for testing converter output and runs the conversion there."""
     output_dir = tmp_path_factory.mktemp(_Test_dir)
-    run_parser(parser, default_json, output_dir)
+    run_parser(parser, project_topas_json, output_dir)
     return output_dir
 
 def test_if_parser_created(parser) -> None:

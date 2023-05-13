@@ -3,9 +3,11 @@ from converter import solid_figures
 
 @pytest.fixture(scope='module')
 def cylinder_figure_dict(project_shieldhit_json):
+    """Part of the project.json file with the cylinder figure"""
     return project_shieldhit_json['scene']['object']['children'][0]
 
 def test_cylinder_figure(cylinder_figure_dict):
+    """Test if the cylinder figure is parsed correctly"""
     assert cylinder_figure_dict['type'] == 'CylinderMesh'
     assert cylinder_figure_dict['name'] == 'Water_phantom_cylinder'
     assert 'geometryData' in cylinder_figure_dict
