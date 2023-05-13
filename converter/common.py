@@ -27,10 +27,12 @@ class Parser:
             with open(Path(target_dir, file_name), 'w') as conf_f:
                 conf_f.write(content)
 
-    @staticmethod
-    def get_configs_json() -> dict:
+    def get_configs_json(self) -> dict:
         """
         Return a dict representation of the config files. Each element has
         the config files name as key and its content as value.
         """
-        return {}
+        configs_json = {
+            "info.json": str(self.info),
+        }
+        return configs_json

@@ -411,13 +411,13 @@ class ShieldhitParser(Parser):
 
     def get_configs_json(self) -> dict:
         """Get JSON data for configs"""
-        configs_json = {
-            "info.json": str(self.info),
+        configs_json = super().get_configs_json()
+        configs_json.update({
             "beam.dat": str(self.beam_config),
             "mat.dat": self.geo_mat_config.get_mat_string(),
             "detect.dat": str(self.detect_config),
             "geo.dat": self.geo_mat_config.get_geo_string()
-        }
+        })
 
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
             filename_of_beam_source_file : str = 'sobp.dat'

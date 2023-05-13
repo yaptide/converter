@@ -30,8 +30,7 @@ class TopasParser(Parser):
         Return a dict representation of the config files. Each element has
         the config files name as key and its content as value.
         """
-        configs_json = {
-            "topas_config.txt": str(self.config)
-        }
+        configs_json = super().get_configs_json()
+        configs_json["topas_config.txt"] = str(self.config)
 
         return configs_json
