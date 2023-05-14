@@ -13,6 +13,7 @@ def test_parser(sh12a_parser : Parser) -> None:
     assert sh12a_parser
     assert sh12a_parser.info['version'] == ''
     assert sh12a_parser.info['simulator'] == 'shieldhit'
+    assert sh12a_parser.info['label'] == ''
 
 def test_project_json(project_shieldhit_json: dict) -> None:
     """Check if project json is created correctly"""

@@ -72,6 +72,7 @@ def test_parser(parser) -> None:
     """Check if parser is created correctly."""
     assert parser.info["version"] == "unknown"
     assert parser.info["simulator"] == "fluka"
+    assert parser.info["label"] == ""
 
 def test_if_inp_created(parser, tmp_path) -> None:
     """Check if fl_sim.inp file created."""
