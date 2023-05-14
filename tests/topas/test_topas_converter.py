@@ -3,7 +3,7 @@ import pytest
 from converter.api import get_parser_from_str, run_parser
 from converter.common import Parser
 
-_excpected_topas_input_content = """s:Ge/MyBox/Type     = "TsBox"
+_expected_topas_input_content = """s:Ge/MyBox/Type     = "TsBox"
 s:Ge/MyBox/Material = "Air"
 s:Ge/MyBox/Parent   = "World"
 d:Ge/MyBox/HLX      = 2.5 m
@@ -85,4 +85,4 @@ def test_if_config_created(topas_parser: Parser, project_topas_json: dict, tmp_p
     output_file = tmp_path / 'topas_config.txt'
     run_parser(topas_parser, project_topas_json, tmp_path)
     with output_file.open(mode='r') as f:
-        assert f.read() == _excpected_topas_input_content
+        assert f.read() == _expected_topas_input_content
