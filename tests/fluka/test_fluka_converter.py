@@ -2,7 +2,7 @@ import pytest
 from converter.common import Parser
 from converter.api import get_parser_from_str, run_parser
 
-_Config_content = """TITLE
+_excpected_fluka_input_content = """TITLE
 proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
@@ -78,4 +78,4 @@ def test_if_inp_created(parser, tmp_path) -> None:
     """Check if fl_sim.inp file created."""
     run_parser(parser, {}, tmp_path)
     with open(tmp_path / "fl_sim.inp") as f:
-        assert f.read() == _Config_content
+        assert f.read() == _excpected_fluka_input_content
