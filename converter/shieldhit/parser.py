@@ -1,5 +1,5 @@
 import itertools
-from pathlib import Path
+from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
@@ -15,62 +15,15 @@ from converter.shieldhit.scoring_geometries import (ScoringCylinder,
                                                     ScoringZone)
 
 
-class DummmyParser(Parser):
-    """A simple placeholder parser that ignores the json input and prints example (default) configs."""
-
-    def __init__(self) -> None:
-        self.beam_config = BeamConfig()
-        self.detect_config = DetectConfig()
-        self.geo_mat_config = GeoMatConfig()
-        self.info = {
-            "version": "not implemented",
-            "label": "placeholder",
-            "simulator": "shieldhit",
-        }
-
-    def parse_configs(self, json: dict):
-        """Basicaly do nothing since we work on defaults in this parser."""
-
-    def save_configs(self, target_dir: str):
-        """
-        Save the configs as text files in the target_dir.
-        The files are: beam.dat, mat.dat, detect.dat and geo.dat.
-        """
-        if not Path(target_dir).exists():
-            raise ValueError("Target directory does not exist.")
-
-        for file_name, content in self.get_configs_json().items():
-            with open(Path(target_dir, file_name), 'w') as conf_f:
-                conf_f.write(content)
-
-    def get_configs_json(self) -> dict:
-        """
-        Return a dict representation of the config files. Each element has
-        the config files name as key and its content as value.
-        """
-        configs_json = {
-            "info.json": str(self.info),
-            "beam.dat": str(self.beam_config),
-            "mat.dat": self.geo_mat_config.get_mat_string(),
-            "detect.dat": str(self.detect_config),
-            "geo.dat": self.geo_mat_config.get_geo_string()
-        }
-
-        return configs_json
-
-
-class ShieldhitParser(DummmyParser):
-    """A regular SHIELD-HIT12A parser"""
+class ShieldhitParser(Parser):
+    """A SHIELD-HIT12A parser"""
 
     def __init__(self) -> None:
         super().__init__()
-        # Add version variable to deploy script
-        version = "unknown"
-        self.info = {
-            "version": version,
-            "label": "development",
-            "simulator": "shieldhit",
-        }
+        self.info['simulator'] = 'shieldhit'
+        self.beam_config = BeamConfig()
+        self.detect_config = DetectConfig()
+        self.geo_mat_config = GeoMatConfig()
 
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
@@ -119,7 +72,9 @@ class ShieldhitParser(DummmyParser):
 
         if json["beam"].get("beamSourceType", "") == BeamSourceType.FILE.value:
             self.beam_config.beam_source_type = BeamSourceType.FILE
-            self.beam_config.beam_source_file = json["beam"].get("beamSourceFile", '')
+            if "beamSourceFile" in json["beam"]:
+                self.beam_config.beam_source_filename = json["beam"]["beamSourceFile"].get("name")
+                self.beam_config.beam_source_file_content = json["beam"]["beamSourceFile"].get("value")
 
         if "physic" in json:
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
@@ -225,7 +180,7 @@ class ShieldhitParser(DummmyParser):
 
         return outputs
 
-    def _get_scoring_geometry_bu_uuid(self, geo_uuid: str) -> str:
+    def _get_scoring_geometry_bu_uuid(self, geo_uuid: str) -> Optional[str]:
         """Finds scoring geometry in the detect_config object by its uuid and returns its simmulation name."""
         for scoring_geometry in self.detect_config.scoring_geometries:
             if scoring_geometry.uuid == geo_uuid:
@@ -409,9 +364,9 @@ class ShieldhitParser(DummmyParser):
         Parse dict of csg operations to a list of sets. Sets contain a list of intersecting geometries.
         The list contains a union of geometries from sets.
         """
-        operations = [item for ops in operations for item in ops]
+        list_of_operations = [item for ops in operations for item in ops]
         parsed_operations = []
-        for operation in operations:
+        for operation in list_of_operations:
             # lists are numbered from 0, but shieldhit figures are numbered from 1
             figure_id = self._get_figure_index_by_uuid(operation["objectUuid"]) + 1
             if operation["mode"] == "union":
@@ -444,7 +399,7 @@ class ShieldhitParser(DummmyParser):
         # filter out sets containing oposite pairs of values
         world_zone = filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone)
 
-        return world_zone
+        return list(world_zone)
 
     def _get_figure_index_by_uuid(self, figure_uuid: str) -> int:
         """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
@@ -457,8 +412,17 @@ class ShieldhitParser(DummmyParser):
     def get_configs_json(self) -> dict:
         """Get JSON data for configs"""
         configs_json = super().get_configs_json()
+        configs_json.update({
+            "beam.dat": str(self.beam_config),
+            "mat.dat": self.geo_mat_config.get_mat_string(),
+            "detect.dat": str(self.detect_config),
+            "geo.dat": self.geo_mat_config.get_geo_string()
+        })
 
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
-            configs_json["sobp.dat"] = self.beam_config.beam_source_file['value']
+            filename_of_beam_source_file : str = 'sobp.dat'
+            if not self.beam_config.beam_source_filename:
+                filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
+            configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)
 
         return configs_json

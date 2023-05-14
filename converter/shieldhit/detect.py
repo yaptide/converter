@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringCylinder, ScoringMesh
 
 
@@ -28,10 +29,10 @@ class OutputQuantity:
 
     detector_type: str
     filter_name: str = ""
-    diff1: tuple[float, float, float, str] = None
-    diff1_t: str = None
-    diff2: tuple[float, float, float, str] = None
-    diff2_t: str = None
+    diff1: Optional[tuple[float, float, float, str]] = None
+    diff1_t: Optional[str] = None
+    diff2: Optional[tuple[float, float, float, str]] = None
+    diff2_t: Optional[str] = None
 
     quantity_template: str = """
     Quantity {detector_type} {filter_name}"""
@@ -52,14 +53,14 @@ class OutputQuantity:
 class ScoringOutput:
     """Dataclass storing information about shieldhit scoring outputs."""
 
-    filename: str = None
-    fileformat: str = None
-    geometry: str = None
-    medium: str = None
-    offset: float = None
-    primaries: float = None
+    filename: Optional[str] = None
+    fileformat: Optional[str] = None
+    geometry: Optional[str] = None
+    medium: Optional[str] = None
+    offset: Optional[float] = None
+    primaries: Optional[int] = None
     quantities: list[OutputQuantity] = field(default_factory=lambda: [])
-    rescale: float = None
+    rescale: Optional[float] = None
 
     filename_str_template: str = """
     Filename {filename}"""

@@ -28,7 +28,7 @@ jobs:
           pip3 install -r test_requirements.txt
 
       - name: Run main tests
-        run: python -m pytest tests/
+        run: python -m pytest
 
 
   build-and-test:
@@ -61,7 +61,7 @@ jobs:
 
       - name: Run main tests
         # when triggering tests with `python -m pytest` (instead of simply calling `pytest`) we add current directory to sys.path
-        run: python -m pytest tests/
+        run: python -m pytest
 
   make-package:
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
           name: packages
           path: |
             ./dist
-            ./input_examples
+            ./tests/shieldhit/resources
 
   test-package:
     runs-on: ubuntu-latest
@@ -117,6 +117,6 @@ jobs:
       - name: Test package
         run: |
          yaptide-converter -h
-         yaptide-converter ./input_examples/sh_parser_test.json
+         yaptide-converter ./tests/shieldhit/resources/project.json
          python3 -m converter.main -h
-         python3 -m converter.main ./input_examples/sh_parser_test.json
+         python3 -m converter.main ./tests/shieldhit/resources/project.json

@@ -1,9 +1,8 @@
 import pytest
-from os import path
-from converter.fluka.parser import FlukaParser
+from converter.common import Parser
 from converter.api import get_parser_from_str, run_parser
 
-_Config_content = """TITLE
+_expected_fluka_input_content = """TITLE
 proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
@@ -63,26 +62,20 @@ START           1000
 STOP
 """
 
-_Test_dir = "./test_runs"
-
 @pytest.fixture
-def parser() -> FlukaParser:
+def parser() -> Parser:
     """Parser fixture."""
     return get_parser_from_str("fluka")
 
-@pytest.fixture
-def output_dir(tmp_path_factory) -> str:
-    """Fixture that creates a temporary dir for testing converter output."""
-    output_dir = tmp_path_factory.mktemp(_Test_dir)
-    return output_dir
 
 def test_parser(parser) -> None:
     """Check if parser is created correctly."""
     assert parser.info["version"] == "unknown"
     assert parser.info["simulator"] == "fluka"
+    assert parser.info["label"] == ""
 
-def test_if_inp_created(parser, output_dir) -> None:
+def test_if_inp_created(parser, tmp_path) -> None:
     """Check if fl_sim.inp file created."""
-    run_parser(parser, {}, output_dir)
-    with open(path.join(output_dir, "fl_sim.inp")) as f:
-        assert f.read() == _Config_content
+    run_parser(parser, {}, tmp_path)
+    with open(tmp_path / "fl_sim.inp") as f:
+        assert f.read() == _expected_fluka_input_content
