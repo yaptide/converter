@@ -1,6 +1,6 @@
 {
 	"metadata": {
-		"version": 0.5,
+		"version": 0.6,
 		"type": "Editor",
 		"generator": "Editor.toJSON"
 	},
@@ -14,24 +14,24 @@
 		"toneMappingExposure": 1,
 		"viewManager": {
 			"ViewPanelXY": {
-				"cameraMatrix": [1,0,0,0,0,0.9999999999994986,9.999999999621414e-7,0,0,-9.999999999621414e-7,0.9999999999994986,0,0,-0.00009999999999621423,99.99999999994995,1],
+				"cameraMatrix": [1,0,0,0,0,0.9999999999994964,9.999999999621397e-7,0,0,-9.999999999621397e-7,0.9999999999994964,0,0,-0.00009999999999621423,99.99999999994992,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": true
 				}
 			},
 			"ViewPanel3D": {
-				"cameraMatrix": [0.7071067811865476,8.326672684688673e-17,-0.7071067811865471,0,-0.4082482904638628,0.8164965809277258,-0.40824829046386285,0,0.5773502691896253,0.5773502691896254,0.5773502691896257,0,10,10,10.000000000000002,1]
+				"cameraMatrix": [0.7071067811865477,5.5511151231257815e-17,-0.707106781186547,0,-0.4082482904638628,0.8164965809277258,-0.4082482904638629,0,0.5773502691896248,0.5773502691896252,0.5773502691896255,0,10,10,10.000000000000002,1]
 			},
 			"ViewPanelY": {
-				"cameraMatrix": [6.661338147750989e-16,-2.2204460492503294e-16,1.000000000000007,0,0.9999999999995064,0.0000010000000003618291,-4.440892098500656e-16,0,-0.0000010000000001397845,0.9999999999995064,4.440892098500656e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
+				"cameraMatrix": [5.551115123125587e-16,-4.4408920985004704e-16,0.9999999999999649,0,0.9999999999994634,9.999999996956521e-7,-6.661338147750695e-16,0,-9.999999998066744e-7,0.9999999999994634,3.3306690738753473e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": true
 				}
 			},
 			"ViewPanelX": {
-				"cameraMatrix": [-2.2204460492503136e-16,1.0000000000000004,0,0,9.999999999177327e-7,-2.2204460492503116e-16,0.9999999999994995,0,0.9999999999994995,0,-0.0000010000000001397773,0,99.99999999994995,0,-0.0000999999999999833,1],
+				"cameraMatrix": [1.1102230246251573e-16,1.0000000000000007,2.2204460492503146e-16,0,9.999999995846643e-7,-4.4408920985006163e-16,0.9999999999994978,0,0.9999999999994978,-2.2204460492503082e-16,-9.999999996956866e-7,0,99.99999999994995,0,-0.0000999999999999833,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": true
@@ -137,7 +137,7 @@
 					"geometry": "744d5753-c4ab-4565-bfbd-77c981e84fec",
 					"material": "81a7aa32-b85f-45c4-bcd7-f648a0be12dc",
 					"geometryData": {
-						"id": 992,
+						"id": 955,
 						"geometryType": "CylinderGeometry",
 						"position": [0,0,10],
 						"rotation": [0,0,0],
@@ -157,7 +157,7 @@
 					"geometry": "918ef747-7846-462d-ab4d-a1bfef2d196a",
 					"material": "8485707f-07bf-49d2-86ab-070eb9878a00",
 					"geometryData": {
-						"id": 994,
+						"id": 957,
 						"geometryType": "CylinderGeometry",
 						"position": [0,0,10.5],
 						"rotation": [0,0,0],
@@ -197,8 +197,13 @@
 						{
 							"mode": "union",
 							"objectUuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b"
+						},
+						{
+							"mode": "subtraction",
+							"objectUuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482"
 						}]],
 				"subscribedObjects": {
+					"7ab62ba9-6dba-4543-b50b-ce31e143d482": 1,
 					"aeeffad9-ed86-44ae-bfe4-b5f78580741b": 1
 				},
 				"materialPropertiesOverrides": {}
@@ -206,7 +211,7 @@
 		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
 		"name": "Zones",
 		"worldZone": {
-			"uuid": "f947b247-8759-4dd8-9929-4993a0451410",
+			"uuid": "5a680f47-72ff-4e22-9eb5-99e5475f6712",
 			"center": {
 				"x": 0,
 				"y": 0,
@@ -374,9 +379,9 @@
 			"y": 0
 		},
 		"sad": {
-			"type": "double",
-			"x": 200,
-			"y": 250
+			"type": "none",
+			"x": 0,
+			"y": 0
 		},
 		"divergence": {
 			"distanceToFocal": 0,
@@ -391,16 +396,16 @@
 		"colorHex": 16776960,
 		"numberOfParticles": 10000,
 		"beamSourceFile": {
-			"name": "sobp.dat",
-			"value": "*ENERGY(GEV) X(CM) Y(CM) FWHM(cm) WEIGHT\n0.270550 -1.00 1.00 0.48 9.3700e+06\n0.270550 -0.90 1.00 0.48 9.3700e+06\n0.270550 -0.80 1.00 0.48 9.3700e+06\n0.270550 -0.70 1.00 0.48 9.3700e+06\n0.270550 -0.60 1.00 0.48 9.3700e+06\n0.270550 -0.50 1.00 0.48 9.3700e+06\n0.270550 -0.40 1.00 0.48 9.3700e+06\n0.270550 -0.30 1.00 0.48 9.3700e+06\n0.270550 -0.20 1.00 0.48 9.3700e+06\n0.270550 -0.10 1.00 0.48 9.3700e+06"
+			"name": "",
+			"value": ""
 		},
-		"beamSourceType": "file"
+		"beamSourceType": "simple"
 	},
 	"physic": {
 		"energyLoss": 0.03,
-		"enableNuclearReactions": false,
-		"energyModelStraggling": "Gaussian",
-		"multipleScattering": "no scattering"
+		"enableNuclearReactions": true,
+		"energyModelStraggling": "Vavilov",
+		"multipleScattering": "Moliere"
 	},
 	"materialManager": {
 		"materials": [
@@ -445,33 +450,27 @@
 				"quantities": {
 					"active": [
 						{
-							"name": "Quantity",
+							"name": "Dose",
 							"uuid": "3b0bc80c-5d78-4899-870f-23167e99fe30",
 							"keyword": "Dose",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_1",
-							"uuid": "e3488754-9a67-4d3c-b0ea-17300d651a8a",
-							"keyword": "DoseGy",
-							"modifiers": []
-						},
-						{
-							"name": "Quantity_2",
+							"name": "FluenceProtons",
 							"uuid": "53ba1036-4975-4a96-a6bd-3d336fc72612",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_3",
+							"name": "FluencePrimaries",
 							"uuid": "050f3919-a59b-45a4-9326-38d788c16ab7",
 							"keyword": "Fluence",
 							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_4",
+							"name": "FluenceSecondaryProtons",
 							"uuid": "b3286437-b2a1-4ee9-b7da-8cc2cc435fcd",
 							"keyword": "Fluence",
 							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
@@ -487,26 +486,20 @@
 				"quantities": {
 					"active": [
 						{
-							"name": "Quantity",
+							"name": "Dose",
 							"uuid": "828d1276-a60e-4e31-9da7-88c84587445a",
 							"keyword": "Dose",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_1",
-							"uuid": "c3499475-9496-4ee5-b705-950b83867dac",
-							"keyword": "DoseGy",
-							"modifiers": []
-						},
-						{
-							"name": "Quantity_2",
+							"name": "FluenceProtons",
 							"uuid": "be97ed10-07af-49d2-b91a-5bfe09c0c228",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_3",
+							"name": "FluenceSecondaryProtons",
 							"uuid": "69305c71-de72-466c-86bc-ba5e58635a9e",
 							"keyword": "Fluence",
 							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
@@ -522,48 +515,48 @@
 				"quantities": {
 					"active": [
 						{
-							"name": "Quantity",
+							"name": "Dose",
 							"uuid": "9730c840-7163-4125-8596-7d26735c373a",
 							"keyword": "Dose",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_1",
+							"name": "KineticEnergyPrimaries",
 							"uuid": "48b2c7a4-58c4-4ff7-816b-865ce146ae95",
 							"keyword": "AvgEnergy",
 							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_2",
+							"name": "KineticEnergyProtons",
 							"uuid": "a9164784-1770-48d5-a772-3342fb06efe9",
 							"keyword": "AvgEnergy",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_3",
+							"name": "KineticEnergySecondaryProtons",
 							"uuid": "2bf3b68d-a855-443a-8ea0-2bf05eeb9e65",
 							"keyword": "AvgEnergy",
 							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_4",
+							"name": "dLETProtons",
 							"uuid": "d0c4addd-0775-420e-9240-d5ba3e279a2b",
 							"keyword": "dLET",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_5",
+							"name": "tLETProtons",
 							"uuid": "a4e9cac1-a643-4448-bc4a-89977101cc67",
 							"keyword": "tLET",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_6",
+							"name": "ProtonsKineticEnergySpectrum",
 							"uuid": "de64c12b-15cc-4e72-9262-b5507a738c9f",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
@@ -587,48 +580,48 @@
 				"quantities": {
 					"active": [
 						{
-							"name": "Quantity",
+							"name": "Dose",
 							"uuid": "d13a9fc5-d13c-4e5a-9fc4-decfe15c9ee4",
 							"keyword": "Dose",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_1",
+							"name": "KineticEnergyPrimaries",
 							"uuid": "54b85511-c885-41bd-a81d-a97842197764",
 							"keyword": "AvgEnergy",
 							"filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_2",
+							"name": "KineticEnergyProtons",
 							"uuid": "e7ff88d1-e46a-4a69-b676-e8e3ed1e67fd",
 							"keyword": "AvgEnergy",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_3",
+							"name": "KineticEnergySecondaryProtons",
 							"uuid": "95c292b9-966e-42fe-91a0-3d0f0db55876",
 							"keyword": "AvgEnergy",
 							"filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_4",
+							"name": "dLETProtons",
 							"uuid": "efd9f82c-8e0e-4d3d-a22d-70a0cc11ef7b",
 							"keyword": "dLET",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_5",
+							"name": "tLETProtons",
 							"uuid": "dac16bbd-e361-46d3-8eae-9c69571aea96",
 							"keyword": "tLET",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
 							"modifiers": []
 						},
 						{
-							"name": "Quantity_6",
+							"name": "ProtonsKineticEnergySpectrum",
 							"uuid": "65f821c8-a654-4f6f-b666-0fdc8c925cf5",
 							"keyword": "Fluence",
 							"filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
@@ -647,5 +640,5 @@
 				"trace": false
 			}]
 	},
-	"hash": "f47bc517674ad28202dab188b7ac4e06af9e5ec7"
+	"hash": "ac147730072b39dfdb81496da75b9f41cab12a62"
 }

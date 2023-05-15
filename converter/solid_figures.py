@@ -11,9 +11,10 @@ class SolidFigure(ABC):
     """
 
     uuid: str = "AAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA"
+    name: str = ""
 
-    position: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
-    rotation: tuple[float, float, float] = field(default_factory=lambda: [0., 0., 0.])
+    position: tuple[float, float, float] = field(default_factory=lambda: (0., 0., 0.))
+    rotation: tuple[float, float, float] = field(default_factory=lambda: (0., 0., 0.))
 
     def expand(self, margin: float) -> None:
         """Expand figure by `expansion` in each dimension."""
@@ -84,6 +85,7 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
     if figure_type == "CylinderGeometry":
         return CylinderFigure(
             uuid=figure_dict["uuid"],
+            name=figure_dict["name"],
             position=tuple(figure_dict["geometryData"]["position"]),
             rotation=tuple(figure_dict["geometryData"]["rotation"]),
             radius_top=figure_dict["geometryData"]['parameters']["radius"],
@@ -93,6 +95,7 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
     if figure_type == "BoxGeometry":
         return BoxFigure(
             uuid=figure_dict["uuid"],
+            name=figure_dict["name"],
             position=tuple(figure_dict["geometryData"]["position"]),
             rotation=tuple(figure_dict["geometryData"]["rotation"]),
             y_edge_length=figure_dict["geometryData"]['parameters']["height"],
@@ -102,6 +105,7 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
     if figure_type == "SphereGeometry":
         return SphereFigure(
             uuid=figure_dict["uuid"],
+            name=figure_dict["name"],
             position=tuple(figure_dict["geometryData"]["position"]),
             rotation=tuple(figure_dict["geometryData"]["rotation"]),
             radius=figure_dict["geometryData"]['parameters']["radius"],

@@ -1,3 +1,4 @@
+from typing import Optional
 from converter.solid_figures import SolidFigure, BoxFigure, CylinderFigure, SphereFigure
 from dataclasses import dataclass, field
 from math import log10, ceil, isclose
@@ -17,7 +18,7 @@ class DefaultMaterial(IntEnum):
 
     @staticmethod
     def is_default_material(material_value: int) -> bool:
-        """Check if the material is one of the predefined materials."""
+        """Check if the material is one of the predefined default materials."""
         return material_value in DefaultMaterial._value2member_map_
 
 
@@ -29,7 +30,7 @@ def format_float(number: float, n: int) -> float:
     """
     result = number
     # If number is zero we just want to get 0.0 (it would mess up the log10 operation below)
-    if isclose(result, 0.):
+    if isclose(result, 0., rel_tol=1e-9):
         return 0.
 
     length = n
@@ -68,14 +69,14 @@ requested length: {n}")
 
     # Formatting negative numbers smaller than the desired precission could result in -0.0 or 0.0 randomly.
     # To avoid this we catch -0.0 and return 0.0.
-    if isclose(result, 0.):
+    if isclose(result, 0., rel_tol=1e-9):
         return 0.
 
     return result
 
 
 def parse_figure(figure: SolidFigure, number: int) -> str:
-    """Parse a SolidFigure into a str representation of SH12A input file."""
+    """Parse a SolidFigure into a string representation of SH12A input file."""
     if type(figure) is BoxFigure:
         return _parse_box(figure, number)
     if type(figure) is CylinderFigure:
@@ -161,7 +162,7 @@ class Material:
 
     uuid: str
     icru: int
-    density: float = None
+    density: Optional[float] = None
     idx: int = 0
 
     property_template = """{name} {value}\n"""
@@ -184,7 +185,7 @@ class Zone:
 
     id: int = 1
     figures_operators: list[set[int]] = field(default_factory=lambda: [{1}])
-    material: str = "0"
+    material: int = 0
     material_override: dict[str, str] = field(default_factory=dict)
 
     zone_template: str = """
@@ -214,19 +215,19 @@ class GeoMatConfig:
             figures_operators=[{
                 1,
             }],
-            material="1",
+            material=1,
         ),
         Zone(
             uuid="",
             id=2,
             figures_operators=[{-1, 2}],
-            material="1000",
+            material=1000,
         ),
         Zone(
             uuid="",
             id=3,
             figures_operators=[{-2, 3}],
-            material="0",
+            material=0,
         ),
     ])
     materials: list[Material] = field(default_factory=lambda: [Material('', 276)])
@@ -244,7 +245,7 @@ class GeoMatConfig:
 """
 
     @staticmethod
-    def _split_zones_to_rows(zones: list[Zone], max_size=14) -> list[list[Zone]]:
+    def _split_zones_to_rows(zones: list[int], max_size=14) -> list[list[int]]:
         """Split list of Zones into rows of not more than 14 elements"""
         return [zones[i:min(i + max_size, len(zones))] for i in range(0, len(zones), max_size)]
 

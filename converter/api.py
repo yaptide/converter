@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Union
-from converter.shieldhit.parser import DummmyParser as SHDummyParser, ShieldhitParser
+from converter.shieldhit.parser import ShieldhitParser
 from converter.topas.parser import TopasParser
 from converter.common import Parser
 from converter.fluka.parser import FlukaParser
@@ -9,8 +9,6 @@ from converter.fluka.parser import FlukaParser
 def get_parser_from_str(parser_type: str) -> Parser:
     """Get a converter object based on the provided type."""
     # This is temporary, suggestions on how to do this better appreciated.
-    if parser_type.lower() == 'sh_dummy':
-        return SHDummyParser()
     if parser_type.lower() == 'shieldhit':
         return ShieldhitParser()
     if parser_type.lower() == 'topas':
@@ -19,7 +17,7 @@ def get_parser_from_str(parser_type: str) -> Parser:
         return FlukaParser()
 
     print(f"Invalid parser type \"{parser_type}\".")
-    raise ValueError("Parser type must be either 'sh_dummy', 'shieldhit', 'topas' or 'fluka'.")
+    raise ValueError("Parser type must be either 'shieldhit', 'topas' or 'fluka'.")
 
 
 def run_parser(parser: Parser, input_data: dict, output_dir: Union[Path, None] = None, silent: bool = True) -> dict:
