@@ -1,5 +1,4 @@
 import pytest
-import json
 from pathlib import Path
 from converter.common import Parser
 from converter.api import get_parser_from_str, run_parser
@@ -65,26 +64,18 @@ STOP
 """
 
 @pytest.fixture
-def parser() -> Parser:
+def fluka_parser() -> Parser:
     """Parser fixture."""
     return get_parser_from_str("fluka")
 
-@pytest.fixture
-def default_json() -> dict:
-    """Creates default json."""
-    file_path = Path(__file__).resolve().parent / 'resources' / 'project.json'
-    with open(file_path, 'r') as json_f:
-        return json.load(json_f)
-
-
-def test_parser(parser: Parser) -> None:
+def test_parser(fluka_parser: Parser) -> None:
     """Check if parser is created correctly."""
-    assert parser.info["version"] == "unknown"
-    assert parser.info["simulator"] == "fluka"
-    assert parser.info["label"] == ""
+    assert fluka_parser.info["version"] == "unknown"
+    assert fluka_parser.info["simulator"] == "fluka"
+    assert fluka_parser.info["label"] == ""
 
-def test_if_inp_created(parser: Parser, default_json: dict, tmp_path: Path) -> None:
+def test_if_inp_created(fluka_parser: Parser, project_fluka_json: dict, tmp_path: Path) -> None:
     """Check if fl_sim.inp file created."""
-    run_parser(parser, default_json, tmp_path)
+    run_parser(fluka_parser, project_fluka_json, tmp_path)
     with open(tmp_path / "fl_sim.inp") as f:
         assert f.read() == _expected_fluka_input_content

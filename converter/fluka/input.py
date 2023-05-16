@@ -73,11 +73,4 @@ STOP
         return self.template.format(
             energy=self.energy,
             number_of_particles=self.number_of_particles,
-            # Not sure if this is the correct way, but we can also
-            # replace line 14 and 65 with {energy} and {number_of_particles}
-            # and then use self.template.format(
-            #    energy = f"{'BEAM':<10}{self.energy:>10.4E}{'':>50}{'PROTON':<10},
-            #    number_of_particles = f"{'START':<10}{float(self.number_of_particles):>10}
-            # )
-            # This may be more resistant to future changes in the template
         )
