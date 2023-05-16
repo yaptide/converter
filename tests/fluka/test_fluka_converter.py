@@ -8,7 +8,7 @@ proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 * beam source
-BEAM      1.5000E-01                                                  PROTON
+BEAM      -1.500E-01                                                  PROTON
 * beam source position
 BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here

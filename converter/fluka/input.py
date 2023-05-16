@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class Input:
     """Class mapping of the fluka input file."""
 
-    energy: float = 90.0  # GeV FLUKA specific
+    energy_GeV: float = 90.0  # GeV FLUKA specific
     number_of_particles: int = 1000
 
     template: str = """TITLE
@@ -13,7 +13,7 @@ proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 * beam source
-BEAM      {energy:>10.4E}                                                  PROTON
+BEAM      {energy_GeV:>10.3E}                                                  PROTON
 * beam source position
 BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
@@ -71,6 +71,6 @@ STOP
     def __str__(self):
         """Return fluka input file as string"""
         return self.template.format(
-            energy=self.energy,
+            energy_GeV=-self.energy_GeV,
             number_of_particles=self.number_of_particles,
         )

@@ -14,7 +14,7 @@ class FlukaParser(Parser):
     def parse_configs(self, json: dict) -> None:
         """Parse energy and number of particles from json."""
         # Since energy in json is in MeV and FLUKA uses GeV, we need to convert it.
-        self.input.energy = float(json["beam"]["energy"]) * 1e-3
+        self.input.energy_GeV = float(json["beam"]["energy"]) * 1e-3
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
 
     def get_configs_json(self) -> dict:
