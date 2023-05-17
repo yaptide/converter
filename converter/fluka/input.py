@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from converter.fluka.card import Card
 
 
 @dataclass
@@ -13,7 +14,7 @@ proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 * beam source
-BEAM      {energy_GeV:>10.3E}                                                  PROTON
+{BEAM}
 * beam source position
 BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
@@ -64,13 +65,13 @@ USRBIN          -5.0      -0.1       0.0       500         1       500&
 * random number generator settings
 RANDOMIZ                   137
 * number of particles to simulate
-START     {number_of_particles:>10}
+{START}
 STOP
 """
 
     def __str__(self):
         """Return fluka input file as string"""
         return self.template.format(
-            energy_GeV=-self.energy_GeV,
-            number_of_particles=self.number_of_particles,
+            BEAM=Card(tag="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
+            START=Card(tag="START", what=[str(self.number_of_particles)]),
         )

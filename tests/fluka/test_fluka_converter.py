@@ -8,7 +8,7 @@ proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 * beam source
-BEAM      -1.500E-01                                                  PROTON
+BEAM           -0.15                                                  PROTON    
 * beam source position
 BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
@@ -59,14 +59,16 @@ USRBIN          -5.0      -0.1       0.0       500         1       500&
 * random number generator settings
 RANDOMIZ                   137
 * number of particles to simulate
-START          10000
+START        10000.0                                                            
 STOP
 """
+
 
 @pytest.fixture
 def fluka_parser() -> Parser:
     """Parser fixture."""
     return get_parser_from_str("fluka")
+
 
 def test_parser(fluka_parser: Parser) -> None:
     """Check if parser is created correctly."""
@@ -74,7 +76,10 @@ def test_parser(fluka_parser: Parser) -> None:
     assert fluka_parser.info["simulator"] == "fluka"
     assert fluka_parser.info["label"] == ""
 
-def test_if_inp_created(fluka_parser: Parser, project_fluka_json: dict, tmp_path: Path) -> None:
+
+def test_if_inp_created(
+    fluka_parser: Parser, project_fluka_json: dict, tmp_path: Path
+) -> None:
     """Check if fl_sim.inp file created."""
     run_parser(fluka_parser, project_fluka_json, tmp_path)
     with open(tmp_path / "fl_sim.inp") as f:
