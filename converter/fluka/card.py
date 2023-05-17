@@ -1,17 +1,18 @@
-from dataclasses import dataclass
-from typing import Optional, List
+from dataclasses import dataclass, field
 
 
 @dataclass
 class Card:
-    """Class for a fluka card."""
+    """Class representing one line (card) in Fluka input."""
 
     tag: str = ""
-    what: Optional[List[str]] = None
+    what: list[str] = field(default_factory=list)
     sdum: str = ""
 
     def __post_init__(self):
-        """Post init function."""
+        """Post init function, always called by automatically generated __init__."""
+        if len(self.what) > 6:
+            raise ValueError("'what' list can have at most 6 elements.")
         self.what = self.what or [""]
         self.what += [""] * (6 - len(self.what))
 

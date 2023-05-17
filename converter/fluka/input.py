@@ -6,8 +6,8 @@ from converter.fluka.card import Card
 class Input:
     """Class mapping of the fluka input file."""
 
-    energy_GeV: float = 90.0  # GeV FLUKA specific
-    number_of_particles: int = 1000
+    energy_GeV: float = 0.15  # GeV FLUKA specific
+    number_of_particles: int = 10000
 
     template: str = """TITLE
 proton beam simulation
