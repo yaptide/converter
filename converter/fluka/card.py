@@ -13,7 +13,6 @@ class Card:
         """Post init function, always called by automatically generated __init__."""
         if len(self.what) > 6:
             raise ValueError("'what' list can have at most 6 elements.")
-        self.what = self.what or [""]
         self.what += [""] * (6 - len(self.what))
 
     def __str__(self) -> str:
