@@ -1,14 +1,20 @@
-import pytest
-from pathlib import Path
-from converter.common import Parser
-from converter.api import get_parser_from_str, run_parser
+from dataclasses import dataclass
+from converter.fluka.card import Card
 
-_expected_fluka_input_content = """TITLE
+
+@dataclass
+class Input:
+    """Class mapping of the fluka input file."""
+
+    energy_GeV: float = 0.15  # GeV FLUKA specific
+    number_of_particles: int = 10000
+
+    template: str = """TITLE
 proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 * beam source
-BEAM           -0.15                                                  PROTON    
+{BEAM}
 * beam source position
 BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
@@ -59,28 +65,13 @@ USRBIN          -5.0      -0.1       0.0       500         1       500&
 * random number generator settings
 RANDOMIZ                   137
 * number of particles to simulate
-START        10000.0                                                            
+{START}
 STOP
 """
 
-
-@pytest.fixture
-def fluka_parser() -> Parser:
-    """Parser fixture."""
-    return get_parser_from_str("fluka")
-
-
-def test_parser(fluka_parser: Parser) -> None:
-    """Check if parser is created correctly."""
-    assert fluka_parser.info["version"] == "unknown"
-    assert fluka_parser.info["simulator"] == "fluka"
-    assert fluka_parser.info["label"] == ""
-
-
-def test_if_inp_created(
-    fluka_parser: Parser, project_fluka_json: dict, tmp_path: Path
-) -> None:
-    """Check if fl_sim.inp file created."""
-    run_parser(fluka_parser, project_fluka_json, tmp_path)
-    with open(tmp_path / "fl_sim.inp") as f:
-        assert f.read() == _expected_fluka_input_content
+    def __str__(self):
+        """Return fluka input file as string"""
+        return self.template.format(
+            BEAM=Card(tag="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
+            START=Card(tag="START", what=[str(self.number_of_particles)]),
+        )
