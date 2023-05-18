@@ -1,4 +1,3 @@
-import pytest
 from converter.fluka.card import Card
 
 
