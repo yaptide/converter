@@ -81,35 +81,36 @@ class BoxFigure(SolidFigure):
 
 def parse_figure(figure_dict: dict) -> SolidFigure:
     """Parse json containing information about figure to figure."""
-    figure_type = figure_dict["geometryData"]["geometryType"]
-    if figure_type == "CylinderGeometry":
-        return CylinderFigure(
-            uuid=figure_dict["uuid"],
-            name=figure_dict["name"],
-            position=tuple(figure_dict["geometryData"]["position"]),
-            rotation=tuple(figure_dict["geometryData"]["rotation"]),
-            radius_top=figure_dict["geometryData"]['parameters']["radius"],
-            radius_bottom=figure_dict["geometryData"]['parameters']["radius"],
-            height=figure_dict["geometryData"]['parameters']["depth"],
-        )
-    if figure_type == "BoxGeometry":
-        return BoxFigure(
-            uuid=figure_dict["uuid"],
-            name=figure_dict["name"],
-            position=tuple(figure_dict["geometryData"]["position"]),
-            rotation=tuple(figure_dict["geometryData"]["rotation"]),
-            y_edge_length=figure_dict["geometryData"]['parameters']["height"],
-            x_edge_length=figure_dict["geometryData"]['parameters']["width"],
-            z_edge_length=figure_dict["geometryData"]['parameters']["depth"],
-        )
-    if figure_type == "SphereGeometry":
-        return SphereFigure(
-            uuid=figure_dict["uuid"],
-            name=figure_dict["name"],
-            position=tuple(figure_dict["geometryData"]["position"]),
-            rotation=tuple(figure_dict["geometryData"]["rotation"]),
-            radius=figure_dict["geometryData"]['parameters']["radius"],
-        )
-
-    print(f"Invalid figure type \"{figure_type}\".")
-    raise ValueError("Parser type must be either 'CylinderGeometry', 'BoxGeometry' or 'SphereGeometry'")
+    geometry_type = figure_dict['geometryData'].get('geometryType')
+    match geometry_type:
+        case "CyliderGeometry" | "HollowCylinderGeometry":
+            return CylinderFigure(
+                uuid=figure_dict["uuid"],
+                name=figure_dict["name"],
+                position=tuple(figure_dict["geometryData"]["position"]),
+                rotation=tuple(figure_dict["geometryData"]["rotation"]),
+                radius_top=figure_dict["geometryData"]['parameters']["radius"],
+                radius_bottom=figure_dict["geometryData"]['parameters']["radius"],
+                height=figure_dict["geometryData"]['parameters']["depth"],
+            )
+        case "BoxGeometry":
+            return BoxFigure(
+                uuid=figure_dict["uuid"],
+                name=figure_dict["name"],
+                position=tuple(figure_dict["geometryData"]["position"]),
+                rotation=tuple(figure_dict["geometryData"]["rotation"]),
+                y_edge_length=figure_dict["geometryData"]['parameters']["height"],
+                x_edge_length=figure_dict["geometryData"]['parameters']["width"],
+                z_edge_length=figure_dict["geometryData"]['parameters']["depth"],
+            )
+        case "SphereGeometry":
+            return SphereFigure(
+                uuid=figure_dict["uuid"],
+                name=figure_dict["name"],
+                position=tuple(figure_dict["geometryData"]["position"]),
+                rotation=tuple(figure_dict["geometryData"]["rotation"]),
+                radius=figure_dict["geometryData"]['parameters']["radius"],
+            )
+        case _:
+            print(f"Invalid geometry of type \"{geometry_type}\" in figure \"{figure_dict.get('name')}\".")
+            raise ValueError("Geometry type must be either 'HollowCylinderGeometry', 'CylinderGeometry', 'BoxGeometry', or 'SphereGeometry'")

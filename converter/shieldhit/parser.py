@@ -4,12 +4,12 @@ from typing import Optional
 import converter.solid_figures as solid_figures
 from converter.common import Parser
 from converter.shieldhit.beam import (BeamConfig, BeamSourceType,
-                                      MultipleScatteringMode, StragglingModel)
+                                        MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity,
                                         ScoringFilter, ScoringOutput)
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material,
-                                     Zone)
-from converter.shieldhit.scoring_geometries import (ScoringCylinder,
+                                        Zone)
+from converter.shieldhit.detectors import (ScoringCylinder,
                                                     ScoringGeometry,
                                                     ScoringGlobal, ScoringMesh,
                                                     ScoringZone)
@@ -87,57 +87,61 @@ class ShieldhitParser(Parser):
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
-        self.detect_config.scoring_geometries = self._parse_scoring_geometries(json)
+        self.detect_config.detectors = self._parse_detectors(json)
         self.detect_config.scoring_filters = self._parse_scoring_filters(json)
         self.detect_config.scoring_outputs = self._parse_scoring_outputs(json)
 
-    def _parse_scoring_geometries(self, json: dict) -> list[ScoringGeometry]:
-        """Parses scoring geometries from the input json."""
-        geometries = []
-        for geometry_dict in json["detectManager"]["detectGeometries"]:
-            if geometry_dict["type"] == "Cyl":
-                geometries.append(
-                    ScoringCylinder(
-                        uuid=geometry_dict["uuid"],
-                        name=geometry_dict["name"],
-                        r_min=geometry_dict["data"]["innerRadius"],
-                        r_max=geometry_dict["data"]["radius"],
-                        r_bins=geometry_dict["data"]["radialSegments"],
-                        h_min=geometry_dict["position"][2] - geometry_dict["data"]["depth"] / 2,
-                        h_max=geometry_dict["position"][2] + geometry_dict["data"]["depth"] / 2,
-                        h_bins=geometry_dict["data"]["zSegments"],
+    def _parse_detectors(self, json: dict) -> list[ScoringGeometry]:
+        """Parses detectors from the input json."""
+        detectors = []
+        for detector_dict in json["detectorManager"].get("detectors"):
+            geometry_type = detector_dict['geometryData'].get('geometryType')
+            position = detector_dict['geometryData'].get('position')
+            parameters = detector_dict['geometryData'].get('parameters')
+            match geometry_type:
+                case "Cyl":
+                    detectors.append(
+                        ScoringCylinder(
+                            uuid=detector_dict["uuid"],
+                            name=detector_dict["name"],
+                            r_min=parameters["innerRadius"],
+                            r_max=parameters["radius"],
+                            r_bins=parameters["radialSegments"],
+                            h_min=position[2] - parameters["depth"] / 2,
+                            h_max=position[2] + parameters["depth"] / 2,
+                            h_bins=parameters["zSegments"],
+                        ))
+                case "Mesh":
+                    detectors.append(
+                        ScoringMesh(
+                            uuid=detector_dict["uuid"],
+                            name=detector_dict["name"],
+                            x_min=position[0] - parameters["width"] / 2,
+                            x_max=position[0] + parameters["width"] / 2,
+                            x_bins=parameters["xSegments"],
+                            y_min=position[1] - parameters["height"] / 2,
+                            y_max=position[1] + parameters["height"] / 2,
+                            y_bins=parameters["ySegments"],
+                            z_min=position[2] - parameters["depth"] / 2,
+                            z_max=position[2] + parameters["depth"] / 2,
+                            z_bins=parameters["zSegments"],
+                        ))
+                case "Zone":
+                    detectors.append(
+                        ScoringZone(
+                            uuid=detector_dict["uuid"],
+                            name=detector_dict["name"],
+                            first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),
+                        ))
+                case "All":
+                    detectors.append(ScoringGlobal(
+                        uuid=detector_dict["uuid"],
+                        name=detector_dict["name"],
                     ))
-            elif geometry_dict["type"] == "Mesh":
-                geometries.append(
-                    ScoringMesh(
-                        uuid=geometry_dict["uuid"],
-                        name=geometry_dict["name"],
-                        x_min=geometry_dict["position"][0] - geometry_dict["data"]["width"] / 2,
-                        x_max=geometry_dict["position"][0] + geometry_dict["data"]["width"] / 2,
-                        x_bins=geometry_dict["data"]["xSegments"],
-                        y_min=geometry_dict["position"][1] - geometry_dict["data"]["height"] / 2,
-                        y_max=geometry_dict["position"][1] + geometry_dict["data"]["height"] / 2,
-                        y_bins=geometry_dict["data"]["ySegments"],
-                        z_min=geometry_dict["position"][2] - geometry_dict["data"]["depth"] / 2,
-                        z_max=geometry_dict["position"][2] + geometry_dict["data"]["depth"] / 2,
-                        z_bins=geometry_dict["data"]["zSegments"],
-                    ))
-            elif geometry_dict["type"] == "Zone":
-                geometries.append(
-                    ScoringZone(
-                        uuid=geometry_dict["uuid"],
-                        name=geometry_dict["name"],
-                        first_zone_id=self._get_zone_index_by_uuid(geometry_dict["data"]["zoneUuid"]),
-                    ))
-            elif geometry_dict["type"] == "All":
-                geometries.append(ScoringGlobal(
-                    uuid=geometry_dict["uuid"],
-                    name=geometry_dict["name"],
-                ))
-            else:
-                raise ValueError(f"Invalid ScoringGeometry type: {geometry_dict['type']}")
+                case _:
+                    raise ValueError(f"Invalid ScoringGeometry type: {detector_dict['type']}")
 
-        return geometries
+        return detectors
 
     def _get_zone_index_by_uuid(self, zone_uuid: str) -> int:
         """Finds zone in the geo_mat_config object by its uuid and returns its simmulation index."""
@@ -155,8 +159,8 @@ class ShieldhitParser(Parser):
                 uuid=filter_dict["uuid"],
                 name=filter_dict["name"],
                 rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
-                       for rule_dict in filter_dict["rules"]],
-            ) for filter_dict in json["detectManager"]["filters"]
+                    for rule_dict in filter_dict["rules"]],
+            ) for filter_dict in json["scoringManager"]["filters"]
         ]
 
         return filters
@@ -167,26 +171,26 @@ class ShieldhitParser(Parser):
             ScoringOutput(
                 filename=output_dict["name"] + ".bdo",
                 fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
-                geometry=self._get_scoring_geometry_bu_uuid(output_dict["detectGeometry"])
-                if 'detectGeometry' in output_dict else None,
+                geometry=self._get_detector_bu_uuid(output_dict["detectorUuid"])
+                if 'detectorUuid' in output_dict else None,
                 medium=output_dict["medium"] if 'medium' in output_dict else None,
                 offset=output_dict["offset"] if 'offset' in output_dict else None,
                 primaries=output_dict["primaries"] if 'primaries' in output_dict else None,
                 quantities=[self._parse_output_quantity(quantity)
-                            for quantity in output_dict["quantities"]["active"]] if 'quantities' in output_dict else [],
+                            for quantity in output_dict.get("quantities",[])],
                 rescale=output_dict["rescale"] if 'rescale' in output_dict else None,
-            ) for output_dict in json["scoringManager"]["scoringOutputs"]
+            ) for output_dict in json["scoringManager"]["outputs"]
         ]
 
         return outputs
 
-    def _get_scoring_geometry_bu_uuid(self, geo_uuid: str) -> Optional[str]:
-        """Finds scoring geometry in the detect_config object by its uuid and returns its simmulation name."""
-        for scoring_geometry in self.detect_config.scoring_geometries:
-            if scoring_geometry.uuid == geo_uuid:
-                return scoring_geometry.name
+    def _get_detector_bu_uuid(self, geo_uuid: str) -> Optional[str]:
+        """Finds detector in the detect_config object by its uuid and returns its simmulation name."""
+        for detector in self.detect_config.detectors:
+            if detector.uuid == geo_uuid:
+                return detector.name
 
-        raise ValueError(f"No scoring geometry with uuid {geo_uuid}")
+        raise ValueError(f"No detector with uuid {geo_uuid}")
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
@@ -245,12 +249,12 @@ class ShieldhitParser(Parser):
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
         self.geo_mat_config.materials = [Material(material["uuid"], material["icru"])
-                                         for material in json["materialManager"]["materials"]]
+                                        for material in json["materialManager"].get("materials")]
 
     def _parse_figures(self, json: dict) -> None:
         """Parse figures from JSON"""
         self.geo_mat_config.figures = [
-            solid_figures.parse_figure(figure_dict) for figure_dict in json["scene"]["object"].get('children')
+            solid_figures.parse_figure(figure_dict) for figure_dict in json["figureManager"].get('figures')
         ]
 
     def _add_overridden_material(self, material: Material) -> None:

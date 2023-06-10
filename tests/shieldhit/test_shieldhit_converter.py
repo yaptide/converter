@@ -20,7 +20,7 @@ def test_project_json(project_shieldhit_json: dict) -> None:
     assert project_shieldhit_json
     assert "metadata" in project_shieldhit_json
     assert "project" in project_shieldhit_json
-    assert "scene" in project_shieldhit_json
+    assert "figureManager" in project_shieldhit_json
     assert "physic" in project_shieldhit_json
     assert "energyLoss" in project_shieldhit_json["physic"]
     assert "enableNuclearReactions" in project_shieldhit_json["physic"]

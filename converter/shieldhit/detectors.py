@@ -12,7 +12,7 @@ class ScoringGeometry(ABC):
 
 @dataclass(frozen=True)
 class ScoringGlobal(ScoringGeometry):
-    r"""\"All\" scoring geometry. Scores on the whole defined space."""
+    r"""\"All\" detector. Scores on the whole defined space."""
 
     name: str
 
@@ -26,7 +26,7 @@ class ScoringGlobal(ScoringGeometry):
 
 @dataclass(frozen=True)
 class ScoringCylinder(ScoringGeometry):
-    """Cylinder scoring geometry dataclass used in DetectConfig."""
+    """Cylinder detector dataclass used in DetectConfig."""
 
     name: str = "CylZ_Mesh"
     r_min: float = 0.
@@ -52,7 +52,7 @@ class ScoringCylinder(ScoringGeometry):
 
 @dataclass(frozen=True)
 class ScoringMesh(ScoringGeometry):
-    """Mesh scoring geometry dataclass used in DetectConfig."""
+    """Mesh detector dataclass used in DetectConfig."""
 
     name: str = "YZ_Mesh"
     x_min: float = -0.5

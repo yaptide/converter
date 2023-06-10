@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Optional
-from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringCylinder, ScoringMesh
+from converter.shieldhit.detectors import ScoringGeometry, ScoringCylinder, ScoringMesh
 
 
 @dataclass
@@ -96,7 +96,7 @@ class ScoringOutput:
 class DetectConfig:
     """Class mapping of the detect.dat config file."""
 
-    scoring_geometries: list[ScoringGeometry] = field(default_factory=lambda: [
+    detectors: list[ScoringGeometry] = field(default_factory=lambda: [
         ScoringCylinder(""),
         ScoringMesh(""),
     ])
@@ -110,7 +110,7 @@ class DetectConfig:
 
     def __str__(self):
         return '\n'.join([
-            "\n".join([str(geom) for geom in self.scoring_geometries]),
+            "\n".join([str(geom) for geom in self.detectors]),
             "\n".join([str(filter) for filter in self.scoring_filters]),
             "\n".join([str(output) for output in self.scoring_outputs]),
         ])
