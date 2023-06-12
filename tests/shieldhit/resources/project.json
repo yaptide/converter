@@ -595,7 +595,7 @@
         },
         "colorHex": 16776960,
         "numberOfParticles": 10000,
-        "beamSourceFile": {
+        "sourceFile": {
             "name": "",
             "value": ""
         },
