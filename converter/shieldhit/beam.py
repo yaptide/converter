@@ -10,6 +10,40 @@ class BeamSourceType(Enum):
 
     SIMPLE = "simple"
     FILE = "file"
+    
+    
+@unique
+class ModulatorSimulationMethod(Enum):
+    """Modulator simulation method for beam.dat file"""
+
+    MODULUS = 0
+    SAMPLING = 1
+    
+    @staticmethod
+    def from_str(value: str) -> "ModulatorSimulationMethod":
+        """Converts a string to a ModulatorSimulationMethod"""
+        for method in ModulatorSimulationMethod:
+            if method.name.lower == value:
+                return method
+
+        raise ValueError(f"Modulator simulation method not recognized: {value}")
+
+@unique 
+class ModulatorInterpretationMode(Enum):
+    """Modulator interpretation mode of data in the input files loaded with the USEBMOD card"""
+    
+    MATERIAL = 0
+    VACUMM = 1
+    
+    @staticmethod
+    def from_str(value: str) -> "ModulatorInterpretationMode":
+        """Converts a string to a ModulatorInterpretationMode"""
+        for mode in ModulatorInterpretationMode:
+            if mode.name.lower == value:
+                return mode
+        
+        raise ValueError(f"Modulator interpretation mode not recognized: {value}")
+    
 
 
 @unique
@@ -65,11 +99,23 @@ class BeamConfig:
     beam_dir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
     nuclear_reactions: bool = True
+    
+    modulator_source_filename: Optional[str] = None
+    modulator_source_file_content: Optional[str] = None
+    modulator_zone_id: Optional[int] = None
+    modulator_mode: ModulatorSimulationMethod = ModulatorSimulationMethod.MODULUS
+    modulator_simulation: ModulatorInterpretationMode = ModulatorInterpretationMode.MATERIAL
+    
     straggling: StragglingModel = StragglingModel.VAVILOV
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
     sad_template = "BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]"
+    modulator_template = """
+USEBMOD    {zone} {filename}  ! Zone# and file name for beam modulator
+BMODMC     {simulation}     ! Simulation method for beam modulator (0-Modulus, 1-Monte Carlo sampling)
+BMODTRANS  {mode}     ! Interpretation of thicknesses data in the config file (0-Material, 1-Vacuum)
+    """
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
     beam_source_filename: Optional[str] = None
     beam_source_file_content: Optional[str] = None
@@ -83,10 +129,11 @@ NSTAT       {n_stat:d}    0       ! NSTAT, Step of saving
 STRAGG          {straggling}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           {multiple_scattering}            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           {nuclear_reactions}            ! Nucl.Reac. switcher: 1-ON, 0-OFF
+{optional_beam_modulator_line}
 BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
 BEAMDIR {theta} {phi} ! Direction of the beam
 BEAMSIGMA  {beam_ext_x} {beam_ext_y}  ! Beam extension
-{optional_sad_parameter_line}
+{optional_beam_modulator_lines}
 DELTAE   {delta_e}   ! relative mean energy loss per transportation step
 """
 
@@ -149,7 +196,20 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
         sad_line = "! no BEAMSAD value"
         if self.sad_x is not None or self.sad_y is not None:
             sad_y_value = self.sad_y if self.sad_y is not None else ""
-            sad_line = BeamConfig.sad_template.format(sad_x=self.sad_x, sad_y=sad_y_value)
+            sad_line = BeamConfig.sad_template.format(
+                sad_x=self.sad_x, 
+                sad_y=sad_y_value
+            )
+            
+        # if beam modulator was defined, add it to the template
+        mod_lines = "! no beam modulator"
+        if self.modulator_source_filename is not None and self.modulator_source_file_content is not None and self.modulator_zone_id is not None:
+            mod_lines = BeamConfig.modulator_template.format(
+                zone=self.modulator_zone_id, 
+                filename=self.modulator_source_filename, 
+                simulation=self.modulator_simulation.value, 
+                mode=self.modulator_mode.value
+            )
 
         # prepare main template
         result = self.beam_dat_template.format(
@@ -157,6 +217,7 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             energy_spread=float(self.energy_spread),
             optional_energy_cut_off_line=cutoff_line,
             optional_sad_parameter_line=sad_line,
+            optional_beam_modulator_lines=mod_lines,
             n_stat=self.n_stat,
             pos_x=self.beam_pos[0],
             pos_y=self.beam_pos[1],

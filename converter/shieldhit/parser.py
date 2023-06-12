@@ -10,7 +10,7 @@ from converter.shieldhit.detect import (DetectConfig, OutputQuantity,
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material,
                                         Zone)
 from converter.shieldhit.detectors import (ScoringCylinder,
-                                                    ScoringGeometry,
+                                                    ScoringDetector,
                                                     ScoringGlobal, ScoringMesh,
                                                     ScoringZone)
 
@@ -27,8 +27,8 @@ class ShieldhitParser(Parser):
 
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
-        self._parse_beam(json)
         self._parse_geo_mat(json)
+        self._parse_beam(json)
         self._parse_detect(json)
 
     def _parse_beam(self, json: dict) -> None:
@@ -70,11 +70,11 @@ class ShieldhitParser(Parser):
                 self.beam_config.sad_x = None
                 self.beam_config.sad_y = None
 
-        if json["beam"].get("beamSourceType", "") == BeamSourceType.FILE.value:
+        if json["beam"].get("sourceType", "") == BeamSourceType.FILE.value:
             self.beam_config.beam_source_type = BeamSourceType.FILE
-            if "beamSourceFile" in json["beam"]:
-                self.beam_config.beam_source_filename = json["beam"]["beamSourceFile"].get("name")
-                self.beam_config.beam_source_file_content = json["beam"]["beamSourceFile"].get("value")
+            if "sourceFile" in json["beam"]:
+                self.beam_config.beam_source_filename = json["beam"]["sourceFile"].get("name")
+                self.beam_config.beam_source_file_content = json["beam"]["sourceFile"].get("value")
 
         if "physic" in json:
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
@@ -84,14 +84,23 @@ class ShieldhitParser(Parser):
                 json["physic"].get("energyModelStraggling", self.beam_config.straggling.value))
             self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
                 json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
+            
+        if "modulator" in json["specialComponentsManager"]:
+            modulator = json["specialComponentsManager"].get("modulator")
+            parameters = modulator['geometryData'].get('parameters')
+            sourceFile = modulator.get('sourceFile')
+            self.beam_config.modulator_source_filename = sourceFile.get('name')
+            self.beam_config.modulator_source_file_content = sourceFile.get('value')
+            self.beam_config.modulator_zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"]),
+            self.beam_config.modulator_simulation = modulator.get('simulationMethod')
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
         self.detect_config.detectors = self._parse_detectors(json)
-        self.detect_config.scoring_filters = self._parse_scoring_filters(json)
-        self.detect_config.scoring_outputs = self._parse_scoring_outputs(json)
+        self.detect_config.filters = self._parse_filters(json)
+        self.detect_config.outputs = self._parse_outputs(json)
 
-    def _parse_detectors(self, json: dict) -> list[ScoringGeometry]:
+    def _parse_detectors(self, json: dict) -> list[ScoringDetector]:
         """Parses detectors from the input json."""
         detectors = []
         for detector_dict in json["detectorManager"].get("detectors"):
@@ -151,8 +160,7 @@ class ShieldhitParser(Parser):
 
         raise ValueError(f"No zone with uuid \"{zone_uuid}\".")
 
-    @staticmethod
-    def _parse_scoring_filters(json: dict) -> list[ScoringFilter]:
+    def _parse_filters(self, json: dict) -> list[ScoringFilter]:
         """Parses scoring filters from the input json."""
         filters = [
             ScoringFilter(
@@ -165,7 +173,7 @@ class ShieldhitParser(Parser):
 
         return filters
 
-    def _parse_scoring_outputs(self, json: dict) -> list[ScoringOutput]:
+    def _parse_outputs(self, json: dict) -> list[ScoringOutput]:
         """Parses scoring outputs from the input json."""
         outputs = [
             ScoringOutput(
@@ -228,11 +236,11 @@ class ShieldhitParser(Parser):
 
     def _get_scoring_filter_by_uuid(self, filter_uuid: str) -> str:
         """Finds scoring filter in the detect_config object by its uuid and returns its simulation name."""
-        for scoring_filter in self.detect_config.scoring_filters:
+        for scoring_filter in self.detect_config.filters:
             if scoring_filter.uuid == filter_uuid:
                 return scoring_filter.name
 
-        raise ValueError(f"No scoring filter with uuid {filter_uuid} in {self.detect_config.scoring_filters}.")
+        raise ValueError(f"No scoring filter with uuid {filter_uuid} in {self.detect_config.filters}.")
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""

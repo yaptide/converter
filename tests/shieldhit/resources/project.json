@@ -595,11 +595,11 @@
         },
         "colorHex": 16776960,
         "numberOfParticles": 10000,
-        "beamSourceFile": {
+        "sourceFile": {
             "name": "",
             "value": ""
         },
-        "beamSourceType": "simple",
+        "sourceType": "simple",
         "uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
         "name": "Beam",
         "type": "Beam"

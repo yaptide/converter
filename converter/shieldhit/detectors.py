@@ -3,7 +3,7 @@ from abc import ABC
 
 
 @dataclass(frozen=True)
-class ScoringGeometry(ABC):
+class ScoringDetector(ABC):
     """Abstract geometry dataclass for DetectConfig."""
 
     uuid: str
@@ -11,7 +11,7 @@ class ScoringGeometry(ABC):
 
 
 @dataclass(frozen=True)
-class ScoringGlobal(ScoringGeometry):
+class ScoringGlobal(ScoringDetector):
     r"""\"All\" detector. Scores on the whole defined space."""
 
     name: str
@@ -25,7 +25,7 @@ class ScoringGlobal(ScoringGeometry):
 
 
 @dataclass(frozen=True)
-class ScoringCylinder(ScoringGeometry):
+class ScoringCylinder(ScoringDetector):
     """Cylinder detector dataclass used in DetectConfig."""
 
     name: str = "CylZ_Mesh"
@@ -51,7 +51,7 @@ class ScoringCylinder(ScoringGeometry):
 
 
 @dataclass(frozen=True)
-class ScoringMesh(ScoringGeometry):
+class ScoringMesh(ScoringDetector):
     """Mesh detector dataclass used in DetectConfig."""
 
     name: str = "YZ_Mesh"
@@ -82,7 +82,7 @@ class ScoringMesh(ScoringGeometry):
 
 
 @dataclass(frozen=True)
-class ScoringZone(ScoringGeometry):
+class ScoringZone(ScoringDetector):
     """Scoring zone dataclass used un DetectConfig."""
 
     name: str
