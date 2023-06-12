@@ -3,7 +3,7 @@ from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
-from converter.shieldhit.beam import (BeamConfig, BeamSourceType,
+from converter.shieldhit.beam import (BeamConfig, BeamSourceType, ModulatorSimulationMethod,
                                         MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity,
                                         ScoringFilter, ScoringOutput)
@@ -91,8 +91,10 @@ class ShieldhitParser(Parser):
             sourceFile = modulator.get('sourceFile')
             self.beam_config.modulator_source_filename = sourceFile.get('name')
             self.beam_config.modulator_source_file_content = sourceFile.get('value')
+            
             self.beam_config.modulator_zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"]),
-            self.beam_config.modulator_simulation = modulator.get('simulationMethod')
+            
+            self.beam_config.modulator_simulation = ModulatorSimulationMethod.from_str(modulator.get('simulationMethod'))
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
@@ -436,5 +438,9 @@ class ShieldhitParser(Parser):
             if not self.beam_config.beam_source_filename:
                 filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
             configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)
+            
+        if self.beam_config.modulator_source_filename is not None and self.beam_config.modulator_source_file_content is not None and self.beam_config.modulator_zone_id is not None:
+            filename_od_modulator_source_file : str = self.beam_config.modulator_source_filename
+            configs_json[filename_od_modulator_source_file] = str(self.beam_config.modulator_source_file_content)
 
         return configs_json
