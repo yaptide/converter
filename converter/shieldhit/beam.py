@@ -6,14 +6,16 @@ from typing import Optional
 
 class LabelledEnum(IntEnum):
     """Base class for enums with a label attribute"""
+
     def __new__(cls, value, label):
+
         if not isinstance(value, int):
             raise TypeError("Value must be an integer")
         obj = int.__new__(cls, value)
         obj._value_ = value
         obj.label = label
         return obj
-    
+
     @classmethod
     def from_str(cls, value: str) -> "LabelledEnum":
         """Converts a string to a LabelledEnum"""
@@ -23,60 +25,70 @@ class LabelledEnum(IntEnum):
 
         raise ValueError(f"{cls.__name__} has no value matching {value}")
 
+
 @unique
 class BeamSourceType(LabelledEnum):
     """Beam source type"""
 
     SIMPLE = (0, "simple")
     FILE = (1, "file")
-    
-    
+
+
 @unique
 class ModulatorSimulationMethod(LabelledEnum):
     """Modulator simulation method for beam.dat file"""
 
     MODULUS = (0, "modulus")
     SAMPLING = (1, "sampling")
-    
 
-@unique 
+
+@unique
 class ModulatorInterpretationMode(LabelledEnum):
     """Modulator interpretation mode of data in the input files loaded with the USEBMOD card"""
-    
+
     MATERIAL = (0, "material")
     VACUMM = (1, "vacumm")
+
 
 @unique
 class StragglingModel(LabelledEnum):
     """Straggle model"""
 
-    GAUSSIAN = (1,"Gaussian")
-    VAVILOV = (2,"Vavilov")
-    NO_STRAGGLING = (0,"no straggling")
+    GAUSSIAN = (1, "Gaussian")
+    VAVILOV = (2, "Vavilov")
+    NO_STRAGGLING = (0, "no straggling")
 
 
 @unique
 class MultipleScatteringMode(LabelledEnum):
     """Multiple scattering mode"""
 
-    GAUSSIAN = (1,"Gaussian")
-    MOLIERE = (2,"Moliere")
-    NO_SCATTERING = (0,"no scattering")
+    GAUSSIAN = (1, "Gaussian")
+    MOLIERE = (2, "Moliere")
+    NO_SCATTERING = (0, "no scattering")
 
 
 @dataclass(frozen=True)
 class BeamModulator():
+    """Beam modulator card dataclass used in BeamConfig."""
+
     filename: str
     file_content: str
     zone_id: int
     simulation: ModulatorSimulationMethod = ModulatorSimulationMethod.MODULUS
     mode: ModulatorInterpretationMode = ModulatorInterpretationMode.MATERIAL
+
     def __str__(self) -> str:
+        """Returns the string representation of the beam modulator card"""
         modulator_template = """USEBMOD         {zone} {filename} ! Zone# and file name for beam modulator
 BMODMC          {simulation}            ! Simulation method for beam modulator (0-Modulus, 1-Monte Carlo sampling)
 BMODTRANS       {mode}            ! Interpretation of thicknesses data in the config file (0-Material, 1-Vacuum)"""
-        return modulator_template.format(zone=self.zone_id, filename=self.filename, simulation=self.simulation, mode=self.mode)
-        
+        return modulator_template.format(
+            zone=self.zone_id,
+            filename=self.filename,
+            simulation=self.simulation,
+            mode=self.mode)
+
 
 @dataclass
 class BeamConfig:
@@ -95,9 +107,9 @@ class BeamConfig:
     beam_dir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
     nuclear_reactions: bool = True
-    
+
     modulator: Optional[BeamModulator] = None
-    
+
     straggling: StragglingModel = StragglingModel.VAVILOV
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
@@ -158,10 +170,9 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
         if self.sad_x is not None or self.sad_y is not None:
             sad_y_value = self.sad_y if self.sad_y is not None else ""
             sad_line = BeamConfig.sad_template.format(
-                sad_x=self.sad_x, 
-                sad_y=sad_y_value
-            )
-            
+                sad_x=self.sad_x,
+                sad_y=sad_y_value)
+
         # if beam modulator was defined, add it to the template
         mod_lines = f"{self.modulator if self.modulator is not None else '! no beam modulator'}"
 

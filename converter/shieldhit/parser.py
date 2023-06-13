@@ -3,16 +3,15 @@ from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
-from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode, ModulatorSimulationMethod,
-                                        MultipleScatteringMode, StragglingModel)
-from converter.shieldhit.detect import (DetectConfig, OutputQuantity,
-                                        ScoringFilter, ScoringOutput)
-from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material,
-                                        Zone)
-from converter.shieldhit.detectors import (ScoringCylinder,
-                                                    ScoringDetector,
-                                                    ScoringGlobal, ScoringMesh,
-                                                    ScoringZone)
+from converter.shieldhit.beam import (
+    BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
+    ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
+from converter.shieldhit.detect import (
+    DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
+from converter.shieldhit.geo import (
+    DefaultMaterial, GeoMatConfig, Material, Zone)
+from converter.shieldhit.detectors import (
+    ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
 
 class ShieldhitParser(Parser):
@@ -84,7 +83,7 @@ class ShieldhitParser(Parser):
                 json["physic"].get("energyModelStraggling", self.beam_config.straggling.value))
             self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
                 json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
-            
+
         if "modulator" in json["specialComponentsManager"]:
             modulator = json["specialComponentsManager"].get("modulator")
             parameters = modulator['geometryData'].get('parameters')
@@ -124,8 +123,8 @@ class ShieldhitParser(Parser):
                         r_bins=parameters["radialSegments"],
                         h_min=position[2] - parameters["depth"] / 2,
                         h_max=position[2] + parameters["depth"] / 2,
-                        h_bins=parameters["zSegments"],
-                    ))
+                        h_bins=parameters["zSegments"],))
+
             elif geometry_type == "Mesh":
                 detectors.append(
                     ScoringMesh(
@@ -139,15 +138,15 @@ class ShieldhitParser(Parser):
                         y_bins=parameters["ySegments"],
                         z_min=position[2] - parameters["depth"] / 2,
                         z_max=position[2] + parameters["depth"] / 2,
-                        z_bins=parameters["zSegments"],
-                    ))
+                        z_bins=parameters["zSegments"],))
+
             elif geometry_type == "Zone":
                 detectors.append(
                     ScoringZone(
                         uuid=detector_dict["uuid"],
                         name=detector_dict["name"],
-                        first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),
-                    ))
+                        first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),))
+
             elif geometry_type == "All":
                 detectors.append(ScoringGlobal(
                     uuid=detector_dict["uuid"],
@@ -166,14 +165,17 @@ class ShieldhitParser(Parser):
 
         raise ValueError(f"No zone with uuid \"{zone_uuid}\".")
 
-    def _parse_filters(self, json: dict) -> list[ScoringFilter]:
+    @staticmethod
+    def _parse_filters(json: dict) -> list[ScoringFilter]:
         """Parses scoring filters from the input json."""
         filters = [
             ScoringFilter(
                 uuid=filter_dict["uuid"],
                 name=filter_dict["name"],
-                rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
+                rules=[
+                    (rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
                     for rule_dict in filter_dict["rules"]],
+
             ) for filter_dict in json["scoringManager"]["filters"]
         ]
 
@@ -190,8 +192,10 @@ class ShieldhitParser(Parser):
                 medium=output_dict["medium"] if 'medium' in output_dict else None,
                 offset=output_dict["offset"] if 'offset' in output_dict else None,
                 primaries=output_dict["primaries"] if 'primaries' in output_dict else None,
-                quantities=[self._parse_output_quantity(quantity)
-                            for quantity in output_dict.get("quantities",[])],
+                quantities=[
+                    self._parse_output_quantity(quantity)
+                    for quantity in output_dict.get("quantities", [])],
+
                 rescale=output_dict["rescale"] if 'rescale' in output_dict else None,
             ) for output_dict in json["scoringManager"]["outputs"]
         ]
@@ -262,8 +266,9 @@ class ShieldhitParser(Parser):
 
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
-        self.geo_mat_config.materials = [Material(material["uuid"], material["icru"])
-                                        for material in json["materialManager"].get("materials")]
+        self.geo_mat_config.materials = [
+            Material(material["uuid"], material["icru"])for material in json["materialManager"].get("materials")
+        ]
 
     def _parse_figures(self, json: dict) -> None:
         """Parse figures from JSON"""
@@ -442,7 +447,7 @@ class ShieldhitParser(Parser):
             if not self.beam_config.beam_source_filename:
                 filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
             configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)
-            
+
         if self.beam_config.modulator is not None:
             filename_of_modulator_source_file : str = self.beam_config.modulator.filename
             configs_json[filename_of_modulator_source_file] = str(self.beam_config.modulator.file_content)
