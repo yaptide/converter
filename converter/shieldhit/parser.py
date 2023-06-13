@@ -3,7 +3,7 @@ from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
-from converter.shieldhit.beam import (BeamConfig, BeamSourceType, ModulatorSimulationMethod,
+from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode, ModulatorSimulationMethod,
                                         MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity,
                                         ScoringFilter, ScoringOutput)
@@ -89,12 +89,17 @@ class ShieldhitParser(Parser):
             modulator = json["specialComponentsManager"].get("modulator")
             parameters = modulator['geometryData'].get('parameters')
             sourceFile = modulator.get('sourceFile')
-            self.beam_config.modulator_source_filename = sourceFile.get('name')
-            self.beam_config.modulator_source_file_content = sourceFile.get('value')
-            
-            self.beam_config.modulator_zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"]),
-            
-            self.beam_config.modulator_simulation = ModulatorSimulationMethod.from_str(modulator.get('simulationMethod'))
+            zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"])
+            if(sourceFile is not None and zone_id is not None):
+                if(sourceFile.get('name') is None or sourceFile.get('value') is None):
+                    raise ValueError("Modulator source file name or content is not defined")
+                self.beam_config.modulator = BeamModulator(
+                    filename=sourceFile.get('name'),
+                    file_content=sourceFile.get('value'),
+                    zone_id=zone_id,
+                    simulation=ModulatorSimulationMethod.from_str(modulator.get('simulationMethod', 'modulus')),
+                    mode=ModulatorInterpretationMode.from_str(modulator.get('interpretationMode', 'material'))
+                )
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
@@ -438,8 +443,8 @@ class ShieldhitParser(Parser):
                 filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
             configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)
             
-        if self.beam_config.modulator_source_filename is not None and self.beam_config.modulator_source_file_content is not None and self.beam_config.modulator_zone_id is not None:
-            filename_od_modulator_source_file : str = self.beam_config.modulator_source_filename
-            configs_json[filename_od_modulator_source_file] = str(self.beam_config.modulator_source_file_content)
+        if self.beam_config.modulator is not None:
+            filename_of_modulator_source_file : str = self.beam_config.modulator.filename
+            configs_json[filename_of_modulator_source_file] = str(self.beam_config.modulator.file_content)
 
         return configs_json
