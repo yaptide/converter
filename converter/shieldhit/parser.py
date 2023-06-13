@@ -43,7 +43,7 @@ class ShieldhitParser(Parser):
         self.beam_config.beam_pos = tuple(json["beam"]["position"])
         self.beam_config.beam_dir = tuple(json["beam"]["direction"])
 
-        if "sigma" in json["beam"]:
+        if json["beam"].get("sigma") is not None:
             beam_type = json["beam"]["sigma"]["type"]
 
             if beam_type == "Gaussian":
@@ -56,7 +56,7 @@ class ShieldhitParser(Parser):
                 self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
 
-        if "sad" in json["beam"]:
+        if json["beam"].get("sad") is not None:
             beam_type = json["beam"]["sad"]["type"]
 
             if beam_type == "double":
@@ -75,7 +75,7 @@ class ShieldhitParser(Parser):
                 self.beam_config.beam_source_filename = json["beam"]["sourceFile"].get("name")
                 self.beam_config.beam_source_file_content = json["beam"]["sourceFile"].get("value")
 
-        if "physic" in json:
+        if json.get("physic") is not None:
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
             self.beam_config.nuclear_reactions = json["physic"].get(
                 "enableNuclearReactions", self.beam_config.nuclear_reactions)
@@ -84,13 +84,13 @@ class ShieldhitParser(Parser):
             self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
                 json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
 
-        if "modulator" in json["specialComponentsManager"]:
+        if json["specialComponentsManager"].get("modulator") is not None:
             modulator = json["specialComponentsManager"].get("modulator")
             parameters = modulator['geometryData'].get('parameters')
             sourceFile = modulator.get('sourceFile')
             zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"])
-            if(sourceFile is not None and zone_id is not None):
-                if(sourceFile.get('name') is None or sourceFile.get('value') is None):
+            if (sourceFile is not None and zone_id is not None):
+                if (sourceFile.get('name') is None or sourceFile.get('value') is None):
                     raise ValueError("Modulator source file name or content is not defined")
                 self.beam_config.modulator = BeamModulator(
                     filename=sourceFile.get('name'),
@@ -443,13 +443,13 @@ class ShieldhitParser(Parser):
         })
 
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
-            filename_of_beam_source_file : str = 'sobp.dat'
+            filename_of_beam_source_file: str = 'sobp.dat'
             if not self.beam_config.beam_source_filename:
                 filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
             configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)
 
         if self.beam_config.modulator is not None:
-            filename_of_modulator_source_file : str = self.beam_config.modulator.filename
+            filename_of_modulator_source_file: str = self.beam_config.modulator.filename
             configs_json[filename_of_modulator_source_file] = str(self.beam_config.modulator.file_content)
 
         return configs_json

@@ -267,3 +267,4 @@ cython_debug/
 
 **/*.dat
 !tests/shieldhit/resources/expected_shieldhit_output/*.dat
+.vscode/settings.json
