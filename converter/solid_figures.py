@@ -81,8 +81,8 @@ class BoxFigure(SolidFigure):
 
 def parse_figure(figure_dict: dict) -> SolidFigure:
     """Parse json containing information about figure to figure."""
-    figure_type = figure_dict["geometryData"]["geometryType"]
-    if figure_type == "CylinderGeometry":
+    geometry_type = figure_dict['geometryData'].get('geometryType')
+    if geometry_type in ("CyliderGeometry", "HollowCylinderGeometry"):
         return CylinderFigure(
             uuid=figure_dict["uuid"],
             name=figure_dict["name"],
@@ -92,7 +92,7 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
             radius_bottom=figure_dict["geometryData"]['parameters']["radius"],
             height=figure_dict["geometryData"]['parameters']["depth"],
         )
-    if figure_type == "BoxGeometry":
+    if geometry_type == "BoxGeometry":
         return BoxFigure(
             uuid=figure_dict["uuid"],
             name=figure_dict["name"],
@@ -102,7 +102,7 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
             x_edge_length=figure_dict["geometryData"]['parameters']["width"],
             z_edge_length=figure_dict["geometryData"]['parameters']["depth"],
         )
-    if figure_type == "SphereGeometry":
+    if geometry_type == "SphereGeometry":
         return SphereFigure(
             uuid=figure_dict["uuid"],
             name=figure_dict["name"],
@@ -110,6 +110,6 @@ def parse_figure(figure_dict: dict) -> SolidFigure:
             rotation=tuple(figure_dict["geometryData"]["rotation"]),
             radius=figure_dict["geometryData"]['parameters']["radius"],
         )
-
-    print(f"Invalid figure type \"{figure_type}\".")
-    raise ValueError("Parser type must be either 'CylinderGeometry', 'BoxGeometry' or 'SphereGeometry'")
+    print(f"Invalid geometry of type \"{geometry_type}\" in figure \"{figure_dict.get('name')}\".")
+    raise ValueError(
+        "Geometry type must be either 'HollowCylinderGeometry', 'CylinderGeometry', 'BoxGeometry', or 'SphereGeometry'")

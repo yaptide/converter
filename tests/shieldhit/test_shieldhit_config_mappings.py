@@ -13,6 +13,7 @@ NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
+! no beam modulator
 BEAMPOS 0 0 0 ! Position of the beam
 BEAMDIR 0.0 0.0 ! Direction of the beam
 BEAMSIGMA  -0.1 0.1  ! Beam extension

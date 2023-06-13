@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Optional
-from converter.shieldhit.scoring_geometries import ScoringGeometry, ScoringCylinder, ScoringMesh
+from converter.shieldhit.detectors import ScoringDetector, ScoringCylinder, ScoringMesh
 
 
 @dataclass
@@ -96,21 +96,21 @@ class ScoringOutput:
 class DetectConfig:
     """Class mapping of the detect.dat config file."""
 
-    scoring_geometries: list[ScoringGeometry] = field(default_factory=lambda: [
+    detectors: list[ScoringDetector] = field(default_factory=lambda: [
         ScoringCylinder(""),
         ScoringMesh(""),
     ])
 
-    scoring_filters: list[ScoringFilter] = field(default_factory=lambda: [])
+    filters: list[ScoringFilter] = field(default_factory=lambda: [])
 
-    scoring_outputs: list[ScoringOutput] = field(default_factory=lambda: [
+    outputs: list[ScoringOutput] = field(default_factory=lambda: [
         ScoringOutput("cylz.bdo", geometry="CylZ_Mesh", quantities=[OutputQuantity("DoseGy")]),
         ScoringOutput("yzmsh.bdo", geometry="YZ_Mesh", quantities=[OutputQuantity("DoseGy")]),
     ])
 
     def __str__(self):
         return '\n'.join([
-            "\n".join([str(geom) for geom in self.scoring_geometries]),
-            "\n".join([str(filter) for filter in self.scoring_filters]),
-            "\n".join([str(output) for output in self.scoring_outputs]),
+            "\n".join([str(geom) for geom in self.detectors]),
+            "\n".join([str(filter) for filter in self.filters]),
+            "\n".join([str(output) for output in self.outputs]),
         ])
