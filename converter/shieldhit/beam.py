@@ -228,8 +228,8 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             mod_lines = BeamConfig.modulator_template.format(
                 zone=self.modulator_zone_id, 
                 filename=self.modulator_source_filename, 
-                simulation=self.modulator_simulation, 
-                mode=self.modulator_mode
+                simulation=self.modulator_simulation.value, 
+                mode=self.modulator_mode.value
             )
 
         # prepare main template

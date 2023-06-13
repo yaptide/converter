@@ -109,47 +109,47 @@ class ShieldhitParser(Parser):
             geometry_type = detector_dict['geometryData'].get('geometryType')
             position = detector_dict['geometryData'].get('position')
             parameters = detector_dict['geometryData'].get('parameters')
-        if geometry_type == "Cyl":
-            detectors.append(
-                ScoringCylinder(
+            if geometry_type == "Cyl":
+                detectors.append(
+                    ScoringCylinder(
+                        uuid=detector_dict["uuid"],
+                        name=detector_dict["name"],
+                        r_min=parameters["innerRadius"],
+                        r_max=parameters["radius"],
+                        r_bins=parameters["radialSegments"],
+                        h_min=position[2] - parameters["depth"] / 2,
+                        h_max=position[2] + parameters["depth"] / 2,
+                        h_bins=parameters["zSegments"],
+                    ))
+            elif geometry_type == "Mesh":
+                detectors.append(
+                    ScoringMesh(
+                        uuid=detector_dict["uuid"],
+                        name=detector_dict["name"],
+                        x_min=position[0] - parameters["width"] / 2,
+                        x_max=position[0] + parameters["width"] / 2,
+                        x_bins=parameters["xSegments"],
+                        y_min=position[1] - parameters["height"] / 2,
+                        y_max=position[1] + parameters["height"] / 2,
+                        y_bins=parameters["ySegments"],
+                        z_min=position[2] - parameters["depth"] / 2,
+                        z_max=position[2] + parameters["depth"] / 2,
+                        z_bins=parameters["zSegments"],
+                    ))
+            elif geometry_type == "Zone":
+                detectors.append(
+                    ScoringZone(
+                        uuid=detector_dict["uuid"],
+                        name=detector_dict["name"],
+                        first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),
+                    ))
+            elif geometry_type == "All":
+                detectors.append(ScoringGlobal(
                     uuid=detector_dict["uuid"],
                     name=detector_dict["name"],
-                    r_min=parameters["innerRadius"],
-                    r_max=parameters["radius"],
-                    r_bins=parameters["radialSegments"],
-                    h_min=position[2] - parameters["depth"] / 2,
-                    h_max=position[2] + parameters["depth"] / 2,
-                    h_bins=parameters["zSegments"],
                 ))
-        elif geometry_type == "Mesh":
-            detectors.append(
-                ScoringMesh(
-                    uuid=detector_dict["uuid"],
-                    name=detector_dict["name"],
-                    x_min=position[0] - parameters["width"] / 2,
-                    x_max=position[0] + parameters["width"] / 2,
-                    x_bins=parameters["xSegments"],
-                    y_min=position[1] - parameters["height"] / 2,
-                    y_max=position[1] + parameters["height"] / 2,
-                    y_bins=parameters["ySegments"],
-                    z_min=position[2] - parameters["depth"] / 2,
-                    z_max=position[2] + parameters["depth"] / 2,
-                    z_bins=parameters["zSegments"],
-                ))
-        elif geometry_type == "Zone":
-            detectors.append(
-                ScoringZone(
-                    uuid=detector_dict["uuid"],
-                    name=detector_dict["name"],
-                    first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),
-                ))
-        elif geometry_type == "All":
-            detectors.append(ScoringGlobal(
-                uuid=detector_dict["uuid"],
-                name=detector_dict["name"],
-            ))
-        else:
-            raise ValueError(f"Invalid ScoringGeometry type: {detector_dict['type']}")
+            else:
+                raise ValueError(f"Invalid ScoringGeometry type: {detector_dict['type']}")
 
         return detectors
 
@@ -180,7 +180,7 @@ class ShieldhitParser(Parser):
             ScoringOutput(
                 filename=output_dict["name"] + ".bdo",
                 fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
-                geometry=self._get_detector_bu_uuid(output_dict["detectorUuid"])
+                geometry=self._get_detector_by_uuid(output_dict["detectorUuid"])
                 if 'detectorUuid' in output_dict else None,
                 medium=output_dict["medium"] if 'medium' in output_dict else None,
                 offset=output_dict["offset"] if 'offset' in output_dict else None,
@@ -193,13 +193,13 @@ class ShieldhitParser(Parser):
 
         return outputs
 
-    def _get_detector_bu_uuid(self, geo_uuid: str) -> Optional[str]:
+    def _get_detector_by_uuid(self, detect_uuid: str) -> Optional[str]:
         """Finds detector in the detect_config object by its uuid and returns its simulation name."""
         for detector in self.detect_config.detectors:
-            if detector.uuid == geo_uuid:
+            if detector.uuid == detect_uuid:
                 return detector.name
 
-        raise ValueError(f"No detector with uuid {geo_uuid}")
+        raise ValueError(f"No detector with uuid {detect_uuid}")
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""

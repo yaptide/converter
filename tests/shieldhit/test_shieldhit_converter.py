@@ -1,3 +1,4 @@
+from difflib import Differ
 import filecmp
 import logging
 from pathlib import Path
@@ -35,7 +36,16 @@ def test_if_expected_files_created(sh12a_parser: Parser, project_shieldhit_json 
     run_parser(sh12a_parser, project_shieldhit_json, tmp_path)
     assert (tmp_path / filename).exists()
     assert (path_to_dir_with_expected_output / filename).exists()
-    assert filecmp.cmp(tmp_path / filename, path_to_dir_with_expected_output / filename)
+    expected_equal_to_generated = filecmp.cmp(tmp_path / filename, path_to_dir_with_expected_output / filename)
+    if not expected_equal_to_generated:
+        logging.info("Expected file at %s", path_to_dir_with_expected_output / filename)
+        logging.info("Generated file at %s", tmp_path / filename)
+        logging.info("Difference between files:")
+        with open(tmp_path / filename) as generated_f, open(path_to_dir_with_expected_output / filename) as expected_f:
+            differ = Differ()
+            difference_lines = "\n".join(differ.compare(generated_f.readlines(), expected_f.readlines()))
+            logging.info("Difference between files: %s", difference_lines)
+    assert expected_equal_to_generated
 
 @pytest.mark.parametrize('filename', ['geo.dat'])
 @pytest.mark.skip(reason="Something is wrong with geo.dat file.")
@@ -46,4 +56,7 @@ def test_to_be_fixed(parser: Parser, default_json : dict, tmp_path : Path, filen
     dir_with_expected_files = Path(__file__).parent.parent / 'input_examples' / 'expected_shieldhit_output'
     assert (tmp_path / filename).exists()
     assert (dir_with_expected_files / filename).exists()
+    expected_equal_to_generated = filecmp.cmp(tmp_path / filename, dir_with_expected_files / filename)
+    if not expected_equal_to_generated:
+        logging.info("Expected file at %s", tmp_path / filename)
     assert filecmp.cmp(tmp_path / filename, dir_with_expected_files / filename)

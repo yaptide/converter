@@ -49,18 +49,18 @@ To run the unit tests run the following command in the project directory (inside
 # For Linux/MacOS
 python -m venv venv
 source venv/bin/activate
-pip install -r test_requirements.txt
 pip install -r requirements.txt
 pip install -e .
-pytest tests
+pip install -r test_requirements.txt
+pytest
 
-# For Windows
+# For Windowsfilecmp.cmp(tmp_path / filename, path_to_dir_with_expected_output / filename)
 python -m venv venv
 venv\Scripts\activate.bat
-pip install -r test_requirements.txt
 pip install -r requirements.txt
 pip install -e .
-pytest tests
+pip install -r test_requirements.txt
+pytest
 ```
 
 ## Credits
