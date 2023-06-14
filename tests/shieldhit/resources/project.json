@@ -284,24 +284,6 @@
             "version": 1,
             "type": "Manager",
             "generator": "SpecialComponentManager.toJSON"
-        },
-        "modulator": {
-            "name": "Beam Modulator",
-            "type": "BeamModulator",
-            "uuid": "94bc91cd-696e-40ea-ba50-2377873bf8b7",
-            "visible": true,
-            "colorHex": 16727357,
-            "geometryData": {
-                "geometryType": "Zone",
-                "parameters": {
-                    "zoneUuid": "9ee041c1-acc0-433f-bc66-90e057b72474"
-                }
-            },
-            "simulationMethod": "modulus",
-            "sourceFile": {
-                "name": "mod062.cfg",
-                "value": "* first column -> weights\n* second column -> thickness of air\n0\n0.231671 1.285641\n0.304357 1.210015\n0.362940 1.134389\n0.410139 1.058763\n0.451202 0.983137\n0.487594 0.907511\n0.520793 0.831885\n0.550829 0.756260\n0.578903 0.680634\n0.605100 0.605008\n0.629758 0.529382\n0.652911 0.453756\n0.674856 0.378130\n0.695837 0.302504\n0.715709 0.226878\n0.734886 0.151252\n0.752816 0.075626\n0.771844 0.000000\n"
-            }
         }
     },
     "scoringManager": {
