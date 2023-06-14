@@ -8,46 +8,27 @@
         "title": "Proton pencil beam in water",
         "description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
         "viewManager": {
-            "ViewPanelXY": {
+            "ViewPanel": {
                 "cameraMatrix": [
-                    1, 0, 0, 0, 0, 0.9999999999994964, 9.999999999621397e-7, 0,
-                    0, -9.999999999621397e-7, 0.9999999999994964, 0, 0,
-                    -0.00009999999999621423, 99.99999999994992, 1
-                ],
-                "clipPlane": {
-                    "planeConstant": 0,
-                    "visible": true
-                }
+                    1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 20,
+                    20.000000000000004, 1
+                ]
             },
             "ViewPanel3D": {
                 "cameraMatrix": [
-                    0.7071067811865477, 5.5511151231257815e-17,
-                    -0.707106781186547, 0, -0.4082482904638628,
+                    0.7071067811865476, 2.7755575615628907e-17,
+                    -0.7071067811865471, 0, -0.4082482904638628,
                     0.8164965809277258, -0.4082482904638629, 0,
-                    0.5773502691896248, 0.5773502691896252, 0.5773502691896255,
+                    0.5773502691896251, 0.5773502691896253, 0.5773502691896255,
                     0, 10, 10, 10.000000000000002, 1
                 ]
             },
-            "ViewPanelY": {
-                "cameraMatrix": [
-                    5.551115123125587e-16, -4.4408920985004704e-16,
-                    0.9999999999999649, 0, 0.9999999999994634,
-                    9.999999996956521e-7, -6.661338147750695e-16, 0,
-                    -9.999999998066744e-7, 0.9999999999994634,
-                    3.3306690738753473e-16, 0, -0.00009999999999998334,
-                    99.99999999994999, 6.1232339957357454e-21, 1
-                ],
-                "clipPlane": {
-                    "planeConstant": 0,
-                    "visible": true
-                }
-            },
             "ViewPanelX": {
                 "cameraMatrix": [
-                    1.1102230246251573e-16, 1.0000000000000007,
-                    2.2204460492503146e-16, 0, 9.999999995846643e-7,
-                    -4.4408920985006163e-16, 0.9999999999994978, 0,
-                    0.9999999999994978, -2.2204460492503082e-16,
+                    2.2204460492503146e-16, 1.0000000000000007,
+                    2.2204460492503146e-16, 0, 9.999999996956866e-7,
+                    -2.2204460492503084e-16, 0.9999999999994978, 0,
+                    0.9999999999994978, -2.2204460492503084e-16,
                     -9.999999996956866e-7, 0, 99.99999999994995, 0,
                     -0.0000999999999999833, 1
                 ],
@@ -56,16 +37,35 @@
                     "visible": true
                 }
             },
-            "ViewPanel": {
+            "ViewPanelXY": {
                 "cameraMatrix": [
-                    1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 20,
-                    20.000000000000004, 1
-                ]
+                    1, 0, 0, 0, 0, 0.9999999999994965, 9.999999999621397e-7, 0,
+                    0, -9.999999999621397e-7, 0.9999999999994965, 0, 0,
+                    -0.00009999999999621423, 99.99999999994992, 1
+                ],
+                "clipPlane": {
+                    "planeConstant": 0,
+                    "visible": true
+                }
+            },
+            "ViewPanelY": {
+                "cameraMatrix": [
+                    6.661338147750706e-16, -4.4408920985004704e-16,
+                    0.9999999999999649, 0, 0.9999999999994634,
+                    9.99999999917697e-7, -6.661338147750696e-16, 0,
+                    -9.99999999917697e-7, 0.9999999999994634,
+                    4.440892098500464e-16, 0, -0.00009999999999998334,
+                    99.99999999994999, 6.1232339957357454e-21, 1
+                ],
+                "clipPlane": {
+                    "planeConstant": 0,
+                    "visible": true
+                }
             }
         },
         "history": {
-            "undos": [],
-            "redos": []
+            "redos": [],
+            "undos": []
         }
     },
     "figureManager": {
@@ -84,14 +84,14 @@
                 "uuid": "7ab62ba9-6dba-4543-b50b-ce31e143d482",
                 "visible": true,
                 "geometryData": {
-                    "id": 955,
                     "geometryType": "HollowCylinderGeometry",
-                    "position": [0, 0, 10],
-                    "rotation": [0, 0, 0],
+                    "id": 5440,
                     "parameters": {
-                        "radius": 5,
-                        "depth": 20
-                    }
+                        "depth": 20,
+                        "radius": 5
+                    },
+                    "position": [0, 0, 10],
+                    "rotation": [0, 0, 0]
                 },
                 "colorHex": 0
             },
@@ -101,14 +101,14 @@
                 "uuid": "aeeffad9-ed86-44ae-bfe4-b5f78580741b",
                 "visible": true,
                 "geometryData": {
-                    "id": 957,
                     "geometryType": "HollowCylinderGeometry",
-                    "position": [0, 0, 10.5],
-                    "rotation": [0, 0, 0],
+                    "id": 5442,
                     "parameters": {
-                        "radius": 5.5,
-                        "depth": 22
-                    }
+                        "depth": 22,
+                        "radius": 5.5
+                    },
+                    "position": [0, 0, 10.5],
+                    "rotation": [0, 0, 0]
                 },
                 "colorHex": 0
             }
@@ -119,9 +119,12 @@
         "name": "Zones",
         "zones": [
             {
-                "uuid": "9ee041c1-acc0-433f-bc66-90e057b72474",
-                "name": "Water_phantom_zone",
+                "materialPropertiesOverrides": {},
                 "materialUuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
+                "name": "Water_phantom_zone",
+                "subscribedObjects": {
+                    "7ab62ba9-6dba-4543-b50b-ce31e143d482": 1
+                },
                 "unionOperations": [
                     [
                         {
@@ -130,17 +133,18 @@
                         }
                     ]
                 ],
-                "subscribedObjects": {
-                    "7ab62ba9-6dba-4543-b50b-ce31e143d482": 1
-                },
-                "materialPropertiesOverrides": {},
+                "uuid": "9ee041c1-acc0-433f-bc66-90e057b72474",
                 "visible": true,
                 "type": "BooleanZone"
             },
             {
-                "uuid": "a2c614cf-7074-4abe-a757-4a850f6731b3",
-                "name": "Vacuum_zone",
+                "materialPropertiesOverrides": {},
                 "materialUuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
+                "name": "Vacuum_zone",
+                "subscribedObjects": {
+                    "7ab62ba9-6dba-4543-b50b-ce31e143d482": 1,
+                    "aeeffad9-ed86-44ae-bfe4-b5f78580741b": 1
+                },
                 "unionOperations": [
                     [
                         {
@@ -153,30 +157,26 @@
                         }
                     ]
                 ],
-                "subscribedObjects": {
-                    "7ab62ba9-6dba-4543-b50b-ce31e143d482": 1,
-                    "aeeffad9-ed86-44ae-bfe4-b5f78580741b": 1
-                },
-                "materialPropertiesOverrides": {},
+                "uuid": "a2c614cf-7074-4abe-a757-4a850f6731b3",
                 "visible": true,
                 "type": "BooleanZone"
             }
         ],
         "worldZone": {
-            "uuid": "5a680f47-72ff-4e22-9eb5-99e5475f6712",
+            "uuid": "3fa6dad3-1cfd-4a52-b0be-66b9955ab7a1",
             "type": "WorldZone",
             "name": "World Zone",
             "materialUuid": "1dd2e8f0-6684-42c2-ad35-7aa55358204e",
             "marginMultiplier": 1.1,
             "geometryData": {
-                "id": 14,
                 "geometryType": "HollowCylinderGeometry",
-                "position": [0, 0, 10.5],
-                "rotation": [0, 0, 0],
+                "id": 14,
                 "parameters": {
-                    "radius": 6,
-                    "depth": 24
-                }
+                    "depth": 24,
+                    "radius": 6
+                },
+                "position": [0, 0, 10.5],
+                "rotation": [0, 0, 0]
             },
             "autoCalculate": false,
             "visible": true
@@ -200,10 +200,10 @@
                 "colorHex": 327424,
                 "geometryData": {
                     "parameters": {
-                        "radius": 5,
-                        "innerRadius": 0,
                         "depth": 20,
+                        "innerRadius": 0,
                         "radialSegments": 1,
+                        "radius": 5,
                         "zSegments": 400
                     },
                     "geometryType": "Cyl",
@@ -219,9 +219,9 @@
                 "colorHex": 65535,
                 "geometryData": {
                     "parameters": {
-                        "width": 0.5,
-                        "height": 4,
                         "depth": 20,
+                        "height": 4,
+                        "width": 0.5,
                         "xSegments": 1,
                         "ySegments": 80,
                         "zSegments": 400
@@ -239,10 +239,10 @@
                 "colorHex": 65535,
                 "geometryData": {
                     "parameters": {
-                        "radius": 5,
-                        "innerRadius": 0,
                         "depth": 0.1,
+                        "innerRadius": 0,
                         "radialSegments": 1,
+                        "radius": 5,
                         "zSegments": 1
                     },
                     "geometryType": "Cyl",
@@ -258,10 +258,10 @@
                 "colorHex": 65535,
                 "geometryData": {
                     "parameters": {
-                        "radius": 5,
-                        "innerRadius": 0,
                         "depth": 0.1,
+                        "innerRadius": 0,
                         "radialSegments": 1,
+                        "radius": 5,
                         "zSegments": 1
                     },
                     "geometryType": "Cyl",
@@ -302,15 +302,15 @@
                 "type": "Filter",
                 "rules": [
                     {
-                        "uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
                         "keyword": "Z",
                         "operator": "==",
+                        "uuid": "e5f50132-6d2a-4606-a58d-24a764d1a413",
                         "value": 1
                     },
                     {
-                        "uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
                         "keyword": "A",
                         "operator": "==",
+                        "uuid": "f25fb8bb-fdaa-49ae-9483-76bf6f8de0a6",
                         "value": 1
                     }
                 ]
@@ -321,21 +321,21 @@
                 "type": "Filter",
                 "rules": [
                     {
-                        "uuid": "624050ff-9761-4688-99e3-b3ba9592ae78",
                         "keyword": "Z",
                         "operator": "==",
+                        "uuid": "624050ff-9761-4688-99e3-b3ba9592ae78",
                         "value": 1
                     },
                     {
-                        "uuid": "6cef8b17-9337-46e5-b522-70a9d1b26324",
                         "keyword": "A",
                         "operator": "==",
+                        "uuid": "6cef8b17-9337-46e5-b522-70a9d1b26324",
                         "value": 1
                     },
                     {
-                        "uuid": "d9b7c82e-338f-40d9-b316-67ed0bab2eb1",
                         "keyword": "GEN",
                         "operator": "==",
+                        "uuid": "d9b7c82e-338f-40d9-b316-67ed0bab2eb1",
                         "value": 0
                     }
                 ]
@@ -346,21 +346,21 @@
                 "type": "Filter",
                 "rules": [
                     {
-                        "uuid": "3d485d37-4753-4afa-85ab-ed0f9bc5ae3b",
                         "keyword": "Z",
                         "operator": "==",
+                        "uuid": "3d485d37-4753-4afa-85ab-ed0f9bc5ae3b",
                         "value": 1
                     },
                     {
-                        "uuid": "b9b5c2a9-6625-409f-81e2-827799cef0a5",
                         "keyword": "A",
                         "operator": "==",
+                        "uuid": "b9b5c2a9-6625-409f-81e2-827799cef0a5",
                         "value": 1
                     },
                     {
-                        "uuid": "919e4280-15ad-449b-9495-1cf1ac0337bc",
                         "keyword": "GEN",
                         "operator": ">=",
+                        "uuid": "919e4280-15ad-449b-9495-1cf1ac0337bc",
                         "value": 1
                     }
                 ]
@@ -373,31 +373,31 @@
                 "name": "z_profile",
                 "quantities": [
                     {
-                        "name": "Dose",
-                        "uuid": "3b0bc80c-5d78-4899-870f-23167e99fe30",
                         "keyword": "Dose",
-                        "modifiers": []
+                        "modifiers": [],
+                        "name": "Dose",
+                        "uuid": "3b0bc80c-5d78-4899-870f-23167e99fe30"
                     },
                     {
-                        "name": "FluenceProtons",
-                        "uuid": "53ba1036-4975-4a96-a6bd-3d336fc72612",
-                        "keyword": "Fluence",
                         "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-                        "modifiers": []
+                        "keyword": "Fluence",
+                        "modifiers": [],
+                        "name": "FluenceProtons",
+                        "uuid": "53ba1036-4975-4a96-a6bd-3d336fc72612"
                     },
                     {
-                        "name": "FluencePrimaries",
-                        "uuid": "050f3919-a59b-45a4-9326-38d788c16ab7",
-                        "keyword": "Fluence",
                         "filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
-                        "modifiers": []
+                        "keyword": "Fluence",
+                        "modifiers": [],
+                        "name": "FluencePrimaries",
+                        "uuid": "050f3919-a59b-45a4-9326-38d788c16ab7"
                     },
                     {
-                        "name": "FluenceSecondaryProtons",
-                        "uuid": "b3286437-b2a1-4ee9-b7da-8cc2cc435fcd",
-                        "keyword": "Fluence",
                         "filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
-                        "modifiers": []
+                        "keyword": "Fluence",
+                        "modifiers": [],
+                        "name": "FluenceSecondaryProtons",
+                        "uuid": "b3286437-b2a1-4ee9-b7da-8cc2cc435fcd"
                     }
                 ],
                 "trace": false,
@@ -409,24 +409,24 @@
                 "name": "yz_profile",
                 "quantities": [
                     {
-                        "name": "Dose",
-                        "uuid": "828d1276-a60e-4e31-9da7-88c84587445a",
                         "keyword": "Dose",
-                        "modifiers": []
+                        "modifiers": [],
+                        "name": "Dose",
+                        "uuid": "828d1276-a60e-4e31-9da7-88c84587445a"
                     },
                     {
-                        "name": "FluenceProtons",
-                        "uuid": "be97ed10-07af-49d2-b91a-5bfe09c0c228",
-                        "keyword": "Fluence",
                         "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-                        "modifiers": []
+                        "keyword": "Fluence",
+                        "modifiers": [],
+                        "name": "FluenceProtons",
+                        "uuid": "be97ed10-07af-49d2-b91a-5bfe09c0c228"
                     },
                     {
-                        "name": "FluenceSecondaryProtons",
-                        "uuid": "69305c71-de72-466c-86bc-ba5e58635a9e",
-                        "keyword": "Fluence",
                         "filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
-                        "modifiers": []
+                        "keyword": "Fluence",
+                        "modifiers": [],
+                        "name": "FluenceSecondaryProtons",
+                        "uuid": "69305c71-de72-466c-86bc-ba5e58635a9e"
                     }
                 ],
                 "trace": false,
@@ -438,61 +438,61 @@
                 "name": "entrance",
                 "quantities": [
                     {
-                        "name": "Dose",
-                        "uuid": "9730c840-7163-4125-8596-7d26735c373a",
                         "keyword": "Dose",
-                        "modifiers": []
+                        "modifiers": [],
+                        "name": "Dose",
+                        "uuid": "9730c840-7163-4125-8596-7d26735c373a"
                     },
                     {
-                        "name": "KineticEnergyPrimaries",
-                        "uuid": "48b2c7a4-58c4-4ff7-816b-865ce146ae95",
-                        "keyword": "AvgEnergy",
                         "filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
-                        "modifiers": []
+                        "keyword": "AvgEnergy",
+                        "modifiers": [],
+                        "name": "KineticEnergyPrimaries",
+                        "uuid": "48b2c7a4-58c4-4ff7-816b-865ce146ae95"
                     },
                     {
+                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+                        "keyword": "AvgEnergy",
+                        "modifiers": [],
                         "name": "KineticEnergyProtons",
-                        "uuid": "a9164784-1770-48d5-a772-3342fb06efe9",
-                        "keyword": "AvgEnergy",
-                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-                        "modifiers": []
+                        "uuid": "a9164784-1770-48d5-a772-3342fb06efe9"
                     },
                     {
-                        "name": "KineticEnergySecondaryProtons",
-                        "uuid": "2bf3b68d-a855-443a-8ea0-2bf05eeb9e65",
-                        "keyword": "AvgEnergy",
                         "filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
-                        "modifiers": []
+                        "keyword": "AvgEnergy",
+                        "modifiers": [],
+                        "name": "KineticEnergySecondaryProtons",
+                        "uuid": "2bf3b68d-a855-443a-8ea0-2bf05eeb9e65"
                     },
                     {
-                        "name": "dLETProtons",
-                        "uuid": "d0c4addd-0775-420e-9240-d5ba3e279a2b",
+                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
                         "keyword": "dLET",
-                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-                        "modifiers": []
+                        "modifiers": [],
+                        "name": "dLETProtons",
+                        "uuid": "d0c4addd-0775-420e-9240-d5ba3e279a2b"
                     },
                     {
-                        "name": "tLETProtons",
-                        "uuid": "a4e9cac1-a643-4448-bc4a-89977101cc67",
+                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
                         "keyword": "tLET",
-                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-                        "modifiers": []
+                        "modifiers": [],
+                        "name": "tLETProtons",
+                        "uuid": "a4e9cac1-a643-4448-bc4a-89977101cc67"
                     },
                     {
-                        "name": "ProtonsKineticEnergySpectrum",
-                        "uuid": "de64c12b-15cc-4e72-9262-b5507a738c9f",
-                        "keyword": "Fluence",
                         "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+                        "keyword": "Fluence",
                         "modifiers": [
                             {
+                                "binsNumber": 640,
                                 "diffType": "E",
+                                "isLog": false,
                                 "lowerLimit": 0,
                                 "upperLimit": 160,
-                                "binsNumber": 640,
-                                "isLog": false,
                                 "uuid": "1afaf3d8-443f-4bac-8999-be914ff0691a"
                             }
-                        ]
+                        ],
+                        "name": "ProtonsKineticEnergySpectrum",
+                        "uuid": "de64c12b-15cc-4e72-9262-b5507a738c9f"
                     }
                 ],
                 "trace": false,
@@ -504,61 +504,61 @@
                 "name": "peak",
                 "quantities": [
                     {
-                        "name": "Dose",
-                        "uuid": "d13a9fc5-d13c-4e5a-9fc4-decfe15c9ee4",
                         "keyword": "Dose",
-                        "modifiers": []
+                        "modifiers": [],
+                        "name": "Dose",
+                        "uuid": "d13a9fc5-d13c-4e5a-9fc4-decfe15c9ee4"
                     },
                     {
-                        "name": "KineticEnergyPrimaries",
-                        "uuid": "54b85511-c885-41bd-a81d-a97842197764",
-                        "keyword": "AvgEnergy",
                         "filter": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
-                        "modifiers": []
+                        "keyword": "AvgEnergy",
+                        "modifiers": [],
+                        "name": "KineticEnergyPrimaries",
+                        "uuid": "54b85511-c885-41bd-a81d-a97842197764"
                     },
                     {
+                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+                        "keyword": "AvgEnergy",
+                        "modifiers": [],
                         "name": "KineticEnergyProtons",
-                        "uuid": "e7ff88d1-e46a-4a69-b676-e8e3ed1e67fd",
-                        "keyword": "AvgEnergy",
-                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-                        "modifiers": []
+                        "uuid": "e7ff88d1-e46a-4a69-b676-e8e3ed1e67fd"
                     },
                     {
-                        "name": "KineticEnergySecondaryProtons",
-                        "uuid": "95c292b9-966e-42fe-91a0-3d0f0db55876",
-                        "keyword": "AvgEnergy",
                         "filter": "6ba215e8-359e-447d-bac9-4f2808faed51",
-                        "modifiers": []
+                        "keyword": "AvgEnergy",
+                        "modifiers": [],
+                        "name": "KineticEnergySecondaryProtons",
+                        "uuid": "95c292b9-966e-42fe-91a0-3d0f0db55876"
                     },
                     {
-                        "name": "dLETProtons",
-                        "uuid": "efd9f82c-8e0e-4d3d-a22d-70a0cc11ef7b",
+                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
                         "keyword": "dLET",
-                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-                        "modifiers": []
+                        "modifiers": [],
+                        "name": "dLETProtons",
+                        "uuid": "efd9f82c-8e0e-4d3d-a22d-70a0cc11ef7b"
                     },
                     {
-                        "name": "tLETProtons",
-                        "uuid": "dac16bbd-e361-46d3-8eae-9c69571aea96",
+                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
                         "keyword": "tLET",
-                        "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
-                        "modifiers": []
+                        "modifiers": [],
+                        "name": "tLETProtons",
+                        "uuid": "dac16bbd-e361-46d3-8eae-9c69571aea96"
                     },
                     {
-                        "name": "ProtonsKineticEnergySpectrum",
-                        "uuid": "65f821c8-a654-4f6f-b666-0fdc8c925cf5",
-                        "keyword": "Fluence",
                         "filter": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
+                        "keyword": "Fluence",
                         "modifiers": [
                             {
+                                "binsNumber": 640,
                                 "diffType": "E",
+                                "isLog": false,
                                 "lowerLimit": 0,
                                 "upperLimit": 160,
-                                "binsNumber": 640,
-                                "isLog": false,
                                 "uuid": "07a5db58-a8ea-4175-93e7-9fe74ca14d34"
                             }
-                        ]
+                        ],
+                        "name": "ProtonsKineticEnergySpectrum",
+                        "uuid": "65f821c8-a654-4f6f-b666-0fdc8c925cf5"
                     }
                 ],
                 "trace": false,
@@ -567,39 +567,39 @@
         ]
     },
     "beam": {
-        "position": [0, 0, 0],
-        "direction": [0, 0, 1],
-        "energy": 150,
-        "energySpread": 1.5,
-        "energyLowCutoff": 0,
-        "energyHighCutoff": 1000,
-        "sigma": {
-            "type": "Gaussian",
-            "x": 0,
-            "y": 0
-        },
-        "sad": {
-            "type": "none",
-            "x": 0,
-            "y": 0
-        },
-        "divergence": {
-            "distanceToFocal": 0,
-            "x": 0,
-            "y": 0
-        },
-        "particle": {
-            "a": 1,
-            "id": 2,
-            "z": 1
-        },
-        "colorHex": 16776960,
-        "numberOfParticles": 10000,
         "sourceFile": {
             "name": "",
             "value": ""
         },
         "sourceType": "simple",
+        "colorHex": 16776960,
+        "direction": [0, 0, 1],
+        "divergence": {
+            "distanceToFocal": 0,
+            "x": 0,
+            "y": 0
+        },
+        "energy": 150,
+        "energyHighCutoff": 1000,
+        "energyLowCutoff": 0,
+        "energySpread": 1.5,
+        "numberOfParticles": 10000,
+        "particle": {
+            "a": 1,
+            "id": 2,
+            "z": 1
+        },
+        "position": [0, 0, 0],
+        "sad": {
+            "type": "none",
+            "x": 0,
+            "y": 0
+        },
+        "sigma": {
+            "type": "Gaussian",
+            "x": 0,
+            "y": 0
+        },
         "uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
         "name": "Beam",
         "type": "Beam"
@@ -607,35 +607,35 @@
     "materialManager": {
         "materials": [
             {
-                "uuid": "1dd2e8f0-6684-42c2-ad35-7aa55358204e",
-                "name": "BLACK HOLE",
+                "color": 196613,
+                "density": 1,
                 "icru": 0,
-                "density": 1,
-                "color": 196613
+                "name": "BLACK HOLE",
+                "uuid": "1dd2e8f0-6684-42c2-ad35-7aa55358204e"
             },
             {
-                "uuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e",
-                "name": "WATER, LIQUID",
-                "icru": 276,
-                "density": 1,
                 "color": 34047,
+                "density": 1,
+                "icru": 276,
+                "name": "WATER, LIQUID",
                 "opacity": 0.4,
-                "transparent": true
+                "transparent": true,
+                "uuid": "49ce56b9-ee48-4640-88d4-bcfd660d8c0e"
             },
             {
-                "uuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09",
-                "name": "VACUUM",
-                "icru": 1000,
-                "density": 1,
                 "color": 16119285,
+                "density": 1,
+                "icru": 1000,
+                "name": "VACUUM",
                 "opacity": 0.1,
-                "transparent": true
+                "transparent": true,
+                "uuid": "cd7c2eb0-e91f-4144-b4eb-536e4626cc09"
             }
         ],
         "selectedMaterials": {
+            "1dd2e8f0-6684-42c2-ad35-7aa55358204e": 1,
             "49ce56b9-ee48-4640-88d4-bcfd660d8c0e": 1,
-            "cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1,
-            "1dd2e8f0-6684-42c2-ad35-7aa55358204e": 1
+            "cd7c2eb0-e91f-4144-b4eb-536e4626cc09": 1
         },
         "uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF",
         "name": "Material Manager",
@@ -647,8 +647,8 @@
         }
     },
     "physic": {
-        "energyLoss": 0.03,
         "enableNuclearReactions": true,
+        "energyLoss": 0.03,
         "energyModelStraggling": "Vavilov",
         "multipleScattering": "Moliere"
     },
