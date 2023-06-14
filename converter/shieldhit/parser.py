@@ -89,8 +89,8 @@ class ShieldhitParser(Parser):
             parameters = modulator['geometryData'].get('parameters')
             sourceFile = modulator.get('sourceFile')
             zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"])
-            if (sourceFile is not None and zone_id is not None):
-                if (sourceFile.get('name') is None or sourceFile.get('value') is None):
+            if sourceFile is not None and zone_id is not None:
+                if sourceFile.get('name') is None or sourceFile.get('value') is None:
                     raise ValueError("Modulator source file name or content is not defined")
                 self.beam_config.modulator = BeamModulator(
                     filename=sourceFile.get('name'),
