@@ -163,15 +163,20 @@ class Material:
     uuid: str
     icru: int
     density: Optional[float] = None
+    custom_stopping_power: Optional[bool] = False
     idx: int = 0
 
     property_template = """{name} {value}\n"""
+    property_template_name = """{name}\n"""
 
     def __str__(self) -> str:
         result = self.property_template.format(name="MEDIUM", value=self.idx)
         result += self.property_template.format(name="ICRU", value=self.icru)
         if self.density is not None:
             result += self.property_template.format(name="RHO", value=format_float(self.density, 10))
+        
+        if self.custom_stopping_power:
+            result += self.property_template_name.format(name="LOADDEDX")
 
         result += "END\n"
         return result

@@ -293,11 +293,12 @@ class ShieldhitParser(Parser):
         ]
 
         for idx, zone in enumerate(json["zoneManager"]["zones"]):
-            if 'customMaterial' in zone and zone['customMaterial'] is not None:
+            if 'customMaterial' in zone and zone['customMaterial'] is not None and 'materialPropertiesOverrides' in zone: 
                 overridden_material = Material(
                     uuid=zone['customMaterial']['uuid'],
                     icru=zone['customMaterial']['icru'],
-                    density=zone['customMaterial']['density'])
+                    density=zone['materialPropertiesOverrides'].get('density', None),
+                    custom_stopping_power=zone['materialPropertiesOverrides'].get('customStoppingPower', False))
 
                 self._add_overridden_material(overridden_material)
 
