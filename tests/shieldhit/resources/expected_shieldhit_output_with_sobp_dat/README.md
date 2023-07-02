@@ -1,0 +1,1 @@
+Output files generated using the UI ("Input files" / "Generate from editor").
