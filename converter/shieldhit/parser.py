@@ -69,7 +69,7 @@ class ShieldhitParser(Parser):
                 self.beam_config.sad_x = None
                 self.beam_config.sad_y = None
 
-        if json["beam"].get("sourceType", "") == BeamSourceType.FILE.value:
+        if json["beam"].get("sourceType", "") == BeamSourceType.FILE.label:
             self.beam_config.beam_source_type = BeamSourceType.FILE
             if "sourceFile" in json["beam"]:
                 self.beam_config.beam_source_filename = json["beam"]["sourceFile"].get("name")
