@@ -3,15 +3,11 @@ from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
-from converter.shieldhit.beam import (
-    BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
-    ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
-from converter.shieldhit.detect import (
-    DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
-from converter.shieldhit.geo import (
-    DefaultMaterial, GeoMatConfig, Material, Zone)
-from converter.shieldhit.detectors import (
-    ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
+from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
+                                      ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
+from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
+from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone)
+from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
 
 class ShieldhitParser(Parser):
