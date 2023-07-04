@@ -3,7 +3,7 @@ from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
-from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
+from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode, 
                                       ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone)
@@ -386,7 +386,7 @@ class ShieldhitParser(Parser):
         list_of_operations = [item for ops in operations for item in ops]
         parsed_operations = []
         for operation in list_of_operations:
-            # lists are numbered from 0, but shieldhit figures are numbered from 1
+            # lists are numbered from 0, but SHIELD-HIT12A figures are numbered from 1
             figure_id = self._get_figure_index_by_uuid(operation["objectUuid"]) + 1
             if operation["mode"] == "union":
                 parsed_operations.append({figure_id})
