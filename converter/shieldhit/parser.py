@@ -3,15 +3,12 @@ from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
-from converter.shieldhit.beam import (
-    BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
-    ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
-from converter.shieldhit.detect import (
-    DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
-from converter.shieldhit.geo import (
-    DefaultMaterial, GeoMatConfig, Material, Zone)
-from converter.shieldhit.detectors import (
-    ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
+from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
+                                      ModulatorSimulationMethod, MultipleScatteringMode,   # skipcq: FLK-E101
+                                      StragglingModel)  # skipcq: FLK-E101
+from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
+from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone)
+from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
 
 class ShieldhitParser(Parser):
@@ -69,7 +66,7 @@ class ShieldhitParser(Parser):
                 self.beam_config.sad_x = None
                 self.beam_config.sad_y = None
 
-        if json["beam"].get("sourceType", "") == BeamSourceType.FILE.value:
+        if json["beam"].get("sourceType", "") == BeamSourceType.FILE.label:
             self.beam_config.beam_source_type = BeamSourceType.FILE
             if "sourceFile" in json["beam"]:
                 self.beam_config.beam_source_filename = json["beam"]["sourceFile"].get("name")
@@ -390,7 +387,7 @@ class ShieldhitParser(Parser):
         list_of_operations = [item for ops in operations for item in ops]
         parsed_operations = []
         for operation in list_of_operations:
-            # lists are numbered from 0, but shieldhit figures are numbered from 1
+            # lists are numbered from 0, but SHIELD-HIT12A figures are numbered from 1
             figure_id = self._get_figure_index_by_uuid(operation["objectUuid"]) + 1
             if operation["mode"] == "union":
                 parsed_operations.append({figure_id})
