@@ -10,6 +10,7 @@ from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFil
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone)
 from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
+
 class ShieldhitParser(Parser):
     """A SHIELD-HIT12A parser"""
 
