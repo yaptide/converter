@@ -8,7 +8,6 @@ from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType,
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone)
 from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
-FLK
 
 class ShieldhitParser(Parser):
     """A SHIELD-HIT12A parser"""
