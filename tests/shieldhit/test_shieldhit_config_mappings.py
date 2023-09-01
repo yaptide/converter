@@ -13,11 +13,12 @@ NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
-BEAMPOS 0 0 0 ! Position of the beam
-BEAMDIR 0.0 0.0 ! Direction of the beam
-BEAMSIGMA  -0.1 0.1  ! Beam extension
+! no beam modulator
+BEAMPOS         0 0 0 ! Position of the beam
+BEAMDIR         0.0 0.0 ! Direction of the beam
+BEAMSIGMA       -0.1 0.1  ! Beam extension
 ! no BEAMSAD value
-DELTAE   0.03   ! relative mean energy loss per transportation step
+DELTAE          0.03   ! relative mean energy loss per transportation step
 """
 
 _Beam_template_default = _Beam_template.format(energy=150., energy_spread=1.5, nstat=10000)
@@ -93,7 +94,7 @@ def test_energy_cutoff() -> None:
     beam = BeamConfig()
     beam.energy_low_cutoff = 0.0
     beam.energy_high_cutoff = 10.0
-    assert "TCUT0 0.0 10.0  ! energy cutoffs [MeV]" in str(beam)
+    assert "TCUT0       0.0 10.0  ! energy cutoffs [MeV]" in str(beam)
 
     beam.energy_low_cutoff = None
     assert "TCUT0" not in str(beam)

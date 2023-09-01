@@ -634,43 +634,43 @@
             "generator": "ScoringManager.toJSON"
         }
     },
-    "beam": {
-        "name": "Beam",
-        "type": "Beam",
-        "uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
-        "position": [0, 0, 0],
-        "direction": [0, 0, 1],
-        "energy": 150,
-        "energySpread": 1.5,
-        "energyLowCutoff": 0,
-        "energyHighCutoff": 1000,
-        "sigma": {
-            "type": "Gaussian",
-            "x": 0,
-            "y": 0
-        },
-        "sad": {
-            "type": "none",
-            "x": 0,
-            "y": 0
-        },
-        "divergence": {
-            "distanceToFocal": 0,
-            "x": 0,
-            "y": 0
-        },
-        "particle": {
-            "a": 1,
-            "id": 2,
-            "z": 1
-        },
-        "colorHex": 16776960,
-        "numberOfParticles": 10000,
-        "sourceFile": {
-            "name": "",
-            "value": ""
-        },
-        "sourceType": "simple"
+	"beam": {
+		"name": "Beam",
+		"type": "Beam",
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
+		"position": [0,0,0],
+		"direction": [0,0,1],
+		"energy": 150,
+		"energySpread": 1.5,
+		"energyLowCutoff": 0,
+		"energyHighCutoff": 1000,
+		"sigma": {
+			"type": "Gaussian",
+			"x": 0,
+			"y": 0
+		},
+		"sad": {
+			"type": "none",
+			"x": 0,
+			"y": 0
+		},
+		"divergence": {
+			"distanceToFocal": 0,
+			"x": 0,
+			"y": 0
+		},
+		"particle": {
+			"a": 1,
+			"id": 2,
+			"z": 1
+		},
+		"colorHex": 16776960,
+		"numberOfParticles": 10000,
+		"sourceFile": {
+			"name": "sobp.dat",
+			"value": "*ENERGY(GEV) SigmaT0(GEV) X(CM)   Y(CM)    FWHMx(cm) FWHMy(cm) WEIGHT\n0.149824     0.00073349    4.76    -4.44    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76    -3.89    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76    -3.33    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76    -2.78    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76    -2.22    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76    -1.67    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76    -1.11    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76    -0.56    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76    -0.00    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76     0.56    0.91     0.66     7.4970e+07\n0.149824     0.00073349    4.76     1.11    0.91     0.66     7.4970e+07\n"
+		},
+		"sourceType": "file"
     },
     "physic": {
         "energyLoss": 0.03,

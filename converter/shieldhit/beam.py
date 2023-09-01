@@ -1,51 +1,98 @@
 import math as m
 from dataclasses import dataclass
-from enum import Enum, unique
-from typing import Optional
+from enum import IntEnum, unique
+from typing import Optional, TypeVar, Type
+
+
+T = TypeVar("T", bound="LabelledEnum")
+
+
+class LabelledEnum(IntEnum):
+    """Base class for enums with a label attribute"""
+
+    label: str
+
+    def __new__(cls, value, label):
+
+        if not isinstance(value, int):
+            raise TypeError("Value must be an integer")
+        obj = int.__new__(cls, value)
+        obj._value_ = value
+        obj.label = label
+        return obj
+
+    @classmethod
+    def from_str(cls: Type[T], value: str) -> T:
+        """Converts a string to a LabelledEnum"""
+        for method in cls:
+            if method.label == value:
+                return method
+
+        raise ValueError(f"{cls.__name__} has no value matching {value}")
 
 
 @unique
-class BeamSourceType(Enum):
+class BeamSourceType(LabelledEnum):
     """Beam source type"""
 
-    SIMPLE = "simple"
-    FILE = "file"
+    SIMPLE = (0, "simple")
+    FILE = (1, "file")
 
 
 @unique
-class StragglingModel(Enum):
+class ModulatorSimulationMethod(LabelledEnum):
+    """Modulator simulation method for beam.dat file"""
+
+    MODULUS = (0, "modulus")
+    SAMPLING = (1, "sampling")
+
+
+@unique
+class ModulatorInterpretationMode(LabelledEnum):
+    """Modulator interpretation mode of data in the input files loaded with the USEBMOD card"""
+
+    MATERIAL = (0, "material")
+    VACUMM = (1, "vacumm")
+
+
+@unique
+class StragglingModel(LabelledEnum):
     """Straggle model"""
 
-    GAUSSIAN = "Gaussian"
-    VAVILOV = "Vavilov"
-    NO_STRAGGLING = "no straggling"
-
-    @staticmethod
-    def from_str(value: str) -> "StragglingModel":
-        """Documentation needed"""
-        for model in StragglingModel:
-            if model.value == value:
-                return model
-
-        raise ValueError(f"Straggle not recognized:{value}")
+    GAUSSIAN = (1, "Gaussian")
+    VAVILOV = (2, "Vavilov")
+    NO_STRAGGLING = (0, "no straggling")
 
 
 @unique
-class MultipleScatteringMode(Enum):
+class MultipleScatteringMode(LabelledEnum):
     """Multiple scattering mode"""
 
-    GAUSSIAN = "Gaussian"
-    MOLIERE = "Moliere"
-    NO_SCATTERING = "no scattering"
+    GAUSSIAN = (1, "Gaussian")
+    MOLIERE = (2, "Moliere")
+    NO_SCATTERING = (0, "no scattering")
 
-    @staticmethod
-    def from_str(value: str) -> "MultipleScatteringMode":
-        """Documentation needed"""
-        for model in MultipleScatteringMode:
-            if model.value == value:
-                return model
 
-        raise ValueError(f"Multiple scattering mode not recognized:{value}")
+@dataclass(frozen=True)
+class BeamModulator():
+    """Beam modulator card dataclass used in BeamConfig."""
+
+    filename: str
+    file_content: str
+    zone_id: int
+    simulation: ModulatorSimulationMethod = ModulatorSimulationMethod.MODULUS
+    mode: ModulatorInterpretationMode = ModulatorInterpretationMode.MATERIAL
+
+    def __str__(self) -> str:
+        """Returns the string representation of the beam modulator card"""
+        modulator_template = """USEBMOD         {zone} {filename} ! Zone# and file name for beam modulator
+BMODMC          {simulation}            ! Simulation method for beam modulator (0-Modulus, 1-Monte Carlo sampling)
+BMODTRANS       {mode}            ! Interpretation of thicknesses data in the config file (0-Material, 1-Vacuum)"""
+        return modulator_template.format(
+            zone=self.zone_id,
+            filename=self.filename,
+            simulation=self.simulation,
+            mode=self.mode)
 
 
 @dataclass
@@ -60,15 +107,18 @@ class BeamConfig:
     beam_ext_y: float = 0.1  # [cm]
     sad_x: Optional[float] = None  # [cm]
     sad_y: Optional[float] = None  # [cm]
-    nstat: int = 10000
-    beampos: tuple[float, float, float] = (0, 0, 0)  # [cm]
-    beamdir: tuple[float, float, float] = (0, 0, 1)  # [cm]
+    n_stat: int = 10000
+    beam_pos: tuple[float, float, float] = (0, 0, 0)  # [cm]
+    beam_dir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
     nuclear_reactions: bool = True
+
+    modulator: Optional[BeamModulator] = None
+
     straggling: StragglingModel = StragglingModel.VAVILOV
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
-    energy_cutoff_template = "TCUT0 {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
+    energy_cutoff_template = "TCUT0       {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
     sad_template = "BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
     beam_source_filename: Optional[str] = None
@@ -79,15 +129,16 @@ RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 {optional_energy_cut_off_line}
-NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
+NSTAT       {n_stat:d}    0       ! NSTAT, Step of saving
 STRAGG          {straggling}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           {multiple_scattering}            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           {nuclear_reactions}            ! Nucl.Reac. switcher: 1-ON, 0-OFF
-BEAMPOS {pos_x} {pos_y} {pos_z} ! Position of the beam
-BEAMDIR {theta} {phi} ! Direction of the beam
-BEAMSIGMA  {beam_ext_x} {beam_ext_y}  ! Beam extension
+{optional_beam_modulator_lines}
+BEAMPOS         {pos_x} {pos_y} {pos_z} ! Position of the beam
+BEAMDIR         {theta} {phi} ! Direction of the beam
+BEAMSIGMA       {beam_ext_x} {beam_ext_y}  ! Beam extension
 {optional_sad_parameter_line}
-DELTAE   {delta_e}   ! relative mean energy loss per transportation step
+DELTAE          {delta_e}   ! relative mean energy loss per transportation step
 """
 
     @staticmethod
@@ -100,42 +151,18 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
         """
         x, y, z = vector
         r = m.sqrt(x**2 + y**2 + z**2)
-        theta = m.degrees(m.acos(z / r))  # acos returns the angle in radians between 0 and pi
-        phi = m.degrees(m.atan2(y, x))  # atan2 returns the angle in radians between -pi and pi
+        # acos returns the angle in radians between 0 and pi
+        theta = m.degrees(m.acos(z / r))
+        # atan2 returns the angle in radians between -pi and pi
+        phi = m.degrees(m.atan2(y, x))
         # lets ensure the angle in degrees is always between 0 and 360, as SHIELD-HIT12A requires
         if phi < 0.:
             phi += 360.
         return theta, phi, r
 
-    @staticmethod
-    def _parse_straggle(value: StragglingModel) -> int:
-        """Documentation needed"""
-        if value == StragglingModel.GAUSSIAN:
-            return 1
-        if value == StragglingModel.VAVILOV:
-            return 2
-        if value == StragglingModel.NO_STRAGGLING:
-            return 0
-
-        # return default value if no reasonable value is provided
-        return 2
-
-    @staticmethod
-    def _parse_multiple_scattering(value: MultipleScatteringMode) -> int:
-        """Documentation needed"""
-        if value == MultipleScatteringMode.GAUSSIAN:
-            return 1
-        if value == MultipleScatteringMode.MOLIERE:
-            return 2
-        if value == MultipleScatteringMode.NO_SCATTERING:
-            return 0
-
-        # return default value if no reasonable value is provided
-        return 2
-
     def __str__(self) -> str:
         """Return the beam.dat config file as a string."""
-        theta, phi, _ = BeamConfig.cartesian2spherical(self.beamdir)
+        theta, phi, _ = BeamConfig.cartesian2spherical(self.beam_dir)
 
         # if energy cutoffs are defined, add them to the template
         cutoff_line = "! no energy cutoffs"
@@ -149,7 +176,12 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
         sad_line = "! no BEAMSAD value"
         if self.sad_x is not None or self.sad_y is not None:
             sad_y_value = self.sad_y if self.sad_y is not None else ""
-            sad_line = BeamConfig.sad_template.format(sad_x=self.sad_x, sad_y=sad_y_value)
+            sad_line = BeamConfig.sad_template.format(
+                sad_x=self.sad_x,
+                sad_y=sad_y_value)
+
+        # if beam modulator was defined, add it to the template
+        mod_lines = str(self.modulator) if self.modulator is not None else '! no beam modulator'
 
         # prepare main template
         result = self.beam_dat_template.format(
@@ -157,18 +189,19 @@ DELTAE   {delta_e}   ! relative mean energy loss per transportation step
             energy_spread=float(self.energy_spread),
             optional_energy_cut_off_line=cutoff_line,
             optional_sad_parameter_line=sad_line,
-            nstat=self.nstat,
-            pos_x=self.beampos[0],
-            pos_y=self.beampos[1],
-            pos_z=self.beampos[2],
+            optional_beam_modulator_lines=mod_lines,
+            n_stat=self.n_stat,
+            pos_x=self.beam_pos[0],
+            pos_y=self.beam_pos[1],
+            pos_z=self.beam_pos[2],
             beam_ext_x=self.beam_ext_x,
             beam_ext_y=self.beam_ext_y,
             theta=theta,
             phi=phi,
             delta_e=self.delta_e,
             nuclear_reactions=1 if self.nuclear_reactions else 0,
-            straggling=self._parse_straggle(self.straggling),
-            multiple_scattering=self._parse_multiple_scattering(self.multiple_scattering)
+            straggling=self.straggling.value,
+            multiple_scattering=self.multiple_scattering.value
         )
 
         # if beam source type is file, add the file name to the template

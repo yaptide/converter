@@ -13,3 +13,4 @@ BEAMDIR         0.0 0.0 ! Direction of the beam
 BEAMSIGMA       0 0  ! Beam extension
 ! no BEAMSAD value
 DELTAE          0.03   ! relative mean energy loss per transportation step
+USECBEAM   sobp.dat   ! Use custom beam source file
