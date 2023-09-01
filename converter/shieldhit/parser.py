@@ -3,16 +3,12 @@ from typing import Optional
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
-from converter.shieldhit.beam import (BeamConfig, BeamSourceType,
-                                      MultipleScatteringMode, StragglingModel)
-from converter.shieldhit.detect import (DetectConfig, OutputQuantity,
-                                        ScoringFilter, ScoringOutput)
-from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material,
-                                     Zone)
-from converter.shieldhit.scoring_geometries import (ScoringCylinder,
-                                                    ScoringGeometry,
-                                                    ScoringGlobal, ScoringMesh,
-                                                    ScoringZone)
+from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
+                                      ModulatorSimulationMethod, MultipleScatteringMode,   # skipcq: FLK-E101
+                                      StragglingModel)  # skipcq: FLK-E101
+from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
+from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
+from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
 
 class ShieldhitParser(Parser):
@@ -27,8 +23,8 @@ class ShieldhitParser(Parser):
 
     def parse_configs(self, json: dict) -> None:
         """Wrapper for all parse functions"""
-        self._parse_beam(json)
         self._parse_geo_mat(json)
+        self._parse_beam(json)
         self._parse_detect(json)
 
     def _parse_beam(self, json: dict) -> None:
@@ -40,11 +36,11 @@ class ShieldhitParser(Parser):
         # which is well handled by the converter
         self.beam_config.energy_low_cutoff = json["beam"].get("energyLowCutoff")
         self.beam_config.energy_high_cutoff = json["beam"].get("energyHighCutoff")
-        self.beam_config.nstat = json["beam"].get("numberOfParticles", self.beam_config.nstat)
-        self.beam_config.beampos = tuple(json["beam"]["position"])
-        self.beam_config.beamdir = tuple(json["beam"]["direction"])
+        self.beam_config.n_stat = json["beam"].get("numberOfParticles", self.beam_config.n_stat)
+        self.beam_config.beam_pos = tuple(json["beam"]["position"])
+        self.beam_config.beam_dir = tuple(json["beam"]["direction"])
 
-        if "sigma" in json["beam"]:
+        if json["beam"].get("sigma") is not None:
             beam_type = json["beam"]["sigma"]["type"]
 
             if beam_type == "Gaussian":
@@ -57,7 +53,7 @@ class ShieldhitParser(Parser):
                 self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
 
-        if "sad" in json["beam"]:
+        if json["beam"].get("sad") is not None:
             beam_type = json["beam"]["sad"]["type"]
 
             if beam_type == "double":
@@ -70,13 +66,13 @@ class ShieldhitParser(Parser):
                 self.beam_config.sad_x = None
                 self.beam_config.sad_y = None
 
-        if json["beam"].get("beamSourceType", "") == BeamSourceType.FILE.value:
+        if json["beam"].get("sourceType", "") == BeamSourceType.FILE.label:
             self.beam_config.beam_source_type = BeamSourceType.FILE
-            if "beamSourceFile" in json["beam"]:
-                self.beam_config.beam_source_filename = json["beam"]["beamSourceFile"].get("name")
-                self.beam_config.beam_source_file_content = json["beam"]["beamSourceFile"].get("value")
+            if "sourceFile" in json["beam"]:
+                self.beam_config.beam_source_filename = json["beam"]["sourceFile"].get("name")
+                self.beam_config.beam_source_file_content = json["beam"]["sourceFile"].get("value")
 
-        if "physic" in json:
+        if json.get("physic") is not None:
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
             self.beam_config.nuclear_reactions = json["physic"].get(
                 "enableNuclearReactions", self.beam_config.nuclear_reactions)
@@ -85,62 +81,81 @@ class ShieldhitParser(Parser):
             self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
                 json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
 
+        if json["specialComponentsManager"].get("modulator") is not None:
+            modulator = json["specialComponentsManager"].get("modulator")
+            parameters = modulator['geometryData'].get('parameters')
+            sourceFile = modulator.get('sourceFile')
+            zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"])
+            if sourceFile is not None and zone_id is not None:
+                if sourceFile.get('name') is None or sourceFile.get('value') is None:
+                    raise ValueError("Modulator source file name or content is not defined")
+                self.beam_config.modulator = BeamModulator(
+                    filename=sourceFile.get('name'),
+                    file_content=sourceFile.get('value'),
+                    zone_id=zone_id,
+                    simulation=ModulatorSimulationMethod.from_str(modulator.get('simulationMethod', 'modulus')),
+                    mode=ModulatorInterpretationMode.from_str(modulator.get('interpretationMode', 'material'))
+                )
+
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
-        self.detect_config.scoring_geometries = self._parse_scoring_geometries(json)
-        self.detect_config.scoring_filters = self._parse_scoring_filters(json)
-        self.detect_config.scoring_outputs = self._parse_scoring_outputs(json)
+        self.detect_config.detectors = self._parse_detectors(json)
+        self.detect_config.filters = self._parse_filters(json)
+        self.detect_config.outputs = self._parse_outputs(json)
 
-    def _parse_scoring_geometries(self, json: dict) -> list[ScoringGeometry]:
-        """Parses scoring geometries from the input json."""
-        geometries = []
-        for geometry_dict in json["detectManager"]["detectGeometries"]:
-            if geometry_dict["type"] == "Cyl":
-                geometries.append(
+    def _parse_detectors(self, json: dict) -> list[ScoringDetector]:
+        """Parses detectors from the input json."""
+        detectors = []
+        for detector_dict in json["detectorManager"].get("detectors"):
+            geometry_type = detector_dict['geometryData'].get('geometryType')
+            position = detector_dict['geometryData'].get('position')
+            parameters = detector_dict['geometryData'].get('parameters')
+            if geometry_type == "Cyl":
+                detectors.append(
                     ScoringCylinder(
-                        uuid=geometry_dict["uuid"],
-                        name=geometry_dict["name"],
-                        r_min=geometry_dict["data"]["innerRadius"],
-                        r_max=geometry_dict["data"]["radius"],
-                        r_bins=geometry_dict["data"]["radialSegments"],
-                        h_min=geometry_dict["position"][2] - geometry_dict["data"]["depth"] / 2,
-                        h_max=geometry_dict["position"][2] + geometry_dict["data"]["depth"] / 2,
-                        h_bins=geometry_dict["data"]["zSegments"],
-                    ))
-            elif geometry_dict["type"] == "Mesh":
-                geometries.append(
+                        uuid=detector_dict["uuid"],
+                        name=detector_dict["name"],
+                        r_min=parameters["innerRadius"],
+                        r_max=parameters["radius"],
+                        r_bins=parameters["radialSegments"],
+                        h_min=position[2] - parameters["depth"] / 2,
+                        h_max=position[2] + parameters["depth"] / 2,
+                        h_bins=parameters["zSegments"],))
+
+            elif geometry_type == "Mesh":
+                detectors.append(
                     ScoringMesh(
-                        uuid=geometry_dict["uuid"],
-                        name=geometry_dict["name"],
-                        x_min=geometry_dict["position"][0] - geometry_dict["data"]["width"] / 2,
-                        x_max=geometry_dict["position"][0] + geometry_dict["data"]["width"] / 2,
-                        x_bins=geometry_dict["data"]["xSegments"],
-                        y_min=geometry_dict["position"][1] - geometry_dict["data"]["height"] / 2,
-                        y_max=geometry_dict["position"][1] + geometry_dict["data"]["height"] / 2,
-                        y_bins=geometry_dict["data"]["ySegments"],
-                        z_min=geometry_dict["position"][2] - geometry_dict["data"]["depth"] / 2,
-                        z_max=geometry_dict["position"][2] + geometry_dict["data"]["depth"] / 2,
-                        z_bins=geometry_dict["data"]["zSegments"],
-                    ))
-            elif geometry_dict["type"] == "Zone":
-                geometries.append(
+                        uuid=detector_dict["uuid"],
+                        name=detector_dict["name"],
+                        x_min=position[0] - parameters["width"] / 2,
+                        x_max=position[0] + parameters["width"] / 2,
+                        x_bins=parameters["xSegments"],
+                        y_min=position[1] - parameters["height"] / 2,
+                        y_max=position[1] + parameters["height"] / 2,
+                        y_bins=parameters["ySegments"],
+                        z_min=position[2] - parameters["depth"] / 2,
+                        z_max=position[2] + parameters["depth"] / 2,
+                        z_bins=parameters["zSegments"],))
+
+            elif geometry_type == "Zone":
+                detectors.append(
                     ScoringZone(
-                        uuid=geometry_dict["uuid"],
-                        name=geometry_dict["name"],
-                        first_zone_id=self._get_zone_index_by_uuid(geometry_dict["data"]["zoneUuid"]),
-                    ))
-            elif geometry_dict["type"] == "All":
-                geometries.append(ScoringGlobal(
-                    uuid=geometry_dict["uuid"],
-                    name=geometry_dict["name"],
+                        uuid=detector_dict["uuid"],
+                        name=detector_dict["name"],
+                        first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),))
+
+            elif geometry_type == "All":
+                detectors.append(ScoringGlobal(
+                    uuid=detector_dict["uuid"],
+                    name=detector_dict["name"],
                 ))
             else:
-                raise ValueError(f"Invalid ScoringGeometry type: {geometry_dict['type']}")
+                raise ValueError(f"Invalid ScoringGeometry type: {detector_dict['type']}")
 
-        return geometries
+        return detectors
 
     def _get_zone_index_by_uuid(self, zone_uuid: str) -> int:
-        """Finds zone in the geo_mat_config object by its uuid and returns its simmulation index."""
+        """Finds zone in the geo_mat_config object by its uuid and returns its simulation index."""
         for idx, zone in enumerate(self.geo_mat_config.zones):
             if zone.uuid == zone_uuid:
                 return idx + 1
@@ -148,45 +163,49 @@ class ShieldhitParser(Parser):
         raise ValueError(f"No zone with uuid \"{zone_uuid}\".")
 
     @staticmethod
-    def _parse_scoring_filters(json: dict) -> list[ScoringFilter]:
+    def _parse_filters(json: dict) -> list[ScoringFilter]:
         """Parses scoring filters from the input json."""
         filters = [
             ScoringFilter(
                 uuid=filter_dict["uuid"],
                 name=filter_dict["name"],
-                rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
-                       for rule_dict in filter_dict["rules"]],
-            ) for filter_dict in json["detectManager"]["filters"]
+                rules=[
+                    (rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
+                    for rule_dict in filter_dict["rules"]],
+
+            ) for filter_dict in json["scoringManager"]["filters"]
         ]
 
         return filters
 
-    def _parse_scoring_outputs(self, json: dict) -> list[ScoringOutput]:
+    def _parse_outputs(self, json: dict) -> list[ScoringOutput]:
         """Parses scoring outputs from the input json."""
         outputs = [
             ScoringOutput(
                 filename=output_dict["name"] + ".bdo",
                 fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
-                geometry=self._get_scoring_geometry_bu_uuid(output_dict["detectGeometry"])
-                if 'detectGeometry' in output_dict else None,
+                geometry=self._get_detector_by_uuid(output_dict["detectorUuid"])
+                if 'detectorUuid' in output_dict else None,
                 medium=output_dict["medium"] if 'medium' in output_dict else None,
                 offset=output_dict["offset"] if 'offset' in output_dict else None,
                 primaries=output_dict["primaries"] if 'primaries' in output_dict else None,
-                quantities=[self._parse_output_quantity(quantity)
-                            for quantity in output_dict["quantities"]["active"]] if 'quantities' in output_dict else [],
+                quantities=[
+                    self._parse_output_quantity(quantity)
+                    for quantity in output_dict.get("quantities", [])],
+
                 rescale=output_dict["rescale"] if 'rescale' in output_dict else None,
-            ) for output_dict in json["scoringManager"]["scoringOutputs"]
+            ) for output_dict in json["scoringManager"]["outputs"]
         ]
 
         return outputs
 
-    def _get_scoring_geometry_bu_uuid(self, geo_uuid: str) -> Optional[str]:
-        """Finds scoring geometry in the detect_config object by its uuid and returns its simmulation name."""
-        for scoring_geometry in self.detect_config.scoring_geometries:
-            if scoring_geometry.uuid == geo_uuid:
-                return scoring_geometry.name
+    def _get_detector_by_uuid(self, detect_uuid: str) -> Optional[str]:
+        """Finds detector in the detect_config object by its uuid and returns its simulation name."""
+        for detector in self.detect_config.detectors:
+            if detector.uuid == detect_uuid:
+                return detector.name
 
-        raise ValueError(f"No scoring geometry with uuid {geo_uuid}")
+        raise ValueError(f"No detector with uuid {detect_uuid}")
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
@@ -223,12 +242,12 @@ class ShieldhitParser(Parser):
         )
 
     def _get_scoring_filter_by_uuid(self, filter_uuid: str) -> str:
-        """Finds scoring filter in the detect_config object by its uuid and returns its simmulation name."""
-        for scoring_filter in self.detect_config.scoring_filters:
+        """Finds scoring filter in the detect_config object by its uuid and returns its simulation name."""
+        for scoring_filter in self.detect_config.filters:
             if scoring_filter.uuid == filter_uuid:
                 return scoring_filter.name
 
-        raise ValueError(f"No scoring filter with uuid {filter_uuid} in {self.detect_config.scoring_filters}.")
+        raise ValueError(f"No scoring filter with uuid {filter_uuid} in {self.detect_config.filters}.")
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
@@ -244,13 +263,20 @@ class ShieldhitParser(Parser):
 
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
-        self.geo_mat_config.materials = [Material(material["uuid"], material["icru"])
-                                         for material in json["materialManager"]["materials"]]
+        self.geo_mat_config.materials = [
+            Material(material["uuid"], material["icru"])for material in json["materialManager"].get("materials")
+        ]
+
+        if json.get("physic") is not None and json["physic"].get("availableStoppingPowerFiles", False):
+            for icru in json["physic"]["availableStoppingPowerFiles"]:
+                value = json["physic"]["availableStoppingPowerFiles"][icru]
+                self.geo_mat_config.available_custom_stopping_power_files[int(icru)] = StoppingPowerFile(
+                    int(icru), value.get("name", ''), value.get("content", ''))
 
     def _parse_figures(self, json: dict) -> None:
         """Parse figures from JSON"""
         self.geo_mat_config.figures = [
-            solid_figures.parse_figure(figure_dict) for figure_dict in json["scene"]["object"].get('children')
+            solid_figures.parse_figure(figure_dict) for figure_dict in json["figureManager"].get('figures')
         ]
 
     def _add_overridden_material(self, material: Material) -> None:
@@ -266,7 +292,7 @@ class ShieldhitParser(Parser):
         raise ValueError(f"No material with uuid {material_uuid}.")
 
     def _get_material_id(self, material_uuid: str) -> int:
-        """Find material by uuid and retun its id."""
+        """Find material by uuid and return its id."""
         offset = 0
         for idx, material in enumerate(self.geo_mat_config.materials):
 
@@ -293,12 +319,17 @@ class ShieldhitParser(Parser):
         ]
 
         for idx, zone in enumerate(json["zoneManager"]["zones"]):
-            if 'customMaterial' in zone and zone['customMaterial'] is not None and 'materialPropertiesOverrides' in zone: 
+            if 'customMaterial' in zone and zone['customMaterial'] is not None and 'materialPropertiesOverrides' in zone:
+
+                is_stopping_power_file_available = zone['customMaterial']['icru'] in self.geo_mat_config.available_custom_stopping_power_files
+                custom_stopping_power = is_stopping_power_file_available and zone['materialPropertiesOverrides'].get(
+                    'customStoppingPower', False)
+
                 overridden_material = Material(
                     uuid=zone['customMaterial']['uuid'],
                     icru=zone['customMaterial']['icru'],
                     density=zone['materialPropertiesOverrides'].get('density', None),
-                    custom_stopping_power=zone['materialPropertiesOverrides'].get('customStoppingPower', False))
+                    custom_stopping_power=custom_stopping_power)
 
                 self._add_overridden_material(overridden_material)
 
@@ -368,7 +399,7 @@ class ShieldhitParser(Parser):
         list_of_operations = [item for ops in operations for item in ops]
         parsed_operations = []
         for operation in list_of_operations:
-            # lists are numbered from 0, but shieldhit figures are numbered from 1
+            # lists are numbered from 0, but SHIELD-HIT12A figures are numbered from 1
             figure_id = self._get_figure_index_by_uuid(operation["objectUuid"]) + 1
             if operation["mode"] == "union":
                 parsed_operations.append({figure_id})
@@ -382,7 +413,7 @@ class ShieldhitParser(Parser):
         return parsed_operations
 
     def _calculate_world_zone_operations(self, world_zone_figure: int) -> list[set[int]]:
-        """Calculate the world zone operations. Take the wolrd zone figure and subract all geometries."""
+        """Calculate the world zone operations. Take the world zone figure and subtract all geometries."""
         # Sum all zones
         all_zones = [
             figure_operators for zone in self.geo_mat_config.zones for figure_operators in zone.figures_operators
@@ -397,13 +428,13 @@ class ShieldhitParser(Parser):
                     new_world_zone.append({*w_figure_set, -figure})
             world_zone = new_world_zone
 
-        # filter out sets containing oposite pairs of values
+        # filter out sets containing opposite pairs of values
         world_zone = filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone)
 
         return list(world_zone)
 
     def _get_figure_index_by_uuid(self, figure_uuid: str) -> int:
-        """Find the list index of a figure from geo_mat_config.figures by uuid. Usefull when parsing CSG operations."""
+        """Find the list index of a figure from geo_mat_config.figures by uuid. Useful when parsing CSG operations."""
         for idx, figure in enumerate(self.geo_mat_config.figures):
             if figure.uuid == figure_uuid:
                 return idx
@@ -420,10 +451,21 @@ class ShieldhitParser(Parser):
             "geo.dat": self.geo_mat_config.get_geo_string()
         })
 
+        files = {}
+        for icru in self.geo_mat_config.available_custom_stopping_power_files:
+            file = self.geo_mat_config.available_custom_stopping_power_files[icru]
+            files[file.name] = file.content
+
+        configs_json.update(files)
+
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
-            filename_of_beam_source_file : str = 'sobp.dat'
+            filename_of_beam_source_file: str = 'sobp.dat'
             if not self.beam_config.beam_source_filename:
                 filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
             configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)
+
+        if self.beam_config.modulator is not None:
+            filename_of_modulator_source_file: str = self.beam_config.modulator.filename
+            configs_json[filename_of_modulator_source_file] = str(self.beam_config.modulator.file_content)
 
         return configs_json
