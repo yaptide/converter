@@ -207,6 +207,7 @@ class Zone:
 @dataclass
 class StoppingPowerFile:
     """Dataclass mapping for SH12A stopping power files."""
+
     icru: int
     name: str
     content: str

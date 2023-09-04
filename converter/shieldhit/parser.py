@@ -319,9 +319,13 @@ class ShieldhitParser(Parser):
         ]
 
         for idx, zone in enumerate(json["zoneManager"]["zones"]):
-            if 'customMaterial' in zone and zone['customMaterial'] is not None and 'materialPropertiesOverrides' in zone:
+            if ('customMaterial' in zone and
+                    zone['customMaterial'] is not None
+                    and 'materialPropertiesOverrides' in zone):
 
-                is_stopping_power_file_available = zone['customMaterial']['icru'] in self.geo_mat_config.available_custom_stopping_power_files
+                icru = zone['customMaterial']['icru']
+                available_files = self.geo_mat_config.available_custom_stopping_power_files
+                is_stopping_power_file_available = icru in available_files
                 custom_stopping_power = is_stopping_power_file_available and zone['materialPropertiesOverrides'].get(
                     'customStoppingPower', False)
 
