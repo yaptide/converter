@@ -7,7 +7,7 @@ from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType,
                                       ModulatorSimulationMethod, MultipleScatteringMode,   # skipcq: FLK-E101
                                       StragglingModel)  # skipcq: FLK-E101
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
-from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone)
+from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
 from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
 
@@ -267,6 +267,12 @@ class ShieldhitParser(Parser):
             Material(material["uuid"], material["icru"])for material in json["materialManager"].get("materials")
         ]
 
+        if json.get("physic") is not None and json["physic"].get("availableStoppingPowerFiles", False):
+            for icru in json["physic"]["availableStoppingPowerFiles"]:
+                value = json["physic"]["availableStoppingPowerFiles"][icru]
+                self.geo_mat_config.available_custom_stopping_power_files[int(icru)] = StoppingPowerFile(
+                    int(icru), value.get("name", ''), value.get("content", ''))
+
     def _parse_figures(self, json: dict) -> None:
         """Parse figures from JSON"""
         self.geo_mat_config.figures = [
@@ -313,11 +319,21 @@ class ShieldhitParser(Parser):
         ]
 
         for idx, zone in enumerate(json["zoneManager"]["zones"]):
-            if 'customMaterial' in zone and zone['customMaterial'] is not None:
+            if ('customMaterial' in zone and
+                    zone['customMaterial'] is not None
+                    and 'materialPropertiesOverrides' in zone):
+
+                icru = zone['customMaterial']['icru']
+                available_files = self.geo_mat_config.available_custom_stopping_power_files
+                is_stopping_power_file_available = icru in available_files
+                custom_stopping_power = is_stopping_power_file_available and zone['materialPropertiesOverrides'].get(
+                    'customStoppingPower', False)
+
                 overridden_material = Material(
                     uuid=zone['customMaterial']['uuid'],
                     icru=zone['customMaterial']['icru'],
-                    density=zone['customMaterial']['density'])
+                    density=zone['materialPropertiesOverrides'].get('density', None),
+                    custom_stopping_power=custom_stopping_power)
 
                 self._add_overridden_material(overridden_material)
 
@@ -438,6 +454,13 @@ class ShieldhitParser(Parser):
             "detect.dat": str(self.detect_config),
             "geo.dat": self.geo_mat_config.get_geo_string()
         })
+
+        files = {}
+        for icru in self.geo_mat_config.available_custom_stopping_power_files:
+            file = self.geo_mat_config.available_custom_stopping_power_files[icru]
+            files[file.name] = file.content
+
+        configs_json.update(files)
 
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
             filename_of_beam_source_file: str = 'sobp.dat'

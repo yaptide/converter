@@ -163,15 +163,20 @@ class Material:
     uuid: str
     icru: int
     density: Optional[float] = None
+    custom_stopping_power: bool = False
     idx: int = 0
 
     property_template = """{name} {value}\n"""
+    property_template_name = """{name}\n"""
 
     def __str__(self) -> str:
         result = self.property_template.format(name="MEDIUM", value=self.idx)
         result += self.property_template.format(name="ICRU", value=self.icru)
         if self.density is not None:
             result += self.property_template.format(name="RHO", value=format_float(self.density, 10))
+
+        if self.custom_stopping_power:
+            result += self.property_template_name.format(name="LOADDEDX")
 
         result += "END\n"
         return result
@@ -197,6 +202,15 @@ class Zone:
             operators='OR'.join(
                 ['  '.join([f'{id:+5}' for id in figure_set]) for figure_set in self.figures_operators]),
         )
+
+
+@dataclass
+class StoppingPowerFile:
+    """Dataclass mapping for SH12A stopping power files."""
+
+    icru: int
+    name: str
+    content: str
 
 
 @dataclass
@@ -234,6 +248,7 @@ class GeoMatConfig:
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
+    available_custom_stopping_power_files: dict[int, StoppingPowerFile] = field(default_factory=lambda: {})
 
     geo_template: str = """
 {jdbg1:>5}{jdbg1:>5}          {title}
