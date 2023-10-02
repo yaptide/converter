@@ -51,25 +51,25 @@ Output
 Output
     Filename entrance.bdo
     Geo EntrySlab
-    Quantity Dose 
-    Quantity AvgEnergy Primaries
-    Quantity AvgEnergy Protons
-    Quantity AvgEnergy Secondary_protons
-    Quantity dLET Protons
-    Quantity tLET Protons
-    Quantity Fluence Protons
+    Quantity Dose  
+    Quantity AvgEnergy Primaries 
+    Quantity AvgEnergy Protons 
+    Quantity AvgEnergy Secondary_protons 
+    Quantity dLET Protons 
+    Quantity tLET Protons 
+    Quantity Fluence Protons 
     Diff1 0 160 640 
     Diff1Type E
 
 Output
     Filename peak.bdo
     Geo PeakSlab
-    Quantity Dose 
-    Quantity AvgEnergy Primaries
-    Quantity AvgEnergy Protons
-    Quantity AvgEnergy Secondary_protons
-    Quantity dLET Protons
-    Quantity tLET Protons
-    Quantity Fluence Protons
+    Quantity Dose  
+    Quantity AvgEnergy Primaries 
+    Quantity AvgEnergy Protons 
+    Quantity AvgEnergy Secondary_protons 
+    Quantity dLET Protons 
+    Quantity tLET Protons 
+    Quantity Fluence Protons 
     Diff1 0 160 640 
     Diff1Type E

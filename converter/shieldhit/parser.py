@@ -6,9 +6,12 @@ from converter.common import Parser
 from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
                                       ModulatorSimulationMethod, MultipleScatteringMode,   # skipcq: FLK-E101
                                       StragglingModel)  # skipcq: FLK-E101
-from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
-from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
-from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
+from converter.shieldhit.detect import (
+    DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
+from converter.shieldhit.geo import (
+    DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
+from converter.shieldhit.detectors import (
+    ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
 
 class ShieldhitParser(Parser):
@@ -34,9 +37,12 @@ class ShieldhitParser(Parser):
         # we use get here to avoid KeyError if the cutoffs are not defined
         # in that case None will be inserted into the beam config
         # which is well handled by the converter
-        self.beam_config.energy_low_cutoff = json["beam"].get("energyLowCutoff")
-        self.beam_config.energy_high_cutoff = json["beam"].get("energyHighCutoff")
-        self.beam_config.n_stat = json["beam"].get("numberOfParticles", self.beam_config.n_stat)
+        self.beam_config.energy_low_cutoff = json["beam"].get(
+            "energyLowCutoff")
+        self.beam_config.energy_high_cutoff = json["beam"].get(
+            "energyHighCutoff")
+        self.beam_config.n_stat = json["beam"].get(
+            "numberOfParticles", self.beam_config.n_stat)
         self.beam_config.beam_pos = tuple(json["beam"]["position"])
         self.beam_config.beam_dir = tuple(json["beam"]["direction"])
 
@@ -50,7 +56,8 @@ class ShieldhitParser(Parser):
                 self.beam_config.beam_ext_x = -abs(json["beam"]["sigma"]["x"])
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
             elif beam_type == "Flat circular":
-                self.beam_config.beam_ext_x = 1.0  # To generate a circular beam x value must be greater than 0
+                # To generate a circular beam x value must be greater than 0
+                self.beam_config.beam_ext_x = 1.0
                 self.beam_config.beam_ext_y = -abs(json["beam"]["sigma"]["y"])
 
         if json["beam"].get("sad") is not None:
@@ -69,11 +76,14 @@ class ShieldhitParser(Parser):
         if json["beam"].get("sourceType", "") == BeamSourceType.FILE.label:
             self.beam_config.beam_source_type = BeamSourceType.FILE
             if "sourceFile" in json["beam"]:
-                self.beam_config.beam_source_filename = json["beam"]["sourceFile"].get("name")
-                self.beam_config.beam_source_file_content = json["beam"]["sourceFile"].get("value")
+                self.beam_config.beam_source_filename = json["beam"]["sourceFile"].get(
+                    "name")
+                self.beam_config.beam_source_file_content = json["beam"]["sourceFile"].get(
+                    "value")
 
         if json.get("physic") is not None:
-            self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
+            self.beam_config.delta_e = json["physic"].get(
+                "energyLoss", self.beam_config.delta_e)
             self.beam_config.nuclear_reactions = json["physic"].get(
                 "enableNuclearReactions", self.beam_config.nuclear_reactions)
             self.beam_config.straggling = StragglingModel.from_str(
@@ -88,13 +98,16 @@ class ShieldhitParser(Parser):
             zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"])
             if sourceFile is not None and zone_id is not None:
                 if sourceFile.get('name') is None or sourceFile.get('value') is None:
-                    raise ValueError("Modulator source file name or content is not defined")
+                    raise ValueError(
+                        "Modulator source file name or content is not defined")
                 self.beam_config.modulator = BeamModulator(
                     filename=sourceFile.get('name'),
                     file_content=sourceFile.get('value'),
                     zone_id=zone_id,
-                    simulation=ModulatorSimulationMethod.from_str(modulator.get('simulationMethod', 'modulus')),
-                    mode=ModulatorInterpretationMode.from_str(modulator.get('interpretationMode', 'material'))
+                    simulation=ModulatorSimulationMethod.from_str(
+                        modulator.get('simulationMethod', 'modulus')),
+                    mode=ModulatorInterpretationMode.from_str(
+                        modulator.get('interpretationMode', 'material'))
                 )
 
     def _parse_detect(self, json: dict) -> None:
@@ -150,7 +163,8 @@ class ShieldhitParser(Parser):
                     name=detector_dict["name"],
                 ))
             else:
-                raise ValueError(f"Invalid ScoringGeometry type: {detector_dict['type']}")
+                raise ValueError(
+                    f"Invalid ScoringGeometry type: {detector_dict['type']}")
 
         return detectors
 
@@ -170,7 +184,8 @@ class ShieldhitParser(Parser):
                 uuid=filter_dict["uuid"],
                 name=filter_dict["name"],
                 rules=[
-                    (rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
+                    (rule_dict["keyword"],
+                     rule_dict["operator"], rule_dict["value"])
                     for rule_dict in filter_dict["rules"]],
 
             ) for filter_dict in json["scoringManager"]["filters"]
@@ -184,7 +199,8 @@ class ShieldhitParser(Parser):
             ScoringOutput(
                 filename=output_dict["name"] + ".bdo",
                 fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
-                geometry=self._get_detector_by_uuid(output_dict["detectorUuid"])
+                geometry=self._get_detector_by_uuid(
+                    output_dict["detectorUuid"])
                 if 'detectorUuid' in output_dict else None,
                 quantities=[
                     self._parse_output_quantity(quantity)
@@ -201,30 +217,31 @@ class ShieldhitParser(Parser):
                 return detector.name
 
         raise ValueError(f"No detector with uuid {detect_uuid}")
-    
+
     def _parse_quantity_settings(self, quantity_dict: dict) -> dict or None:
         """Parses settings from the input json into the quantity settings property"""
-        
+
         def createNameFromSettings() -> str:
-            return f"{'Absolute_' 
+            return f"""{'Absolute_' 
                 if 'primaries' in quantity_dict 
                 else ''}{quantity_dict['name']}{('_to_'+quantity_dict['medium']) 
                 if 'medium' in quantity_dict 
                 else ('_to_'+self._get_material_by_uuid(quantity_dict['materialUuid']).name) 
                 if 'materialUuid' in quantity_dict 
                 else ''
-            }"
-        
+            }"""
+
         if all(map(lambda el: el not in quantity_dict, ['medium', 'offset', 'primaries', 'material', 'rescale'])):
             return None
-        
+
         return QuantitySettings(
             name=createNameFromSettings(),
             medium=quantity_dict["medium"] if 'medium' in quantity_dict else None,
             offset=quantity_dict["offset"] if 'offset' in quantity_dict else None,
             primaries=quantity_dict["primaries"] if 'primaries' in quantity_dict else None,
             rescale=quantity_dict["rescale"] if 'rescale' in quantity_dict else None,
-            material=self._get_material_id(quantity_dict["materialUuid"]) if 'materialUuid' in quantity_dict else None
+            material=self._get_material_id(
+                quantity_dict["materialUuid"]) if 'materialUuid' in quantity_dict else None
         )
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
@@ -255,7 +272,8 @@ class ShieldhitParser(Parser):
         return OutputQuantity(
             name=quantity_dict["name"],
             detector_type=quantity_dict["keyword"],
-            filter_name=self._get_scoring_filter_by_uuid(quantity_dict["filter"]) if "filter" in quantity_dict else "",
+            filter_name=self._get_scoring_filter_by_uuid(
+                quantity_dict["filter"]) if "filter" in quantity_dict else "",
             diff1=diff1,
             diff1_t=diff1_t,
             diff2=diff2,
@@ -269,7 +287,8 @@ class ShieldhitParser(Parser):
             if scoring_filter.uuid == filter_uuid:
                 return scoring_filter.name
 
-        raise ValueError(f"No scoring filter with uuid {filter_uuid} in {self.detect_config.filters}.")
+        raise ValueError(
+            f"No scoring filter with uuid {filter_uuid} in {self.detect_config.filters}.")
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
@@ -286,7 +305,7 @@ class ShieldhitParser(Parser):
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
         self.geo_mat_config.materials = [
-            Material(material["uuid"], material["icru"])for material in json["materialManager"].get("materials")
+            Material(material["name"], material["uuid"], material["icru"])for material in json["materialManager"].get("materials")
         ]
 
         if json.get("physic") is not None and json["physic"].get("availableStoppingPowerFiles", False):
@@ -333,7 +352,8 @@ class ShieldhitParser(Parser):
                 # Only materials defined in mat.dat file are indexed.
                 return idx + 1 - offset
 
-        raise ValueError(f"No material with uuid {material_uuid} in materials {self.geo_mat_config.materials}.")
+        raise ValueError(
+            f"No material with uuid {material_uuid} in materials {self.geo_mat_config.materials}.")
 
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""
@@ -352,9 +372,11 @@ class ShieldhitParser(Parser):
                     'customStoppingPower', False)
 
                 overridden_material = Material(
+                    name=f"Custom_{zone['customMaterial']['name']}",
                     uuid=zone['customMaterial']['uuid'],
                     icru=zone['customMaterial']['icru'],
-                    density=zone['materialPropertiesOverrides'].get('density', None),
+                    density=zone['materialPropertiesOverrides'].get(
+                        'density', None),
                     custom_stopping_power=custom_stopping_power)
 
                 self._add_overridden_material(overridden_material)
@@ -364,9 +386,11 @@ class ShieldhitParser(Parser):
                     uuid=zone["uuid"],
                     # lists are numbered from 0, but shieldhit zones are numbered from 1
                     id=idx + 1,
-                    figures_operators=self._parse_csg_operations(zone["unionOperations"]),
+                    figures_operators=self._parse_csg_operations(
+                        zone["unionOperations"]),
                     material=self._get_material_id(zone["materialUuid"]),
-                    material_override=zone.get('materialPropertiesOverrides', None),
+                    material_override=zone.get(
+                        'materialPropertiesOverrides', None),
                 )
             )
 
@@ -380,7 +404,8 @@ class ShieldhitParser(Parser):
         world_figure = solid_figures.parse_figure(world_zone)
         self.geo_mat_config.figures.append(world_figure)
 
-        operations = self._calculate_world_zone_operations(len(self.geo_mat_config.figures))
+        operations = self._calculate_world_zone_operations(
+            len(self.geo_mat_config.figures))
         material = self._get_material_id(world_zone["materialUuid"])
         # add zone to zones for every operation in operations
         for operation in operations:
@@ -413,7 +438,8 @@ class ShieldhitParser(Parser):
                     uuid="",
                     id=len(self.geo_mat_config.zones) + 1,
                     # slightly larger world zone - world zone
-                    figures_operators=[{last_figure_idx, -(last_figure_idx - 1)}],
+                    figures_operators=[
+                        {last_figure_idx, -(last_figure_idx - 1)}],
                     # the last material is the black hole
                     material=DefaultMaterial.BLACK_HOLE))
 
@@ -426,7 +452,8 @@ class ShieldhitParser(Parser):
         parsed_operations = []
         for operation in list_of_operations:
             # lists are numbered from 0, but SHIELD-HIT12A figures are numbered from 1
-            figure_id = self._get_figure_index_by_uuid(operation["objectUuid"]) + 1
+            figure_id = self._get_figure_index_by_uuid(
+                operation["objectUuid"]) + 1
             if operation["mode"] == "union":
                 parsed_operations.append({figure_id})
             elif operation["mode"] == "subtraction":
@@ -434,7 +461,8 @@ class ShieldhitParser(Parser):
             elif operation["mode"] == "intersection":
                 parsed_operations[-1].add(figure_id)
             else:
-                raise ValueError(f"Unexpected CSG operation: {operation['mode']}")
+                raise ValueError(
+                    f"Unexpected CSG operation: {operation['mode']}")
 
         return parsed_operations
 
@@ -455,7 +483,8 @@ class ShieldhitParser(Parser):
             world_zone = new_world_zone
 
         # filter out sets containing opposite pairs of values
-        world_zone = filter(lambda x: not any(abs(i) == abs(j) for i, j in itertools.combinations(x, 2)), world_zone)
+        world_zone = filter(lambda x: not any(abs(i) == abs(j)
+                            for i, j in itertools.combinations(x, 2)), world_zone)
 
         return list(world_zone)
 
@@ -487,11 +516,14 @@ class ShieldhitParser(Parser):
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
             filename_of_beam_source_file: str = 'sobp.dat'
             if not self.beam_config.beam_source_filename:
-                filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
-            configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)
+                filename_of_beam_source_file = str(
+                    self.beam_config.beam_source_filename)
+            configs_json[filename_of_beam_source_file] = str(
+                self.beam_config.beam_source_file_content)
 
         if self.beam_config.modulator is not None:
             filename_of_modulator_source_file: str = self.beam_config.modulator.filename
-            configs_json[filename_of_modulator_source_file] = str(self.beam_config.modulator.file_content)
+            configs_json[filename_of_modulator_source_file] = str(
+                self.beam_config.modulator.file_content)
 
         return configs_json
