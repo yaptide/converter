@@ -6,7 +6,7 @@ from converter.common import Parser
 from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
                                       ModulatorSimulationMethod, MultipleScatteringMode,   # skipcq: FLK-E101
                                       StragglingModel)  # skipcq: FLK-E101
-from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput)
+from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
 from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
@@ -186,14 +186,9 @@ class ShieldhitParser(Parser):
                 fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
                 geometry=self._get_detector_by_uuid(output_dict["detectorUuid"])
                 if 'detectorUuid' in output_dict else None,
-                medium=output_dict["medium"] if 'medium' in output_dict else None,
-                offset=output_dict["offset"] if 'offset' in output_dict else None,
-                primaries=output_dict["primaries"] if 'primaries' in output_dict else None,
                 quantities=[
                     self._parse_output_quantity(quantity)
                     for quantity in output_dict.get("quantities", [])],
-
-                rescale=output_dict["rescale"] if 'rescale' in output_dict else None,
             ) for output_dict in json["scoringManager"]["outputs"]
         ]
 
@@ -206,6 +201,31 @@ class ShieldhitParser(Parser):
                 return detector.name
 
         raise ValueError(f"No detector with uuid {detect_uuid}")
+    
+    def _parse_quantity_settings(self, quantity_dict: dict) -> dict or None:
+        """Parses settings from the input json into the quantity settings property"""
+        
+        def createNameFromSettings() -> str:
+            return f"{'Absolute_' 
+                if 'primaries' in quantity_dict 
+                else ''}{quantity_dict['name']}{('_to_'+quantity_dict['medium']) 
+                if 'medium' in quantity_dict 
+                else ('_to_'+self._get_material_by_uuid(quantity_dict['materialUuid']).name) 
+                if 'materialUuid' in quantity_dict 
+                else ''
+            }"
+        
+        if all(map(lambda el: el not in quantity_dict, ['medium', 'offset', 'primaries', 'material', 'rescale'])):
+            return None
+        
+        return QuantitySettings(
+            name=createNameFromSettings(),
+            medium=quantity_dict["medium"] if 'medium' in quantity_dict else None,
+            offset=quantity_dict["offset"] if 'offset' in quantity_dict else None,
+            primaries=quantity_dict["primaries"] if 'primaries' in quantity_dict else None,
+            rescale=quantity_dict["rescale"] if 'rescale' in quantity_dict else None,
+            material=self._get_material_id(quantity_dict["materialUuid"]) if 'materialUuid' in quantity_dict else None
+        )
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
@@ -233,12 +253,14 @@ class ShieldhitParser(Parser):
             diff2_t = quantity_dict["modifiers"][1]["diffType"]
 
         return OutputQuantity(
+            name=quantity_dict["name"],
             detector_type=quantity_dict["keyword"],
             filter_name=self._get_scoring_filter_by_uuid(quantity_dict["filter"]) if "filter" in quantity_dict else "",
             diff1=diff1,
             diff1_t=diff1_t,
             diff2=diff2,
             diff2_t=diff2_t,
+            settings=self._parse_quantity_settings(quantity_dict)
         )
 
     def _get_scoring_filter_by_uuid(self, filter_uuid: str) -> str:
