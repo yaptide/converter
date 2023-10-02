@@ -224,6 +224,8 @@ class ShieldhitParser(Parser):
         def createNameFromSettings() -> str:
             return f"""{'Absolute_' 
                 if 'primaries' in quantity_dict 
+                else 'Rescaled_' 
+                if 'rescale' in quantity_dict 
                 else ''}{quantity_dict['name']}{('_to_'+quantity_dict['medium']) 
                 if 'medium' in quantity_dict 
                 else ('_to_'+self._get_material_by_uuid(quantity_dict['materialUuid']).name) 
@@ -231,7 +233,7 @@ class ShieldhitParser(Parser):
                 else ''
             }"""
 
-        if all(map(lambda el: el not in quantity_dict, ['medium', 'offset', 'primaries', 'material', 'rescale'])):
+        if all(map(lambda el: el not in quantity_dict, ['medium', 'offset', 'primaries', 'materialUuid', 'rescale'])):
             return None
 
         return QuantitySettings(

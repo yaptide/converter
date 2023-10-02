@@ -103,7 +103,8 @@ class ScoringOutput:
             self.fileformat_str_template.format(
                 fileformat=self.fileformat) if self.fileformat else "",
             self.geometry_str_template.format(
-                geometry=self.geometry) if self.geometry else ""
+                geometry=self.geometry) if self.geometry else "",
+            ''.join([str(quantity) for quantity in self.quantities]),
         ]))
 
 
