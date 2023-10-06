@@ -73,11 +73,9 @@ class OutputQuantity:
         return ''.join([
             self.quantity_template.format(detector_type=self.detector_type, filter_name=self.filter_name,
                                           settings_name=self.settings.name if self.settings else ''),
-            self.diff_template.format(
-                1, d=self.diff1, diff_t=self.diff1_t, log=("log" if self.diff1[3] else ""))
+            self.diff_template.format(1, d=self.diff1, diff_t=self.diff1_t, log=("log" if self.diff1[3] else ""))
             if self.diff1 else "",
-            self.diff_template.format(
-                2, d=self.diff2, diff_t=self.diff2_t) if self.diff2 else "",
+            self.diff_template.format(2, d=self.diff2, diff_t=self.diff2_t) if self.diff2 else "",
         ])
 
 
@@ -103,10 +101,8 @@ class ScoringOutput:
         return self.template.format(fields=''.join([
             self.filename_str_template.format(
                 filename=self.filename) if self.filename else "",
-            self.fileformat_str_template.format(
-                fileformat=self.fileformat) if self.fileformat else "",
-            self.geometry_str_template.format(
-                geometry=self.geometry) if self.geometry else "",
+            self.fileformat_str_template.format(fileformat=self.fileformat) if self.fileformat else "",
+            self.geometry_str_template.format(geometry=self.geometry) if self.geometry else "",
             ''.join([str(quantity) for quantity in self.quantities]),
             '\n'
         ]))
@@ -124,10 +120,8 @@ class DetectConfig:
     filters: list[ScoringFilter] = field(default_factory=lambda: [])
 
     outputs: list[ScoringOutput] = field(default_factory=lambda: [
-        ScoringOutput("cylz.bdo", geometry="CylZ_Mesh", quantities=[
-                      OutputQuantity("CylDose", "DoseGy")]),
-        ScoringOutput("yzmsh.bdo", geometry="YZ_Mesh", quantities=[
-                      OutputQuantity("MeshDose", "DoseGy")]),
+        ScoringOutput("cylz.bdo", geometry="CylZ_Mesh", quantities=[OutputQuantity("CylDose", "DoseGy")]),
+        ScoringOutput("yzmsh.bdo", geometry="YZ_Mesh", quantities=[OutputQuantity("MeshDose", "DoseGy")]),
     ])
 
     def __str__(self):

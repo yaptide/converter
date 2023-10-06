@@ -65,8 +65,7 @@ requested length: {n}")
 
     # Check if the round function truncated the number, warn the user if it did.
     if not isclose(result, number):
-        print(
-            f'WARN: number was truncated when converting: {number} -> {result}')
+        print(f'WARN: number was truncated when converting: {number} -> {result}')
 
     # Formatting negative numbers smaller than the desired precision could result in -0.0 or 0.0 randomly.
     # To avoid this we catch -0.0 and return 0.0.
@@ -176,8 +175,7 @@ class Material:
         result = self.property_template.format(name="MEDIUM", value=self.idx)
         result += self.property_template.format(name="ICRU", value=self.icru)
         if self.density is not None:
-            result += self.property_template.format(
-                name="RHO", value=format_float(self.density, 10))
+            result += self.property_template.format(name="RHO", value=format_float(self.density, 10))
 
         if self.custom_stopping_power:
             result += self.property_template_name.format(name="LOADDEDX")
@@ -222,12 +220,9 @@ class GeoMatConfig:
     """Class mapping of the geo.dat config file."""
 
     figures: list[SolidFigure] = field(default_factory=lambda: [
-        CylinderFigure(position=(0., 0., 10.), radius_top=10.,
-                       radius_bottom=10., height=20., rotation=(90., 0., 0.)),
-        CylinderFigure(position=(0., 0., 7.5), radius_top=15.,
-                       radius_bottom=15., height=25., rotation=(90., 0., 0.)),
-        CylinderFigure(position=(0., 0., 5.), radius_top=20.,
-                       radius_bottom=20., height=30., rotation=(90., 0., 0.)),
+        CylinderFigure(position=(0., 0., 10.), radius_top=10., radius_bottom=10., height=20., rotation=(90., 0., 0.)),
+        CylinderFigure(position=(0., 0., 7.5), radius_top=15., radius_bottom=15., height=25., rotation=(90., 0., 0.)),
+        CylinderFigure(position=(0., 0., 5.), radius_top=20., radius_bottom=20., height=30., rotation=(90., 0., 0.)),
     ])
     zones: list[Zone] = field(default_factory=lambda: [
         Zone(
@@ -251,13 +246,11 @@ class GeoMatConfig:
             material=0,
         ),
     ])
-    materials: list[Material] = field(
-        default_factory=lambda: [Material('', '', '', 276)])
+    materials: list[Material] = field(default_factory=lambda: [Material('', '', '', 276)])
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"
-    available_custom_stopping_power_files: dict[int, StoppingPowerFile] = field(
-        default_factory=lambda: {})
+    available_custom_stopping_power_files: dict[int, StoppingPowerFile] = field(default_factory=lambda: {})
 
     geo_template: str = """
 {jdbg1:>5}{jdbg1:>5}          {title}
@@ -293,8 +286,7 @@ class GeoMatConfig:
             jdbg2=self.jdbg2,
             title=self.title,
             # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
-            figures="".join([parse_figure(figure, idx + 1)
-                            for idx, figure in enumerate(self.figures)])[1:],
+            figures="".join([parse_figure(figure, idx + 1) for idx, figure in enumerate(self.figures)])[1:],
             zones_geometries="".join([str(zone) for zone in self.zones])[1:],
             zones_materials=self._get_zone_material_string(),
         )
@@ -303,8 +295,7 @@ class GeoMatConfig:
         """Generate mat.dat config."""
         # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
         material_strings = []
-        materials_filtered = filter(
-            lambda x: not DefaultMaterial.is_default_material(x.icru), self.materials)
+        materials_filtered = filter(lambda x: not DefaultMaterial.is_default_material(x.icru), self.materials)
         for idx, material in enumerate(materials_filtered):
             material.idx = idx + 1
             material_strings.append(str(material))
