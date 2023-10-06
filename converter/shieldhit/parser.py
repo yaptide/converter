@@ -219,19 +219,27 @@ class ShieldhitParser(Parser):
 
         def create_name_from_settings() -> str:
             """Create a name for the quantity from its settings."""
+            
+            # If the quantity has generic name in format [Quantity_XYZ], we want to use more descriptive name
+            # New name will be in format [Absolute/Rescaled]_[Quantity_XYZ]_[QuantityKeyword]_[to_Medium/to_Material]
+            # Specific elements of the name will be added only if they are present in the settings
             if re.search(r'^Quantity(_\d*)?$', quantity_dict['name']):
-                return f"""{'Absolute_'
-                    if 'primaries' in quantity_dict
-                    else 'Rescaled_'
-                    if 'rescale' in quantity_dict
-                    else ''}{quantity_dict['name']}{('_to_'+quantity_dict['medium'])
-                    if 'medium' in quantity_dict
-                    else ('_to_'+self._get_material_by_uuid(quantity_dict['materialUuid']).sanitized_name)
-                    if 'materialUuid' in quantity_dict
-                    else ''
-                }"""
+                prefix = None
+                suffix = None
+                if 'primaries' in quantity_dict:
+                    prefix = 'Absolute' 
+                elif 'rescale' in quantity_dict:
+                    prefix = 'Rescaled'
+                if 'medium' in quantity_dict:
+                    suffix = f'to_{quantity_dict["medium"]}'
+                elif 'materialUuid' in quantity_dict:
+                    suffix = f'to_{self._get_material_by_uuid(quantity_dict["materialUuid"]).sanitized_name}'
+                return '_'.join(filter(None, [prefix, quantity_dict['keyword'], quantity_dict['name'], suffix]))
+
+            # If the quantity has a custom name, we want to remove all non-alphanumeric characters from it
             return re.sub(r'\W+', '', quantity_dict['name'])
 
+        # We want to skip parsing settings if there are no parameters to put in the settings
         if all(map(lambda el: el not in quantity_dict, ['medium', 'offset', 'primaries', 'materialUuid', 'rescale'])):
             return None
 
