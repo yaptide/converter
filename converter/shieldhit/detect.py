@@ -26,6 +26,7 @@ class ScoringFilter:
 @dataclass
 class QuantitySettings:
     """Dataclass storing information about quantity settings."""
+
     name: str
     rescale: Optional[float] = None
     offset: Optional[float] = None
@@ -43,7 +44,9 @@ class QuantitySettings:
     }
 
     def __str__(self) -> str:
-        return "Settings"+''.join([self.settings_template[key].format(**{key: value}) for key, value in self.__dict__.items() if value is not None])
+        return "Settings"+''.join([
+            self.settings_template[key].format(**{key: value}) for key, value in self.__dict__.items() if value is not None
+        ])
 
 
 @dataclass

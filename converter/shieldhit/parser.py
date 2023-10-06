@@ -31,6 +31,39 @@ class ShieldhitParser(Parser):
         self._parse_beam(json)
         self._parse_detect(json)
 
+    def parse_modulator(self, json: dict) -> None:
+        """Parses data from the input json into the beam_config property"""
+        if json["specialComponentsManager"].get("modulator") is not None:
+            modulator = json["specialComponentsManager"].get("modulator")
+            parameters = modulator['geometryData'].get('parameters')
+            sourceFile = modulator.get('sourceFile')
+            zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"])
+            if sourceFile is not None and zone_id is not None:
+                if sourceFile.get('name') is None or sourceFile.get('value') is None:
+                    raise ValueError(
+                        "Modulator source file name or content is not defined")
+                self.beam_config.modulator = BeamModulator(
+                    filename=sourceFile.get('name'),
+                    file_content=sourceFile.get('value'),
+                    zone_id=zone_id,
+                    simulation=ModulatorSimulationMethod.from_str(
+                        modulator.get('simulationMethod', 'modulus')),
+                    mode=ModulatorInterpretationMode.from_str(
+                        modulator.get('interpretationMode', 'material'))
+                )
+
+    def parse_physics(self, json: dict) -> None:
+        """Parses data from the input json into the beam_config property"""
+        if json.get("physic") is not None:
+            self.beam_config.delta_e = json["physic"].get(
+                "energyLoss", self.beam_config.delta_e)
+            self.beam_config.nuclear_reactions = json["physic"].get(
+                "enableNuclearReactions", self.beam_config.nuclear_reactions)
+            self.beam_config.straggling = StragglingModel.from_str(
+                json["physic"].get("energyModelStraggling", self.beam_config.straggling.value))
+            self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
+                json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
+
     def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
         self.beam_config.energy = json["beam"]["energy"]
@@ -82,34 +115,8 @@ class ShieldhitParser(Parser):
                 self.beam_config.beam_source_file_content = json["beam"]["sourceFile"].get(
                     "value")
 
-        if json.get("physic") is not None:
-            self.beam_config.delta_e = json["physic"].get(
-                "energyLoss", self.beam_config.delta_e)
-            self.beam_config.nuclear_reactions = json["physic"].get(
-                "enableNuclearReactions", self.beam_config.nuclear_reactions)
-            self.beam_config.straggling = StragglingModel.from_str(
-                json["physic"].get("energyModelStraggling", self.beam_config.straggling.value))
-            self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
-                json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
-
-        if json["specialComponentsManager"].get("modulator") is not None:
-            modulator = json["specialComponentsManager"].get("modulator")
-            parameters = modulator['geometryData'].get('parameters')
-            sourceFile = modulator.get('sourceFile')
-            zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"])
-            if sourceFile is not None and zone_id is not None:
-                if sourceFile.get('name') is None or sourceFile.get('value') is None:
-                    raise ValueError(
-                        "Modulator source file name or content is not defined")
-                self.beam_config.modulator = BeamModulator(
-                    filename=sourceFile.get('name'),
-                    file_content=sourceFile.get('value'),
-                    zone_id=zone_id,
-                    simulation=ModulatorSimulationMethod.from_str(
-                        modulator.get('simulationMethod', 'modulus')),
-                    mode=ModulatorInterpretationMode.from_str(
-                        modulator.get('interpretationMode', 'material'))
-                )
+        self.parse_physics(json)
+        self.parse_modulator(json)
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""
@@ -222,27 +229,26 @@ class ShieldhitParser(Parser):
     def _parse_quantity_settings(self, quantity_dict: dict) -> dict or None:
         """Parses settings from the input json into the quantity settings property"""
 
-        def createNameFromSettings() -> str:
-            
+        def create_name_from_settings() -> str:
+            """Create a name for the quantity from its settings."""
             if re.search(r'^Quantity(_\d*)?$', quantity_dict['name']):
-                return f"""{'Absolute_' 
-                    if 'primaries' in quantity_dict 
-                    else 'Rescaled_' 
-                    if 'rescale' in quantity_dict 
-                    else ''}{quantity_dict['name']}{('_to_'+quantity_dict['medium']) 
-                    if 'medium' in quantity_dict 
-                    else ('_to_'+self._get_material_by_uuid(quantity_dict['materialUuid']).sanitized_name) 
-                    if 'materialUuid' in quantity_dict 
+                return f"""{'Absolute_'
+                    if 'primaries' in quantity_dict
+                    else 'Rescaled_'
+                    if 'rescale' in quantity_dict
+                    else ''}{quantity_dict['name']}{('_to_'+quantity_dict['medium'])
+                    if 'medium' in quantity_dict
+                    else ('_to_'+self._get_material_by_uuid(quantity_dict['materialUuid']).sanitized_name)
+                    if 'materialUuid' in quantity_dict
                     else ''
                 }"""
-            else:
-                return re.sub(r'\W+', '', quantity_dict['name'])
+            return re.sub(r'\W+', '', quantity_dict['name'])
 
         if all(map(lambda el: el not in quantity_dict, ['medium', 'offset', 'primaries', 'materialUuid', 'rescale'])):
             return None
 
         return QuantitySettings(
-            name=createNameFromSettings(),
+            name=create_name_from_settings(),
             medium=quantity_dict.get("medium", None),
             offset=quantity_dict.get("offset", None),
             primaries=quantity_dict.get("primaries", None),
@@ -312,7 +318,8 @@ class ShieldhitParser(Parser):
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
         self.geo_mat_config.materials = [
-            Material(material["name"], material["sanitizedName"], material["uuid"], material["icru"])for material in json["materialManager"].get("materials")
+            Material(material["name"], material["sanitizedName"], material["uuid"], material["icru"]) 
+            for material in json["materialManager"].get("materials")
         ]
 
         if json.get("physic") is not None and json["physic"].get("availableStoppingPowerFiles", False):
