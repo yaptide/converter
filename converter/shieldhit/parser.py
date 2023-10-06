@@ -1,5 +1,6 @@
 import itertools
 from typing import Optional
+import re
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
@@ -222,26 +223,30 @@ class ShieldhitParser(Parser):
         """Parses settings from the input json into the quantity settings property"""
 
         def createNameFromSettings() -> str:
-            return f"""{'Absolute_' 
-                if 'primaries' in quantity_dict 
-                else 'Rescaled_' 
-                if 'rescale' in quantity_dict 
-                else ''}{quantity_dict['name']}{('_to_'+quantity_dict['medium']) 
-                if 'medium' in quantity_dict 
-                else ('_to_'+self._get_material_by_uuid(quantity_dict['materialUuid']).name) 
-                if 'materialUuid' in quantity_dict 
-                else ''
-            }"""
+            
+            if re.search(r'^Quantity(_\d*)?$', quantity_dict['name']):
+                return f"""{'Absolute_' 
+                    if 'primaries' in quantity_dict 
+                    else 'Rescaled_' 
+                    if 'rescale' in quantity_dict 
+                    else ''}{quantity_dict['name']}{('_to_'+quantity_dict['medium']) 
+                    if 'medium' in quantity_dict 
+                    else ('_to_'+self._get_material_by_uuid(quantity_dict['materialUuid']).sanitized_name) 
+                    if 'materialUuid' in quantity_dict 
+                    else ''
+                }"""
+            else:
+                return re.sub(r'\W+', '', quantity_dict['name'])
 
         if all(map(lambda el: el not in quantity_dict, ['medium', 'offset', 'primaries', 'materialUuid', 'rescale'])):
             return None
 
         return QuantitySettings(
             name=createNameFromSettings(),
-            medium=quantity_dict["medium"] if 'medium' in quantity_dict else None,
-            offset=quantity_dict["offset"] if 'offset' in quantity_dict else None,
-            primaries=quantity_dict["primaries"] if 'primaries' in quantity_dict else None,
-            rescale=quantity_dict["rescale"] if 'rescale' in quantity_dict else None,
+            medium=quantity_dict.get("medium", None),
+            offset=quantity_dict.get("offset", None),
+            primaries=quantity_dict.get("primaries", None),
+            rescale=quantity_dict.get("rescale", None),
             material=self._get_material_id(
                 quantity_dict["materialUuid"]) if 'materialUuid' in quantity_dict else None
         )
@@ -307,7 +312,7 @@ class ShieldhitParser(Parser):
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
         self.geo_mat_config.materials = [
-            Material(material["name"], material["uuid"], material["icru"])for material in json["materialManager"].get("materials")
+            Material(material["name"], material["sanitizedName"], material["uuid"], material["icru"])for material in json["materialManager"].get("materials")
         ]
 
         if json.get("physic") is not None and json["physic"].get("availableStoppingPowerFiles", False):
