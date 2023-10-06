@@ -33,20 +33,21 @@ Filter
     Z == 1
     A == 1
     GEN >= 1
+
 Output
     Filename z_profile.bdo
     Geo CylZ_Mesh
-    Quantity Dose 
-    Quantity Fluence Protons
-    Quantity Fluence Primaries
-    Quantity Fluence Secondary_protons
+    Quantity Dose  
+    Quantity Fluence Protons 
+    Quantity Fluence Primaries 
+    Quantity Fluence Secondary_protons 
 
 Output
     Filename yz_profile.bdo
     Geo YZ_Mesh
-    Quantity Dose 
-    Quantity Fluence Protons
-    Quantity Fluence Secondary_protons
+    Quantity Dose  
+    Quantity Fluence Protons 
+    Quantity Fluence Secondary_protons 
 
 Output
     Filename entrance.bdo
