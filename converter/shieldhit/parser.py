@@ -255,6 +255,7 @@ class ShieldhitParser(Parser):
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
+        self._parse_custom_material(quantity_dict)
         diff1 = None
         diff1_t = None
         diff2 = None
@@ -361,6 +362,29 @@ class ShieldhitParser(Parser):
                 return idx + 1 - offset
 
         raise ValueError(f"No material with uuid {material_uuid} in materials {self.geo_mat_config.materials}.")
+    
+    def _parse_custom_material(self, json: dict) -> None:
+        """Parse custom material from JSON and add it to the list of materials"""
+        if ('customMaterial' not in json or
+                json['customMaterial'] is None
+                or 'materialPropertiesOverrides' not in json):
+            return
+
+        icru = json['customMaterial']['icru']
+        available_files = self.geo_mat_config.available_custom_stopping_power_files
+        is_stopping_power_file_available = icru in available_files
+        custom_stopping_power = is_stopping_power_file_available and json['materialPropertiesOverrides'].get(
+            'customStoppingPower', False)
+
+        overridden_material = Material(
+            name=f"Custom {json['customMaterial']['name']}",
+            sanitized_name=f"custom_{json['customMaterial']['sanitizedName']}",
+            uuid=json['customMaterial']['uuid'],
+            icru=json['customMaterial']['icru'],
+            density=json['materialPropertiesOverrides'].get('density', json['customMaterial']['density']),
+            custom_stopping_power=custom_stopping_power)
+
+        self._add_overridden_material(overridden_material)
 
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""
@@ -368,25 +392,7 @@ class ShieldhitParser(Parser):
         ]
 
         for idx, zone in enumerate(json["zoneManager"]["zones"]):
-            if ('customMaterial' in zone and
-                    zone['customMaterial'] is not None
-                    and 'materialPropertiesOverrides' in zone):
-
-                icru = zone['customMaterial']['icru']
-                available_files = self.geo_mat_config.available_custom_stopping_power_files
-                is_stopping_power_file_available = icru in available_files
-                custom_stopping_power = is_stopping_power_file_available and zone['materialPropertiesOverrides'].get(
-                    'customStoppingPower', False)
-
-                overridden_material = Material(
-                    name=f"Custom_{zone['customMaterial']['name']}",
-                    uuid=zone['customMaterial']['uuid'],
-                    icru=zone['customMaterial']['icru'],
-                    density=zone['materialPropertiesOverrides'].get('density'),
-                    custom_stopping_power=custom_stopping_power)
-
-                self._add_overridden_material(overridden_material)
-
+            self._parse_custom_material(zone)
             self.geo_mat_config.zones.append(
                 Zone(
                     uuid=zone["uuid"],
