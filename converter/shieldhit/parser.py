@@ -224,17 +224,18 @@ class ShieldhitParser(Parser):
             # New name will be in format [Absolute/Rescaled]_[Quantity_XYZ]_[QuantityKeyword]_[to_Medium/to_Material]
             # Specific elements of the name will be added only if they are present in the settings
             if re.search(r'^Quantity(_\d*)?$', quantity_dict['name']):
-                prefix = None
-                suffix = None
+                prefix = ''
+                suffix = ''
                 if 'primaries' in quantity_dict:
-                    prefix = 'Absolute' 
+                    prefix = 'Absolute_' 
                 elif 'rescale' in quantity_dict:
-                    prefix = 'Rescaled'
+                    prefix = 'Rescaled_'
                 if 'medium' in quantity_dict:
-                    suffix = f'to_{quantity_dict["medium"]}'
+                    suffix = f'_to_{quantity_dict["medium"]}'
                 elif 'materialUuid' in quantity_dict:
-                    suffix = f'to_{self._get_material_by_uuid(quantity_dict["materialUuid"]).sanitized_name}'
-                return '_'.join(filter(None, [prefix, quantity_dict['keyword'], quantity_dict['name'], suffix]))
+                    suffix = f'_to_{self._get_material_by_uuid(quantity_dict["materialUuid"]).sanitized_name}'
+                result = f"{prefix}{quantity_dict['keyword']}_{quantity_dict['name']}{suffix}"
+                return result
 
             # If the quantity has a custom name, we want to remove all non-alphanumeric characters from it
             return re.sub(r'\W+', '', quantity_dict['name'])
