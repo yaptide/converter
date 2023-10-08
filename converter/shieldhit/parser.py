@@ -219,7 +219,6 @@ class ShieldhitParser(Parser):
 
         def create_name_from_settings() -> str:
             """Create a name for the quantity from its settings."""
-            
             # If the quantity has generic name in format [Quantity_XYZ], we want to use more descriptive name
             # New name will be in format [Absolute/Rescaled]_[Quantity_XYZ]_[QuantityKeyword]_[to_Medium/to_Material]
             # Specific elements of the name will be added only if they are present in the settings
@@ -227,7 +226,7 @@ class ShieldhitParser(Parser):
                 prefix = ''
                 suffix = ''
                 if 'primaries' in quantity_dict:
-                    prefix = 'Absolute_' 
+                    prefix = 'Absolute_'
                 elif 'rescale' in quantity_dict:
                     prefix = 'Rescaled_'
                 if 'medium' in quantity_dict:
@@ -314,7 +313,7 @@ class ShieldhitParser(Parser):
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from JSON"""
         self.geo_mat_config.materials = [
-            Material(material["name"], material["sanitizedName"], material["uuid"], material["icru"]) 
+            Material(material["name"], material["sanitizedName"], material["uuid"], material["icru"])
             for material in json["materialManager"].get("materials")
         ]
 
@@ -363,7 +362,7 @@ class ShieldhitParser(Parser):
                 return idx + 1 - offset
 
         raise ValueError(f"No material with uuid {material_uuid} in materials {self.geo_mat_config.materials}.")
-    
+
     def _parse_custom_material(self, json: dict) -> None:
         """Parse custom material from JSON and add it to the list of materials"""
         if ('customMaterial' not in json or

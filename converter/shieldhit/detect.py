@@ -34,7 +34,7 @@ class QuantitySettings:
     material: Optional[int] = None
     medium: Optional[str] = None
 
-    settings_template = {
+    settings_dict = {
         "name": "\n    Name {name}",
         "rescale": "\n    Rescale {rescale}",
         "offset": "\n    Offset {offset}",
@@ -45,7 +45,7 @@ class QuantitySettings:
 
     def __str__(self) -> str:
         return "Settings"+''.join([
-            self.settings_template[key].format(**{key: value}) for key, value in self.__dict__.items() if value is not None
+            self.settings_dict[key].format(**{key: value}) for key, value in self.__dict__.items() if value is not None
         ])
 
 
