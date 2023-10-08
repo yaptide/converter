@@ -160,6 +160,8 @@ def _parse_sphere(sphere: SphereFigure, number: int) -> str:
 class Material:
     """Dataclass mapping for SH12A materials."""
 
+    name: str
+    sanitized_name: str
     uuid: str
     icru: int
     density: Optional[float] = None
@@ -244,7 +246,7 @@ class GeoMatConfig:
             material=0,
         ),
     ])
-    materials: list[Material] = field(default_factory=lambda: [Material('', 276)])
+    materials: list[Material] = field(default_factory=lambda: [Material('', '', '', 276)])
     jdbg1: int = 0
     jdbg2: int = 0
     title: str = "Unnamed geometry"

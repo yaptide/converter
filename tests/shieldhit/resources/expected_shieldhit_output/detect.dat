@@ -33,43 +33,44 @@ Filter
     Z == 1
     A == 1
     GEN >= 1
+
 Output
     Filename z_profile.bdo
     Geo CylZ_Mesh
-    Quantity Dose 
-    Quantity Fluence Protons
-    Quantity Fluence Primaries
-    Quantity Fluence Secondary_protons
+    Quantity Dose  
+    Quantity Fluence Protons 
+    Quantity Fluence Primaries 
+    Quantity Fluence Secondary_protons 
 
 Output
     Filename yz_profile.bdo
     Geo YZ_Mesh
-    Quantity Dose 
-    Quantity Fluence Protons
-    Quantity Fluence Secondary_protons
+    Quantity Dose  
+    Quantity Fluence Protons 
+    Quantity Fluence Secondary_protons 
 
 Output
     Filename entrance.bdo
     Geo EntrySlab
-    Quantity Dose 
-    Quantity AvgEnergy Primaries
-    Quantity AvgEnergy Protons
-    Quantity AvgEnergy Secondary_protons
-    Quantity dLET Protons
-    Quantity tLET Protons
-    Quantity Fluence Protons
+    Quantity Dose  
+    Quantity AvgEnergy Primaries 
+    Quantity AvgEnergy Protons 
+    Quantity AvgEnergy Secondary_protons 
+    Quantity dLET Protons 
+    Quantity tLET Protons 
+    Quantity Fluence Protons 
     Diff1 0 160 640 
     Diff1Type E
 
 Output
     Filename peak.bdo
     Geo PeakSlab
-    Quantity Dose 
-    Quantity AvgEnergy Primaries
-    Quantity AvgEnergy Protons
-    Quantity AvgEnergy Secondary_protons
-    Quantity dLET Protons
-    Quantity tLET Protons
-    Quantity Fluence Protons
+    Quantity Dose  
+    Quantity AvgEnergy Primaries 
+    Quantity AvgEnergy Protons 
+    Quantity AvgEnergy Secondary_protons 
+    Quantity dLET Protons 
+    Quantity tLET Protons 
+    Quantity Fluence Protons 
     Diff1 0 160 640 
     Diff1Type E
