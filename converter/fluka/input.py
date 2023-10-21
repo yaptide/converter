@@ -1,13 +1,17 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from converter.fluka.card import Card
-
+from converter.fluka.geometry_cards import FiguresCard, ZonesCard
+from converter.solid_figures import CylinderFigure, SolidFigure
 
 @dataclass
 class Input:
-    """Class mapping of the fluka input file."""
+    """Class mapping of the Fluka input file."""
 
     energy_GeV: float = 0.15  # GeV FLUKA specific
     number_of_particles: int = 10000
+
+    figures: list[SolidFigure] = field(default_factory=lambda: [])
+    zones: list = field(default_factory=lambda: [])
 
     template: str = """TITLE
 proton beam simulation
@@ -20,19 +24,9 @@ BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME
     0    0
-* black body sphere
-SPH blkbody    0.0 0.0 0.0 10000.0
-* air shpere
-SPH air        0.0 0.0 0.0 100.0
-* target cylinder
-RCC target     0.0 0.0 0.0 0.0 0.0 10.0 5.0
+{FIGURES}
 END
-* outer black body region
-Z_BBODY      5 +blkbody -air
-* inner air region
-Z_AIR        5 +air -target
-* target region
-Z_TARGET     5 +target
+{ZONES}
 END
 GEOEND
 ASSIGNMA    BLCKHOLE   Z_BBODY
@@ -74,4 +68,6 @@ STOP
         return self.template.format(
             BEAM=Card(tag="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
             START=Card(tag="START", what=[str(self.number_of_particles)]),
+            FIGURES=FiguresCard(data=self.figures),
+            ZONES=ZonesCard(data=self.zones)
         )

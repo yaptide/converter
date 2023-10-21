@@ -79,7 +79,7 @@ class BoxFigure(SolidFigure):
         self.z_edge_length += margin * 2
 
 
-def parse_figure(figure_dict: dict) -> SolidFigure:
+def  parse_figure(figure_dict: dict) -> SolidFigure:
     """Parse json containing information about figure to figure."""
     geometry_type = figure_dict['geometryData'].get('geometryType')
     if geometry_type in ("CyliderGeometry", "HollowCylinderGeometry"):

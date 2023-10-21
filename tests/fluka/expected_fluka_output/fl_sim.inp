@@ -9,24 +9,17 @@ BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME
     0    0
-* black body sphere
-SPH blkbody    0.0 0.0 0.0 10000.0
-* air shpere
-SPH air        0.0 0.0 0.0 100.0
-* target cylinder
-RCC target     0.0 0.0 0.0 0.0 0.0 10.0 5.0
+RCC  fig1  5.0  5.0  5.0  57.73502691896258  57.73502691896258
+        57.73502691896258  37.
+RPP  fig2  -20.0  +20.0  -50.0  +50.0  -38.5  +38.5
+SPH  fig3  5.0  -30.0  27.0  528.2
 END
-* outer black body region
-Z_BBODY      5 +blkbody -air
-* inner air region
-Z_AIR        5 +air -target
-* target region
-Z_TARGET     5 +target
+zone1 5 +fig2 +fig1
+zone2 5 +fig3 -fig1
 END
 GEOEND
-ASSIGNMA    BLCKHOLE   Z_BBODY
-ASSIGNMA         AIR     Z_AIR
-ASSIGNMA       WATER  Z_TARGET
+ASSIGNMA    BLCKHOLE   zone1
+ASSIGNMA         AIR   zone2
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&

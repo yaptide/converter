@@ -1,4 +1,6 @@
+from converter import solid_figures
 from converter.common import Parser
+from converter.fluka.geometry_parser import parse_figures, parse_zones
 from converter.fluka.input import Input
 
 
@@ -16,6 +18,9 @@ class FlukaParser(Parser):
         # Since energy in json is in MeV and FLUKA uses GeV, we need to convert it.
         self.input.energy_GeV = float(json["beam"]["energy"]) * 1e-3
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
+
+        self.input.figures = parse_figures(json["figureManager"].get('figures'))
+        self.input.zones = parse_zones()
 
     def get_configs_json(self) -> dict:
         """
