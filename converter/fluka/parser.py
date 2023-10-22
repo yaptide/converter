@@ -1,6 +1,6 @@
-from converter import solid_figures
 from converter.common import Parser
-from converter.fluka.geometry_parser import parse_figures, parse_zones
+from converter.fluka.helper_parsers.figure_parser import parse_figures
+from converter.fluka.helper_parsers.zone_parser import parse_zones
 from converter.fluka.input import Input
 
 
@@ -20,7 +20,8 @@ class FlukaParser(Parser):
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
 
         self.input.figures = parse_figures(json["figureManager"].get('figures'))
-        self.input.zones = parse_zones()
+        self.input.zones, world_figures = parse_zones(json["zoneManager"], self.input.figures)
+        self.input.figures.extend(world_figures)
 
     def get_configs_json(self) -> dict:
         """

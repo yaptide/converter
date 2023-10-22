@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from converter.fluka.geometry_parser import FlukaBox, FlukaCylinder, FlukaFigure, FlukaSphere
+from converter.fluka.helper_parsers.figure_parser import FlukaBox, FlukaCylinder, FlukaFigure, FlukaSphere
 
 
 @dataclass
@@ -8,7 +8,7 @@ class FiguresCard:
     """Class representing description of figures in Fluka input"""
     data: list[FlukaFigure] = field(default_factory=lambda: [])
 
-    def __str__(self) -> str: #TODO: check max number lengths and format accordingly, format the second line of figure correctly
+    def __str__(self) -> str: #line max 132 chars, add plus sign before positive numbers
         """Return the card as a string."""
         result = ""
         for index, figure in enumerate(self.data):
@@ -55,14 +55,3 @@ class FiguresCard:
             result+=line
 
         return result
-        
-
-@dataclass
-class ZonesCard:
-    """Class representing description of zones in Fluka input"""
-    data: list = field(default_factory=lambda: [])
-
-    def __str__(self) -> str:
-        """Return the card as a string."""
-
-        return ""
