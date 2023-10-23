@@ -18,7 +18,8 @@ class FiguresCard:
                 line = "\n"
             line += "{} {}".format(figure.figure_type, figure.name)
             if type(figure) is FlukaBox:
-                line += " {} {} {} {} {} {}\n{} {} {} {} {} {}".format(
+                line += """ {:+.16g} {:+.16g} {:+.16g} {:+.16g} {:+.16g} {:+.16g}\n
+                {:+.16g} {:+.16g} {:+.16g} {:+.16g} {:+.16g} {:+.16g}""".format(
                     figure.coordinates[0],
                     figure.coordinates[1],
                     figure.coordinates[2],
@@ -33,7 +34,7 @@ class FiguresCard:
                     figure.z_vector[2],
                 )
             elif type(figure) is FlukaCylinder:
-                line += " {} {} {} {} {}\n{} {}".format(
+                line += " {:+.16g} {:+.16g} {:+.16g} {:+.16g} {:+.16g}\n{:+.16g} {:+.16g}".format(
                     figure.coordinates[0],
                     figure.coordinates[1],
                     figure.coordinates[2],
@@ -43,7 +44,7 @@ class FiguresCard:
                     figure.radius
                 )
             elif type(figure) is FlukaSphere:
-                line += " {} {} {} {}".format(
+                line += " {:+.16g} {:+.16g} {:+.16g} {:+.16g}".format(
                     figure.coordinates[0],
                     figure.coordinates[1],
                     figure.coordinates[2],

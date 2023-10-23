@@ -5,7 +5,10 @@ from converter.fluka.input import Input
 
 
 class FlukaParser(Parser):
-    """A simple placeholder that ignores the json input and prints example (default) configs."""
+    """
+    A simple parser that parses only some of the parameters, such as geometry data and beam energy,
+    and returns hardcoded values for other parameters
+    """
 
     def __init__(self) -> None:
         super().__init__()
