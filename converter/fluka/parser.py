@@ -2,6 +2,7 @@ from converter.common import Parser
 from converter.fluka.helper_parsers.figure_parser import parse_figures
 from converter.fluka.helper_parsers.region_parser import parse_regions
 from converter.fluka.input import Input
+from converter.fluka.material import MaterialConfig
 
 
 class FlukaParser(Parser):
@@ -15,6 +16,7 @@ class FlukaParser(Parser):
         self.info['simulator'] = 'fluka'
         self.info['version'] = 'unknown'
         self.input = Input()
+        self.material_config = MaterialConfig()
 
     def parse_configs(self, json: dict) -> None:
         """Parse energy and number of particles from json."""
@@ -35,3 +37,7 @@ class FlukaParser(Parser):
         configs_json["fl_sim.inp"] = str(self.input)
 
         return configs_json
+
+    def _parse_materials(self, json: dict) -> None:
+        """Parse materials from json."""
+        self.mat_config.parse_materials(json["materialManager"].get("materials"))
