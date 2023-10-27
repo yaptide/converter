@@ -12,7 +12,6 @@ class BoolOperation(Enum):
 class FlukaRegion:
     """Dataclass mapping for Fluka regions."""
 
-    uuid: str = ""
     name: str = ""
     figures_operators: list[list[tuple[BoolOperation, str]]] = field(default_factory=lambda: [])
 
@@ -36,16 +35,17 @@ def parse_zones(zones_json: dict, figures: list[FlukaFigure]) -> (list[FlukaRegi
         )
 
     if "worldZone" in zones_json:
-        world_zone, world_figure, world_boundary = parse_world_zone(zones_json)
-        regions.append(world_zone)
+        world_region, boundary_region, world_figure, world_boundary = parse_world_zone(zones_json, figures)
+        regions.append(world_region)
+        regions.append(boundary_region)
 
     return regions, [world_figure, world_boundary]
 
 
-def parse_world_zone(zones_json: dict) -> (FlukaRegion, FlukaFigure, FlukaFigure):
+def parse_world_zone(zones_json: dict, figures: list[FlukaFigure]) -> (FlukaRegion, FlukaFigure, FlukaFigure):
     """
     Parse the world zone.
-    Returns tuple consisting of world zone and the two figures of which it consists.
+    Returns tuple consisting of world region, boundary region and the two figures of which they consist.
     """
     # Parse the world figure, then create boundary figure by expanding it
     # The boundary will have the black hole material
@@ -58,15 +58,24 @@ def parse_world_zone(zones_json: dict) -> (FlukaRegion, FlukaFigure, FlukaFigure
     fluka_world_boundary = parse_fluka_figure(world_boundary)
     fluka_world_boundary.name = "figbound"
 
-    # The world zone consists of world boundary with subtracted world figure
-    world_region = FlukaRegion(
-                uuid=world_zone_json["uuid"],
-                name="world",
+    # The boundary region consists of boundary figure with world figure subtracted
+    boundary_region = FlukaRegion(
+                name="boundary",
                 figures_operators=[(BoolOperation.INTERSECTION, fluka_world_boundary.name),
                                    (BoolOperation.SUBTRACTION, fluka_world_figure.name)],
                 )
+
+    # The world region consists of world figure with all other figures subtracted
+    world_region = FlukaRegion(
+                name="world",
+                figures_operators=[(BoolOperation.INTERSECTION, fluka_world_figure.name)],
+                )
     
-    return world_region, fluka_world_figure, fluka_world_boundary
+    # Subtract all other figures from world region
+    for figure in figures:
+        world_region.figures_operators.append((BoolOperation.SUBTRACTION, figure.name))
+    
+    return world_region, boundary_region, fluka_world_figure, fluka_world_boundary
     
 
 def parse_csg_operations(operations: list[list[dict]], figures: list[FlukaFigure]) -> list[tuple[BoolOperation, str]]:

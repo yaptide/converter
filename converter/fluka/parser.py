@@ -1,6 +1,6 @@
 from converter.common import Parser
 from converter.fluka.helper_parsers.figure_parser import parse_figures
-from converter.fluka.helper_parsers.zone_parser import parse_zones
+from converter.fluka.helper_parsers.region_parser import parse_zones
 from converter.fluka.input import Input
 
 

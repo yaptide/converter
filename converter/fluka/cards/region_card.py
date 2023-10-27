@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from converter.fluka.helper_parsers.zone_parser import BoolOperation, FlukaRegion
+from converter.fluka.helper_parsers.region_parser import BoolOperation, FlukaRegion
 
 
 @dataclass
@@ -29,6 +29,7 @@ class ZonesCard:
                     if len(line>=120):
                         result+=line
                         line = "\n"
+                # We connect Fluka zones into regions with union operator
                 if zone_index<len(region.figures_operators)-1:
                     line+=" |"
 
