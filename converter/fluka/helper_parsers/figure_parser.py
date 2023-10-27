@@ -3,32 +3,32 @@ from converter import solid_figures
 from converter.solid_figures import BoxFigure, CylinderFigure, SolidFigure, SphereFigure
 from scipy.spatial.transform import Rotation as R
 
-@dataclass
+@dataclass(frozen=False)
 class FlukaFigure:
-    figure_type = ""
-    name = ""
-    uuid = ""
+    figure_type: str = ""
+    name: str = ""
+    uuid: str = ""
 
-@dataclass
+@dataclass(frozen=False)
 class FlukaBox(FlukaFigure):
-    figure_type = "BOX"
-    coordinates = [0, 0, 0]
-    x_vector = [0, 0, 0]
-    y_vector = [0, 0, 0]
-    z_vector = [0, 0, 0]
+    figure_type: str = "BOX"
+    coordinates: list[float] = [0, 0, 0]
+    x_vector: list[float] = [0, 0, 0]
+    y_vector: list[float] = [0, 0, 0]
+    z_vector: list[float] = [0, 0, 0]
 
-@dataclass
+@dataclass(frozen=False)
 class FlukaCylinder(FlukaFigure):
-    figure_type = "RCC"
-    coordinates = [0, 0, 0]
-    height_vector = [0, 0, 0]
-    radius = 0
+    figure_type: str = "RCC"
+    coordinates: list[float] = [0, 0, 0]
+    height_vector: list[float] = [0, 0, 0]
+    radius: float = 0
 
-@dataclass
+@dataclass(frozen=False)
 class FlukaSphere(FlukaFigure):
-    figure_type = "SPH"
-    coordinates = [0, 0, 0]
-    radius = 0
+    figure_type: str = "SPH"
+    coordinates: list[float] = [0, 0, 0]
+    radius: float = 0
 
 def parse_box(box: BoxFigure) -> FlukaBox:
     """Parse box to Fluka box"""

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from converter.fluka.cards.card import Card
 from converter.fluka.cards.figure_card import FiguresCard
-from converter.fluka.cards.zone_card import ZonesCard
+from converter.fluka.cards.region_card import ZonesCard
 from converter.solid_figures import SolidFigure
 
 @dataclass

@@ -8,7 +8,7 @@ class BoolOperation(Enum):
     INTERSECTION = 1
     SUBTRACTION = 2
 
-@dataclass
+@dataclass(frozen=False)
 class FlukaRegion:
     """Dataclass mapping for Fluka regions."""
 
