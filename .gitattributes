@@ -2,4 +2,4 @@
 text=auto
 
 # Ensure that fluka .inp files are saved with CRLF line endings
-.inp text eol=crlf
+*.inp text eol=crlf
