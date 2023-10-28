@@ -100,7 +100,7 @@ def parse_figures(figures_json) -> list[FlukaFigure]:
     fluka_figures = []
     figure_name = "fig{}"
 
-    for idx, figure in raw_figures:
+    for idx, figure in enumerate(raw_figures):
         fluka_figure = parse_fluka_figure(figure)
         fluka_figure.name = figure_name.format(idx)
         fluka_figures.append(fluka_figure)

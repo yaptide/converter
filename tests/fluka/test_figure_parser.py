@@ -1,7 +1,6 @@
-import logging
 import math
 from converter import solid_figures
-from converter.fluka.helper_parsers.figure_parser import FlukaCylinder, FlukaBox, FlukaSphere, parse_box, parse_cylinder, parse_sphere
+from converter.fluka.helper_parsers.figure_parser import parse_box, parse_cylinder, parse_sphere
 import pytest
 
 def test_parse_cylinder():
