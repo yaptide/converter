@@ -2,7 +2,6 @@ import pytest
 from pathlib import Path
 from converter.common import Parser
 from converter.api import get_parser_from_str, run_parser
-import filecmp
 import logging
 from difflib import Differ
 from expected_fluka_output.fl_sim import expected_output

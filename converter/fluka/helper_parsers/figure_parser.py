@@ -3,32 +3,45 @@ from converter import solid_figures
 from converter.solid_figures import BoxFigure, CylinderFigure, SolidFigure, SphereFigure
 from scipy.spatial.transform import Rotation as R
 
+
 @dataclass(frozen=False)
 class FlukaFigure:
+    """Abstract class representing Fluka figure"""
+
     figure_type: str = ""
     name: str = ""
     uuid: str = ""
 
+
 @dataclass(frozen=False)
 class FlukaBox(FlukaFigure):
+    """Class representing Fluka box"""
+
     figure_type: str = "BOX"
     coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
     x_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
     y_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
     z_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
 
+
 @dataclass(frozen=False)
 class FlukaCylinder(FlukaFigure):
+    """Class representing Fluka cylinder"""
+
     figure_type: str = "RCC"
     coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
     height_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
     radius: float = 0
 
+
 @dataclass(frozen=False)
 class FlukaSphere(FlukaFigure):
+    """Class representing Fluka sphere"""
+
     figure_type: str = "SPH"
     coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
     radius: float = 0
+
 
 def parse_box(box: BoxFigure) -> FlukaBox:
     """Parse box to Fluka box"""
@@ -51,13 +64,14 @@ def parse_box(box: BoxFigure) -> FlukaBox:
 
     return fluka_box
 
+
 def parse_cylinder(cylinder: CylinderFigure) -> FlukaCylinder:
     """Parse cylinder to Fluka cylinder"""
     rotation = R.from_euler('xyz', cylinder.rotation, degrees=True)
     height_vector = rotation.apply((0, 0, cylinder.height))
 
     fluka_cylinder = FlukaCylinder()
-    fluka_cylinder.coordinates= (
+    fluka_cylinder.coordinates = (
         cylinder.position[0] - height_vector[0] / 2,
         cylinder.position[1] - height_vector[1] / 2,
         cylinder.position[2] - height_vector[2] / 2,
@@ -67,6 +81,7 @@ def parse_cylinder(cylinder: CylinderFigure) -> FlukaCylinder:
     fluka_cylinder.uuid = cylinder.uuid
 
     return fluka_cylinder
+
 
 def parse_sphere(sphere: SphereFigure) -> FlukaSphere:
     """Parse sphere to Fluka sphere"""
@@ -78,6 +93,7 @@ def parse_sphere(sphere: SphereFigure) -> FlukaSphere:
     fluka_sphere.uuid = sphere.uuid
     return fluka_sphere
 
+
 def parse_fluka_figure(figure: SolidFigure) -> FlukaFigure:
     """Parse any SolidFigure to FlukaFigure"""
     if type(figure) is BoxFigure:
@@ -88,15 +104,16 @@ def parse_fluka_figure(figure: SolidFigure) -> FlukaFigure:
         fluka_figure = parse_sphere(figure)
     else:
         raise ValueError(f"Unexpected solid figure type: {figure}")
-    
+
     return fluka_figure
+
 
 def parse_figures(figures_json) -> list[FlukaFigure]:
     """Parse figures data from JSON to figures data used by Fluka"""
     raw_figures = [
             solid_figures.parse_figure(figure_dict) for figure_dict in figures_json
         ]
-    
+
     fluka_figures = []
     figure_name = "fig{}"
 
@@ -106,6 +123,7 @@ def parse_figures(figures_json) -> list[FlukaFigure]:
         fluka_figures.append(fluka_figure)
 
     return fluka_figures
+
 
 def get_figure_name_by_uuid(figures_list: list[FlukaFigure], uuid: str) -> str:
     """Helper function which returns name of figure with provided uuid"""

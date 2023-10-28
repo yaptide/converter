@@ -9,7 +9,6 @@ def zones_json(project_fluka_json):
 
 def test_parse_regions(zones_json, project_fluka_json):
     """Test if regions are parsed correctly"""
-    
     figures = parse_figures(project_fluka_json["figureManager"].get('figures'))
 
     regions, _ = parse_regions(zones_json, figures)

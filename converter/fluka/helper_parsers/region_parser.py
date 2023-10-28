@@ -1,14 +1,17 @@
 import copy
 from dataclasses import dataclass, field
 from enum import Enum
-import logging
 
 from converter import solid_figures
 from converter.fluka.helper_parsers.figure_parser import FlukaFigure, get_figure_name_by_uuid, parse_fluka_figure
 
+
 class BoolOperation(Enum):
+    """Enum representing boolean operations used in Fluka zones."""
+
     INTERSECTION = 1
     SUBTRACTION = 2
+
 
 @dataclass(frozen=False)
 class FlukaRegion:
@@ -66,7 +69,7 @@ def parse_world_zone(zones_json: dict, figures: list[FlukaFigure]) -> (FlukaRegi
                 figures_operators=[[(BoolOperation.INTERSECTION, fluka_world_boundary.name),
                                    (BoolOperation.SUBTRACTION, fluka_world_figure.name)]],
                 )
-    
+
     # Subtract all other figures from world region
     world_operations = [(BoolOperation.INTERSECTION, fluka_world_figure.name)]
     for figure in figures:
@@ -79,7 +82,7 @@ def parse_world_zone(zones_json: dict, figures: list[FlukaFigure]) -> (FlukaRegi
                 )
 
     return world_region, boundary_region, fluka_world_figure, fluka_world_boundary
-    
+
 
 def parse_csg_operations(operations: list[list[dict]], figures: list[FlukaFigure]) -> list[tuple[BoolOperation, str]]:
     """
@@ -88,7 +91,7 @@ def parse_csg_operations(operations: list[list[dict]], figures: list[FlukaFigure
     Each list of tuples represents a Fluka zone.
     The list of lists represents a Fluka region, which consists of union of all zones.
     """
-    zones_json = [zone for zone in operations]
+    zones_json = list(operations)
     region = []
     for zone in zones_json:
         operations_list = []

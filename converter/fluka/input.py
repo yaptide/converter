@@ -4,6 +4,7 @@ from converter.fluka.cards.figure_card import FiguresCard
 from converter.fluka.cards.region_card import RegionsCard
 from converter.solid_figures import SolidFigure
 
+
 @dataclass
 class Input:
     """Class mapping of the Fluka input file."""

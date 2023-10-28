@@ -1,9 +1,9 @@
 import math
 from converter import solid_figures
 from converter.fluka.helper_parsers.figure_parser import parse_box, parse_cylinder, parse_sphere
-import pytest
 
 def test_parse_cylinder():
+    """Test if cylinder is parsed correctly"""
     cylinder = solid_figures.CylinderFigure(uuid='ed1507a5-0489-4dc3-bb87-7b27dcff43e7',
                                           name='Cylinder',
                                           position=(2.14, 1.32, 0),
@@ -23,6 +23,7 @@ def test_parse_cylinder():
     assert fluka_cylinder.radius == 1
 
 def test_parse_sphere():
+    """Test if sphere is parsed correctly"""
     sphere = solid_figures.SphereFigure(uuid='ed1507a5-0489-4dc3-bb87-7b27dcff43e7',
                                         name='Sphere',
                                         position=(2.14, 1.32, 0),
@@ -37,6 +38,7 @@ def test_parse_sphere():
     assert fluka_sphere.radius == 1
 
 def test_parse_box():
+    """Test if box is parsed correctly"""
     figure = solid_figures.BoxFigure(uuid='ed1507a5-0489-4dc3-bb87-7b27dcff43e7',
                                      name='Box',
                                      position=(2.14, 1.32, 0),
