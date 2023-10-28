@@ -17,7 +17,7 @@ class FiguresCard:
                 line = ""
             else:
                 line = "\n"
-            line += "{} {}".format(figure.figure_type, figure.name)
+            line += "{figure.figure_type} {figure.name}"
             if type(figure) is FlukaBox:
                 line += (f" {figure.coordinates[0]:+#.16g} {figure.coordinates[1]:+#.16g}"
                          f" {figure.coordinates[2]:+#.16g} {figure.x_vector[0]:+#.16g}"
@@ -31,7 +31,7 @@ class FiguresCard:
                          f" {figure.height_vector[1]:+#.16g}\n{figure.height_vector[2]:+#.16g}"
                          f" {figure.radius:+#.16g}")
             elif type(figure) is FlukaSphere:
-                line +=(f" {figure.coordinates[0]:+#.16g} {figure.coordinates[1]:+#.16g}"
+                line += (f" {figure.coordinates[0]:+#.16g} {figure.coordinates[1]:+#.16g}"
                         f" {figure.coordinates[2]:+#.16g} {figure.radius:+#.16g}")
             else:
                 raise ValueError(f"Unexpected figure type: {figure}")

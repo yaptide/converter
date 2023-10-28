@@ -1,4 +1,4 @@
-from converter.fluka.card import Card
+from converter.fluka.cards.card import Card
 
 
 def test_beam_line() -> None:
