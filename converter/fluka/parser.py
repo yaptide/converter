@@ -23,7 +23,7 @@ class FlukaParser(Parser):
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
 
         self.input.figures = parse_figures(json["figureManager"].get('figures'))
-        self.input.zones, world_figures = parse_regions(json["zoneManager"], self.input.figures)
+        self.input.regions, world_figures = parse_regions(json["zoneManager"], self.input.figures)
         self.input.figures.extend(world_figures)
 
     def get_configs_json(self) -> dict:

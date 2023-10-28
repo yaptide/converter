@@ -3,7 +3,7 @@ from converter.fluka.helper_parsers.region_parser import BoolOperation, FlukaReg
 
 
 @dataclass
-class ZonesCard:
+class RegionsCard:
     """Class representing description of zones in Fluka input"""
     data: list[FlukaRegion] = field(default_factory=lambda: [])
 
@@ -26,11 +26,12 @@ class ZonesCard:
                         line+=" +{}".format(figure_name)
                     elif operation==BoolOperation.SUBTRACTION:
                         line+=" -{}".format(figure_name)
-                    if len(line>=120):
+                    if len(line)>=120: # Ensure that line is not longer than 132 characters
                         result+=line
                         line = "\n"
                 # We connect Fluka zones into regions with union operator
                 if zone_index<len(region.figures_operators)-1:
                     line+=" |"
+            result+=line
 
         return result

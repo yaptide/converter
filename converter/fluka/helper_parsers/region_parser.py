@@ -63,20 +63,21 @@ def parse_world_zone(zones_json: dict, figures: list[FlukaFigure]) -> (FlukaRegi
     # The boundary region consists of boundary figure with world figure subtracted
     boundary_region = FlukaRegion(
                 name="boundary",
-                figures_operators=[(BoolOperation.INTERSECTION, fluka_world_boundary.name),
-                                   (BoolOperation.SUBTRACTION, fluka_world_figure.name)],
+                figures_operators=[[(BoolOperation.INTERSECTION, fluka_world_boundary.name),
+                                   (BoolOperation.SUBTRACTION, fluka_world_figure.name)]],
                 )
+    
+    # Subtract all other figures from world region
+    world_operations = [(BoolOperation.INTERSECTION, fluka_world_figure.name)]
+    for figure in figures:
+        world_operations.append((BoolOperation.SUBTRACTION, figure.name))
 
     # The world region consists of world figure with all other figures subtracted
     world_region = FlukaRegion(
                 name="world",
-                figures_operators=[(BoolOperation.INTERSECTION, fluka_world_figure.name)],
+                figures_operators=[world_operations],
                 )
-    
-    # Subtract all other figures from world region
-    for figure in figures:
-        world_region.figures_operators.append((BoolOperation.SUBTRACTION, figure.name))
-    
+
     return world_region, boundary_region, fluka_world_figure, fluka_world_boundary
     
 

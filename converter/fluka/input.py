@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from converter.fluka.cards.card import Card
 from converter.fluka.cards.figure_card import FiguresCard
-from converter.fluka.cards.region_card import ZonesCard
+from converter.fluka.cards.region_card import RegionsCard
 from converter.solid_figures import SolidFigure
 
 @dataclass
@@ -12,7 +12,7 @@ class Input:
     number_of_particles: int = 10000
 
     figures: list[SolidFigure] = field(default_factory=lambda: [])
-    zones: list = field(default_factory=lambda: [])
+    regions: list = field(default_factory=lambda: [])
 
     template: str = """TITLE
 proton beam simulation
@@ -27,7 +27,7 @@ GEOBEGIN                                                              COMBNAME
     0    0
 {FIGURES}
 END
-{ZONES}
+{REGIONS}
 END
 GEOEND
 ASSIGNMA    BLCKHOLE   Z_BBODY
@@ -70,5 +70,5 @@ STOP
             BEAM=Card(tag="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
             START=Card(tag="START", what=[str(self.number_of_particles)]),
             FIGURES=FiguresCard(data=self.figures),
-            ZONES=ZonesCard(data=self.zones)
+            REGIONS=RegionsCard(data=self.regions)
         )
