@@ -1,4 +1,4 @@
-TITLE
+expected_output = """TITLE
 proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
@@ -57,3 +57,4 @@ RANDOMIZ                   137
 * number of particles to simulate
 START        10000.0                                                            
 STOP
+"""

@@ -1,5 +1,0 @@
-# All files are checked into the repo with LF
-text=auto
-
-# Ensure that fluka .inp files are saved with CRLF line endings
-*.inp text eol=crlf
