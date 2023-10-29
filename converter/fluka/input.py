@@ -18,7 +18,7 @@ class Input:
     template: str = """TITLE
 proton beam simulation
 * default physics settings for hadron therapy
-GLOBAL    SDUM=DEPRBODY
+GLOBAL                                                                DEPRBODY
 DEFAULTS                                                              HADROTHE
 * beam source
 {BEAM}
