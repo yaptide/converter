@@ -99,7 +99,7 @@ def parse_csg_operations(operations: list[list[dict]], figures: list[FlukaFigure
             figure_name = get_figure_name_by_uuid(figures, operation['objectUuid'])
             if figure_name is None:
                 raise ValueError(f"Cant find figure of uuid {operation['objectUuid']}")
-            if operation["mode"] == "union" or "intersection":
+            if operation["mode"] == "union" or operation["mode"] == "intersection":
                 # In JSON received from frontend, first figure added to each zone is marked as a union operation.
                 # However Fluka requires each zone to contain at least one figure marked with intersection.
                 # This doesn't change the logic, as there is no way to add another union with a figure in the UI

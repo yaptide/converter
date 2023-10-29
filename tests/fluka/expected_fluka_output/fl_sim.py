@@ -20,7 +20,7 @@ BOX figbound -1.0 +0.0 +10.5 +2.0 +0.0 +0.0
 +0.0 +2.0 +0.0 +0.0 +0.0 +2.0
 END
 region0 5 +fig0 +fig1
-region1 5 +fig2 +fig1
+region1 5 +fig2 -fig1
 world 5 +figworld -fig0 -fig1 -fig2
 boundary 5 +figbound -figworld
 END
