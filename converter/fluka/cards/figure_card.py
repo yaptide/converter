@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from converter.common import format_float
 
 from converter.fluka.helper_parsers.figure_parser import FlukaBox, FlukaCylinder, FlukaFigure, FlukaSphere
 
@@ -19,20 +20,31 @@ class FiguresCard:
                 line = "\n"
             line += f"{figure.figure_type} {figure.name}"
             if type(figure) is FlukaBox:
-                line += (f" {figure.coordinates[0]:+#.16g} {figure.coordinates[1]:+#.16g}"
-                         f" {figure.coordinates[2]:+#.16g} {figure.x_vector[0]:+#.16g}"
-                         f" {figure.x_vector[1]:+#.16g} {figure.x_vector[2]:+#.16g}\n"
-                         f"{figure.y_vector[0]:+#.16g} {figure.y_vector[1]:+#.16g}"
-                         f" {figure.y_vector[2]:+#.16g} {figure.z_vector[0]:+#.16g}"
-                         f" {figure.z_vector[1]:+#.16g} {figure.z_vector[2]:+#.16g}")
+                line += (f" {format_float(figure.coordinates[0], n=16):+#}"
+                         f" {format_float(figure.coordinates[1], n=16):+#}"
+                         f" {format_float(figure.coordinates[2], n=16):+#}"
+                         f" {format_float(figure.x_vector[0], n=16):+#}"
+                         f" {format_float(figure.x_vector[1], n=16):+#}"
+                         f" {format_float(figure.x_vector[2], n=16):+#}\n"
+                         f"{format_float(figure.y_vector[0], n=16):+#}"
+                         f" {format_float(figure.y_vector[1], n=16):+#}"
+                         f" {format_float(figure.y_vector[2], n=16):+#}"
+                         f" {format_float(figure.z_vector[0], n=16):+#}"
+                         f" {format_float(figure.z_vector[1], n=16):+#}"
+                         f" {format_float(figure.z_vector[2], n=16):+#}")
             elif type(figure) is FlukaCylinder:
-                line += (f" {figure.coordinates[0]:+#.16g} {figure.coordinates[1]:+#.16g}"
-                         f" {figure.coordinates[2]:+#.16g} {figure.height_vector[0]:+#.16g}"
-                         f" {figure.height_vector[1]:+#.16g}\n{figure.height_vector[2]:+#.16g}"
-                         f" {figure.radius:+#.16g}")
+                line += (f" {format_float(figure.coordinates[0], n=16):+#}"
+                         f" {format_float(figure.coordinates[1], n=16):+#}"
+                         f" {format_float(figure.coordinates[2], n=16):+#}"
+                         f" {format_float(figure.height_vector[0], n=16):+#}"
+                         f" {format_float(figure.height_vector[1], n=16):+#}\n"
+                         f"{format_float(figure.height_vector[2], n=16):+#}"
+                         f" {format_float(figure.radius, n=16):+#}")
             elif type(figure) is FlukaSphere:
-                line += (f" {figure.coordinates[0]:+#.16g} {figure.coordinates[1]:+#.16g}"
-                         f" {figure.coordinates[2]:+#.16g} {figure.radius:+#.16g}")
+                line += (f" {format_float(figure.coordinates[0], n=16):+#}"
+                         f" {format_float(figure.coordinates[1], n=16):+#}"
+                         f" {format_float(figure.coordinates[2], n=16):+#}"
+                         f" {format_float(figure.radius, n=16):+#}")
             else:
                 raise ValueError(f"Unexpected figure type: {figure}")
 
