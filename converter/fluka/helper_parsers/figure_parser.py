@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import logging
 from converter import solid_figures
 from converter.solid_figures import BoxFigure, CylinderFigure, SolidFigure, SphereFigure
 from scipy.spatial.transform import Rotation as R
@@ -17,11 +18,13 @@ class FlukaFigure:
 class FlukaBox(FlukaFigure):
     """Class representing Fluka box"""
 
-    figure_type: str = "BOX"
-    coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
-    x_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
-    y_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
-    z_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
+    figure_type: str = "RPP"
+    x_min: float = 0
+    x_max: float = 0
+    y_min: float = 0
+    y_max: float = 0
+    z_min: float = 0
+    z_max: float = 0
 
 
 @dataclass(frozen=False)
@@ -44,23 +47,22 @@ class FlukaSphere(FlukaFigure):
 
 
 def parse_box(box: BoxFigure) -> FlukaBox:
-    """Parse box to Fluka box"""
-    rotation = R.from_euler('xyz', box.rotation, degrees=True)
-    x_vec = tuple(rotation.apply((box.x_edge_length, 0, 0)))
-    y_vec = tuple(rotation.apply((0, box.y_edge_length, 0)))
-    z_vec = tuple(rotation.apply((0, 0, box.z_edge_length)))
-    diagonal_vec = x_vec + y_vec + z_vec
+    """
+    Parse box to Fluka RPP.
+    RPP is a parallelepiped with sides parallel to the coordinate axes.
+    In case the box to parse has rotation applied, we throw an error.
+    """
+    if (box.rotation[0] != 0 or box.rotation[1] != 0 or box.rotation[2] != 0):
+        raise ValueError("Rotation of box is not supported for Fluka")
 
     fluka_box = FlukaBox()
-    fluka_box.coordinates = (
-        box.position[0] - diagonal_vec[0] / 2,
-        box.position[1] - diagonal_vec[1] / 2,
-        box.position[2] - diagonal_vec[2] / 2,
-    )
-    fluka_box.x_vector = x_vec
-    fluka_box.y_vector = y_vec
-    fluka_box.z_vector = z_vec
     fluka_box.uuid = box.uuid
+    fluka_box.x_min = box.position[0] - box.x_edge_length / 2
+    fluka_box.x_max = box.position[0] + box.x_edge_length / 2
+    fluka_box.y_min = box.position[1] - box.y_edge_length / 2
+    fluka_box.y_max = box.position[1] + box.y_edge_length / 2
+    fluka_box.z_min = box.position[2] - box.z_edge_length / 2
+    fluka_box.z_max = box.position[2] + box.z_edge_length / 2
 
     return fluka_box
 

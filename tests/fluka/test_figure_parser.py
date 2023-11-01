@@ -1,4 +1,5 @@
 import math
+import pytest
 from converter import solid_figures
 from converter.fluka.helper_parsers.figure_parser import parse_box, parse_cylinder, parse_sphere
 
@@ -42,20 +43,37 @@ def test_parse_box():
     figure = solid_figures.BoxFigure(uuid='ed1507a5-0489-4dc3-bb87-7b27dcff43e7',
                                      name='Box',
                                      position=(2.14, 1.32, 0),
-                                     rotation=(19.6, 14.2, 0),
+                                     rotation=(0, 0, 0),
                                      x_edge_length=1,
                                      y_edge_length=1,
                                      z_edge_length=1)
 
     fluka_box = parse_box(figure)
 
-    assert fluka_box.figure_type == "BOX"
+    assert fluka_box.figure_type == "RPP"
     assert fluka_box.uuid == "ed1507a5-0489-4dc3-bb87-7b27dcff43e7"
-    assert all(math.isclose(a, b, abs_tol=1e-8) for a, b in zip(fluka_box.coordinates,
-                                                                (1.65527732505, 1.32, 0.1226536929)))
-    assert all(math.isclose(a, b, abs_tol=1e-8) for a, b in zip(fluka_box.x_vector,
-                                                                (0.96944534989, 6.9388939e-18, -0.24530738587)))
-    assert all(math.isclose(a, b, abs_tol=1e-8) for a, b in zip(fluka_box.y_vector,
-                                                                (0.08228874766, 0.94205745278, 0.32520196440)))
-    assert all(math.isclose(a, b, abs_tol=1e-8) for a, b in zip(fluka_box.z_vector,
-                                                                (0.23109365109, -0.3354515697, 0.91327321693)))
+    assert math.isclose(fluka_box.x_min, 1.64)
+    assert math.isclose(fluka_box.x_max, 2.64)
+    assert math.isclose(fluka_box.y_min, 0.82)
+    assert math.isclose(fluka_box.y_max, 1.82)
+    assert math.isclose(fluka_box.z_min, -0.5)
+    assert math.isclose(fluka_box.z_max, 0.5)
+
+def test_rotated_box():
+    """
+    Test if trying to parse rotated box throws an error
+    (as we use RPP for Fluka)
+    """
+
+    figure = solid_figures.BoxFigure(uuid='ed1507a5-0489-4dc3-bb87-7b27dcff43e7',
+                                     name='Box',
+                                     position=(2.14, 1.32, 0),
+                                     rotation=(1, 56, 76),
+                                     x_edge_length=1,
+                                     y_edge_length=1,
+                                     z_edge_length=1)
+
+    with pytest.raises(ValueError) as err:
+        parse_box(figure)
+
+    assert "Rotation of box is not supported for Fluka" in str(err.value)

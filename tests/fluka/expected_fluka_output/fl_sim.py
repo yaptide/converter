@@ -1,28 +1,29 @@
 expected_output = """TITLE
 proton beam simulation
 * default physics settings for hadron therapy
-GLOBAL                                                                DEPRBODY
 DEFAULTS                                                              HADROTHE
 * beam source
-BEAM           -0.15                                                  PROTON    
+BEAM           -0.07                                                  PROTON    
 * beam source position
 BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME
     0    0
-BOX fig0 -0.5 +0.0 +0.0 +1.0 +0.0 +0.0
-+0.0 +1.0 +0.0 +0.0 +0.0 +1.0
-RCC fig1 +2.02445317445455 +1.48772578487513 -0.4566366084694 +0.2310936510909 -0.3354515697503
-+0.9132732169387 +1.0
-SPH fig2 +3.32 +3.16 +0.0 +2.96
-BOX figworld +0.0 +0.0 +10.5 +0.0 +0.0 +0.0
-+0.0 +0.0 +0.0 +0.0 +0.0 +0.0
-BOX figbound -1.0 +0.0 +10.5 +2.0 +0.0 +0.0
-+0.0 +2.0 +0.0 +0.0 +0.0 +2.0
+RPP fig0 -6.0 +6.0 -5.0 +5.0 -1.0 +9.0
+RPP fig1 -4.0 +4.0 -4.0 +4.0 +0.0 +8.0
+RCC fig2 +0.0 +0.0 -0.5 +0.0 +0.0
++1.0 +4.0
+RCC fig3 +0.0 +0.0 -0.5 +0.0 +0.0
++1.0 +2.0
+SPH fig4 +0.0 +11.8172105325468 -14.215841748815 +1.0
+RPP figworld -6.6 +6.6 -5.5 +5.5 -5.5 +5.5
+RPP figbound -7.6 +7.6 -6.5 +6.5 -6.5 +6.5
 END
-region0 5 +fig0 +fig1
-region1 5 +fig2 -fig1
-world 5 +figworld -fig0 -fig1 -fig2
+region0 5 +fig0 -fig1 -fig2
+region1 5 +fig1
+region2 5 +fig2 -fig3
+region3 5 +fig3
+world 5 +figworld -fig0 -fig1 -fig2 -fig3 -fig4
 boundary 5 +figbound -figworld
 END
 GEOEND

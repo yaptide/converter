@@ -20,18 +20,12 @@ class FiguresCard:
                 line = "\n"
             line += f"{figure.figure_type} {figure.name}"
             if type(figure) is FlukaBox:
-                line += (f" {format_float(figure.coordinates[0], n=16):+#}"
-                         f" {format_float(figure.coordinates[1], n=16):+#}"
-                         f" {format_float(figure.coordinates[2], n=16):+#}"
-                         f" {format_float(figure.x_vector[0], n=16):+#}"
-                         f" {format_float(figure.x_vector[1], n=16):+#}"
-                         f" {format_float(figure.x_vector[2], n=16):+#}\n"
-                         f"{format_float(figure.y_vector[0], n=16):+#}"
-                         f" {format_float(figure.y_vector[1], n=16):+#}"
-                         f" {format_float(figure.y_vector[2], n=16):+#}"
-                         f" {format_float(figure.z_vector[0], n=16):+#}"
-                         f" {format_float(figure.z_vector[1], n=16):+#}"
-                         f" {format_float(figure.z_vector[2], n=16):+#}")
+                line += (f" {format_float(figure.x_min, n=16):+#}"
+                         f" {format_float(figure.x_max, n=16):+#}"
+                         f" {format_float(figure.y_min, n=16):+#}"
+                         f" {format_float(figure.y_max, n=16):+#}"
+                         f" {format_float(figure.z_min, n=16):+#}"
+                         f" {format_float(figure.z_max, n=16):+#}")
             elif type(figure) is FlukaCylinder:
                 line += (f" {format_float(figure.coordinates[0], n=16):+#}"
                          f" {format_float(figure.coordinates[1], n=16):+#}"
