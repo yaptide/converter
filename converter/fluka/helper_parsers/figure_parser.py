@@ -35,7 +35,7 @@ class FlukaCylinder(FlukaFigure):
     height_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
     radius: float = 0
     rotation: list[float] = field(default_factory=lambda: (0, 0, 0))
-    heightL: float = 0
+    height: float = 0
 
 
 @dataclass(frozen=False)
