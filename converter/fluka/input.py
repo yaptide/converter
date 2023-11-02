@@ -9,7 +9,7 @@ from converter.solid_figures import SolidFigure
 class Input:
     """Class mapping of the Fluka input file."""
 
-    energy_GeV: float = 0.15  # GeV FLUKA specific
+    energy_GeV: float = 0.07  # GeV FLUKA specific
     number_of_particles: int = 10000
 
     figures: list[SolidFigure] = field(default_factory=lambda: [])
