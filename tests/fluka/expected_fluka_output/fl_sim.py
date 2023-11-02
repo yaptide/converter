@@ -9,14 +9,40 @@ BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME
     0    0
+* box fig0
+* X range -6.0, +6.0
+* Y range -5.0, +5.0
+* Z range -1.0, +9.0
 RPP fig0 -6.0 +6.0 -5.0 +5.0 -1.0 +9.0
+* box fig1
+* X range -4.0, +4.0
+* Y range -4.0, +4.0
+* Z range +0.0, +8.0
 RPP fig1 -4.0 +4.0 -4.0 +4.0 +0.0 +8.0
+* cylinder fig2
+* bottom center (+0.0, +0.0, -0.5), spanning vector (+0.0, +0.0, +1.0),
+* radius +4.0, height +0.0 cm
+* rotation angles: 0*, 0*, 0*
 RCC fig2 +0.0 +0.0 -0.5 +0.0 +0.0
 +1.0 +4.0
+* cylinder fig3
+* bottom center (+0.0, +0.0, -0.5), spanning vector (+0.0, +0.0, +1.0),
+* radius +2.0, height +0.0 cm
+* rotation angles: 0*, 0*, 0*
 RCC fig3 +0.0 +0.0 -0.5 +0.0 +0.0
 +1.0 +2.0
+* sphere fig4
+* center (+0.0, +11.8172105325468, -14.215841748815), radius +1.0
 SPH fig4 +0.0 +11.8172105325468 -14.215841748815 +1.0
+* box figworld
+* X range -6.6, +6.6
+* Y range -5.5, +5.5
+* Z range -5.5, +5.5
 RPP figworld -6.6 +6.6 -5.5 +5.5 -5.5 +5.5
+* box figbound
+* X range -16.6, +16.6
+* Y range -15.5, +15.5
+* Z range -15.5, +15.5
 RPP figbound -16.6 +16.6 -15.5 +15.5 -15.5 +15.5
 END
 region0 5 +fig0 -fig1 -fig2

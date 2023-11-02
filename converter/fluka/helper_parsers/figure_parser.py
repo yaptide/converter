@@ -34,6 +34,8 @@ class FlukaCylinder(FlukaFigure):
     coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
     height_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
     radius: float = 0
+    rotation: list[float] = field(default_factory=lambda: (0, 0, 0))
+    heightL: float = 0
 
 
 @dataclass(frozen=False)
@@ -80,6 +82,8 @@ def parse_cylinder(cylinder: CylinderFigure) -> FlukaCylinder:
     fluka_cylinder.height_vector = height_vector
     fluka_cylinder.radius = cylinder.radius_top
     fluka_cylinder.uuid = cylinder.uuid
+    fluka_cylinder.rotation = cylinder.rotation
+    fluka_cylinder.height = cylinder.height
 
     return fluka_cylinder
 
