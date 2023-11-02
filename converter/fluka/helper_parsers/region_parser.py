@@ -56,7 +56,7 @@ def parse_world_zone(zones_json: dict, figures: list[FlukaFigure]) -> (FlukaRegi
     world_zone_json = zones_json["worldZone"]
     world_figure = solid_figures.parse_figure(world_zone_json)
     world_boundary = copy.deepcopy(world_figure)
-    world_boundary.expand(1)
+    world_boundary.expand(10)
 
     fluka_world_figure = parse_fluka_figure(world_figure)
     fluka_world_figure.name = "figworld"
