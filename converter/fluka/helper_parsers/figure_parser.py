@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-import logging
 from converter import solid_figures
 from converter.solid_figures import BoxFigure, CylinderFigure, SolidFigure, SphereFigure
 from scipy.spatial.transform import Rotation as R

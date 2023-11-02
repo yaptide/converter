@@ -64,7 +64,6 @@ def test_rotated_box():
     Test if trying to parse rotated box throws an error
     (as we use RPP for Fluka)
     """
-
     figure = solid_figures.BoxFigure(uuid='ed1507a5-0489-4dc3-bb87-7b27dcff43e7',
                                      name='Box',
                                      position=(2.14, 1.32, 0),
