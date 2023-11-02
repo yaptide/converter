@@ -59,8 +59,8 @@ def format_float(number: float, n: int) -> float:
     # abs() to fix that, but we need to remember the sign and update `n` accordingly
     sign = 1
 
-    if result < 0:
-        result = abs(result)
+    if number < 0:
+        result = abs(number)
         sign = -1
         # Adjust length for the sign
         length -= 1
