@@ -2,67 +2,9 @@ import pytest
 from pathlib import Path
 from converter.common import Parser
 from converter.api import get_parser_from_str, run_parser
-
-_expected_fluka_input_content = """TITLE
-proton beam simulation
-* default physics settings for hadron therapy
-DEFAULTS                                                              HADROTHE
-* beam source
-BEAM           -0.15                                                  PROTON    
-* beam source position
-BEAMPOS          0.0       0.0    -100.0
-* geometry description starts here
-GEOBEGIN                                                              COMBNAME
-    0    0
-* black body sphere
-SPH blkbody    0.0 0.0 0.0 10000.0
-* air shpere
-SPH air        0.0 0.0 0.0 100.0
-* target cylinder
-RCC target     0.0 0.0 0.0 0.0 0.0 10.0 5.0
-END
-* outer black body region
-Z_BBODY      5 +blkbody -air
-* inner air region
-Z_AIR        5 +air -target
-* target region
-Z_TARGET     5 +target
-END
-GEOEND
-ASSIGNMA    BLCKHOLE   Z_BBODY
-ASSIGNMA         AIR     Z_AIR
-ASSIGNMA       WATER  Z_TARGET
-* scoring NEUTRON on mesh z
-USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
-USRBIN          -0.5      -0.5       0.0         1         1       500&
-* scoring NEUTRON on mesh yz
-USRBIN           0.0   NEUTRON       -22       0.1       5.0       5.0n_yz
-USRBIN          -0.1      -5.0       0.0         1       500       500&
-* scoring NEUTRON on mesh xy
-USRBIN           0.0   NEUTRON       -23       5.0       5.0       2.9n_xy
-USRBIN          -5.0      -5.0       2.8       500       500         1&
-* scoring NEUTRON on mesh zx
-USRBIN           0.0   NEUTRON       -24       5.0       0.1       5.0n_zx
-USRBIN          -5.0      -0.1       0.0       500         1       500&
-* scoring ENERGY on mesh z
-USRBIN           0.0    ENERGY       -25       0.5       0.5       5.0en_z
-USRBIN          -0.5      -0.5       0.0         1         1       500&
-* scoring ENERGY on mesh yz
-USRBIN           0.0    ENERGY       -26       0.1       5.0       5.0en_yz
-USRBIN          -0.1      -5.0       0.0         1       500       500&
-* scoring ENERGY on mesh xy
-USRBIN           0.0    ENERGY       -27       5.0       5.0       2.9en_xy
-USRBIN          -5.0      -5.0       2.8       500       500         1&
-* scoring ENERGY on mesh zx
-USRBIN           0.0    ENERGY       -28       5.0       0.1       5.0en_zx
-USRBIN          -5.0      -0.1       0.0       500         1       500&
-* random number generator settings
-RANDOMIZ                   137
-* number of particles to simulate
-START        10000.0                                                            
-STOP
-"""
-
+import logging
+from difflib import Differ
+from expected_fluka_output.fl_sim import expected_output
 
 @pytest.fixture
 def fluka_parser() -> Parser:
@@ -76,11 +18,18 @@ def test_parser(fluka_parser: Parser) -> None:
     assert fluka_parser.info["simulator"] == "fluka"
     assert fluka_parser.info["label"] == ""
 
-
-def test_if_inp_created(
-    fluka_parser: Parser, project_fluka_json: dict, tmp_path: Path
-) -> None:
-    """Check if fl_sim.inp file created."""
+@pytest.mark.parametrize('filename', ['fl_sim.inp'])
+def test_if_inp_created(fluka_parser: Parser, project_fluka_json: dict, tmp_path: Path, filename: str) -> None:
+    """Check if fl_sim.inp file created and equal to expected."""
     run_parser(fluka_parser, project_fluka_json, tmp_path)
-    with open(tmp_path / "fl_sim.inp") as f:
-        assert f.read() == _expected_fluka_input_content
+    with open(tmp_path / filename) as generated_f:
+        generated_content = generated_f.read()
+        expected_equal_to_generated = generated_content == expected_output
+        if not expected_equal_to_generated:
+            logging.info("Generated file at %s", tmp_path / filename)
+            differ = Differ()
+            generated_f.seek(0)
+            difference_lines = "\n".join(differ.compare([line.rstrip() for line in generated_f.readlines()],
+                                                        [line.rstrip() for line in expected_output.splitlines()]))
+            logging.info("Difference between files: %s", difference_lines)
+        assert expected_equal_to_generated
