@@ -25,10 +25,15 @@ class FiguresCard:
                 y_max = format_float(figure.y_max, n=16)
                 z_min = format_float(figure.z_min, n=16)
                 z_max = format_float(figure.z_max, n=16)
+                x_length = format_float(figure.x_max - figure.x_min, n=16)
+                y_length = format_float(figure.y_max - figure.y_min, n=16)
+                z_length = format_float(figure.z_max - figure.z_min, n=16)
                 line += (f"* box {figure.name}\n"
                          f"* X range {x_min:+#}, {x_max:+#}\n"
                          f"* Y range {y_min:+#}, {y_max:+#}\n"
                          f"* Z range {z_min:+#}, {z_max:+#}\n"
+                         f"* X, Y, Z side lengths:"
+                         f" {x_length:+#}, {y_length:+#}, {z_length:+#}\n"
                          f"{figure.figure_type} {figure.name}"
                          f" {x_min:+#}"
                          f" {x_max:+#}"
@@ -44,7 +49,7 @@ class FiguresCard:
                 vector_y = format_float(figure.height_vector[1], n=16)
                 vector_z = format_float(figure.height_vector[2], n=16)
                 radius = format_float(figure.radius, n=16)
-                height = format_float(figure.heightL, n=16)
+                height = format_float(figure.height, n=16)
                 line += (f"* cylinder {figure.name}\n"
                          f"* bottom center ({x:+#}, {y:+#}, {z:+#}),"
                          f" spanning vector ({vector_x:+#}, {vector_y:+#}, {vector_z:+#}),\n"
