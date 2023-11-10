@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from enum import IntEnum, unique
 from typing import Optional, TypeVar, Type
 
+from converter.common import cartesian2spherical
+
 
 T = TypeVar("T", bound="LabelledEnum")
 
@@ -141,28 +143,10 @@ BEAMSIGMA       {beam_ext_x} {beam_ext_y}  ! Beam extension
 DELTAE          {delta_e}   ! relative mean energy loss per transportation step
 """
 
-    @staticmethod
-    def cartesian2spherical(vector: tuple[float, float, float]) -> tuple[float, float, float]:
-        """
-        Transform cartesian coordinates to spherical coordinates.
-
-        :param vector: cartesian coordinates
-        :return: spherical coordinates
-        """
-        x, y, z = vector
-        r = m.sqrt(x**2 + y**2 + z**2)
-        # acos returns the angle in radians between 0 and pi
-        theta = m.degrees(m.acos(z / r))
-        # atan2 returns the angle in radians between -pi and pi
-        phi = m.degrees(m.atan2(y, x))
-        # lets ensure the angle in degrees is always between 0 and 360, as SHIELD-HIT12A requires
-        if phi < 0.:
-            phi += 360.
-        return theta, phi, r
 
     def __str__(self) -> str:
         """Return the beam.dat config file as a string."""
-        theta, phi, _ = BeamConfig.cartesian2spherical(self.beam_dir)
+        theta, phi, _ = cartesian2spherical(self.beam_dir)
 
         # if energy cutoffs are defined, add them to the template
         cutoff_line = "! no energy cutoffs"
