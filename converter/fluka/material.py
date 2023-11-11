@@ -56,7 +56,7 @@ class MaterialConfig:
                         sdum=self.__generate_name(),
                     )
                     new_compound.add_component(
-                        -mateirla.density / predefined_compound.density,
+                        -material.density / predefined_compound.density,
                         predefined_compound,
                     )
                     self.compounds[material.uuid] = new_compound
