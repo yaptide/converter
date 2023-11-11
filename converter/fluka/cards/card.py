@@ -1,11 +1,12 @@
 from dataclasses import dataclass, field
+from common import format_float
 
 
 @dataclass
 class Card:
     """Class representing one line (card) in Fluka input."""
 
-    tag: str = ""
+    codewd: str = ""
     what: list[str] = field(default_factory=list)
     sdum: str = ""
 
@@ -17,12 +18,17 @@ class Card:
 
     def __str__(self) -> str:
         """Return the card as a string."""
-        line = f"{self.tag:<10}"
-        for w in self.what:
+        return self._format_line(self.codewd, self.what, self.sdum)
+    
+    def _format_line(codewd: str, what: list, sdum: str) -> str:
+        """Return formatted line from given parameters."""
+        line = f"{codewd:<10}"
+        for w in what:
             try:
                 num = float(w)
-                line += f"{num:>10.3E}" if len(str(w)) > 10 else f"{num:>10}"
+                num = format_float(num, 10)
+                line += f"{num:>10}"
             except ValueError:
                 line += f"{w:>10}"
-        line += f"{self.sdum:<10}"
+        line += f"{sdum:<10}"
         return line
