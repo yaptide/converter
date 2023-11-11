@@ -28,3 +28,9 @@ class CompoundCard(Card):
             self.what = items
             result += self._format_line() + "\n"
         return result
+
+    def add_component(self, content: float, material: Card):
+        """Add component to the compound."""
+        if len(self.composition) >= 80:
+            raise IndexError("Compound can have at most 80 components.")
+        self.composition.append((content, material))
