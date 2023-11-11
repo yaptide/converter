@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from converter.common import format_float
 
 
 @dataclass
@@ -26,9 +25,8 @@ class Card:
         for w in self.what:
             try:
                 num = float(w)
-                num = format_float(num, 10)
-                line += f"{num:>10}"
+                line += f"{num:>10.3E}" if len(str(w)) > 10 else f"{num:>10}"
             except ValueError:
                 line += f"{w:>10}"
-        line += f"{self.sdum:>10}"
+        line += f"{self.sdum:<10}"
         return line
