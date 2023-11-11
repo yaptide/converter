@@ -29,17 +29,17 @@
     ],
     "_comment2": "Pre-defined FLUKA ICRU compounds",
     "compounds": [
-        {"id": 100, "fluka_name": "WATER", "fluka_number": 100, "common_name": "Water", "density": 1.0, "icru_code": 276},
-        {"id": 101, "fluka_name": "POLYSTYR", "fluka_number": 101, "common_name": "Polystyrene", "density": 1.06, "icru_code": 226},
-        {"id": 102, "fluka_name": "PLASCINT", "fluka_number": 102, "common_name": "Plastic scintillator", "density": 1.032, "icru_code": 216},
-        {"id": 103, "fluka_name": "PMMA", "fluka_number": 103, "common_name": "Polymethyl methacrylate, Plexiglas, Lucite, Perspex", "density": 1.19, "icru_code": 222},
-        {"id": 104, "fluka_name": "BONECOMP", "fluka_number": 104, "common_name": "Compact bone", "density": 1.85, "icru_code": 119},
-        {"id": 105, "fluka_name": "BONECORT", "fluka_number": 105, "common_name": "Cortical bone", "density": 1.85, "icru_code": 120},
-        {"id": 106, "fluka_name": "MUSCLESK", "fluka_number": 106, "common_name": "Skeletal muscle", "density": 1.04, "icru_code": 201},
-        {"id": 107, "fluka_name": "MUSCLEST", "fluka_number": 107, "common_name": "Striated muscle", "density": 1.04, "icru_code": 202},
-        {"id": 108, "fluka_name": "ADTISSUE", "fluka_number": 108, "common_name": "Adipose tissue", "density": 0.92, "icru_code": 103},
-        {"id": 109, "fluka_name": "KAPTON", "fluka_number": 109, "common_name": "Kapton polyimide film", "density": 1.42, "icru_code": 179},
-        {"id": 110, "fluka_name": "POLYETHY", "fluka_number": 110, "common_name": "Polyethylene", "density": 0.94, "icru_code": 221},
-        {"id": 111, "fluka_name": "AIR", "fluka_number": 111, "common_name": "Dry air at NTP conditions", "density": 0.00120479, "icru_code": 104}
+        {"id": 100, "fluka_name": "WATER", "common_name": "Water", "density": 1.0, "icru_code": 276},
+        {"id": 101, "fluka_name": "POLYSTYR", "common_name": "Polystyrene", "density": 1.06, "icru_code": 226},
+        {"id": 102, "fluka_name": "PLASCINT", "common_name": "Plastic scintillator", "density": 1.032, "icru_code": 216},
+        {"id": 103, "fluka_name": "PMMA", "common_name": "Polymethyl methacrylate, Plexiglas, Lucite, Perspex", "density": 1.19, "icru_code": 222},
+        {"id": 104, "fluka_name": "BONECOMP", "common_name": "Compact bone", "density": 1.85, "icru_code": 119},
+        {"id": 105, "fluka_name": "BONECORT", "common_name": "Cortical bone", "density": 1.85, "icru_code": 120},
+        {"id": 106, "fluka_name": "MUSCLESK", "common_name": "Skeletal muscle", "density": 1.04, "icru_code": 201},
+        {"id": 107, "fluka_name": "MUSCLEST", "common_name": "Striated muscle", "density": 1.04, "icru_code": 202},
+        {"id": 108, "fluka_name": "ADTISSUE", "common_name": "Adipose tissue", "density": 0.92, "icru_code": 103},
+        {"id": 109, "fluka_name": "KAPTON", "common_name": "Kapton polyimide film", "density": 1.42, "icru_code": 179},
+        {"id": 110, "fluka_name": "POLYETHY", "common_name": "Polyethylene", "density": 0.94, "icru_code": 221},
+        {"id": 111, "fluka_name": "AIR", "common_name": "Dry air at NTP conditions", "density": 0.00120479, "icru_code": 104}
     ]
 }
