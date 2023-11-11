@@ -22,7 +22,9 @@ class CompoundCard(Card):
             items = []
             for content, material in self.composition[i : i + 3]:
                 items.append(content)
-                items.append(material.sdum if material.sdum else str(fluka_number))
+                items.append(
+                    material.sdum if material.sdum else str(material.fluka_number)
+                )
             self.what = items
             result += self._format_line() + "\n"
         return result
