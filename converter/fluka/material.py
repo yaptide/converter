@@ -5,6 +5,7 @@ from converter.fluka.cards.compound_card import CompoundCard
 from converter.fluka.cards.material_card import MaterialCard
 import random
 import string
+from pathlib import Path
 
 
 class MaterialConfig:
@@ -71,7 +72,7 @@ class MaterialConfig:
 
     def __load_predifined_materials(self) -> None:
         """Load predefined materials and compounds from file"""
-        with open("predefined_materials.json", "r") as file:
+        with open(Path(".") / "predefined_materials.json", "r") as file:
             data = json.load(file)
             for material in data["materials"]:
                 new_material = Material(
