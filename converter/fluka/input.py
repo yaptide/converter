@@ -68,8 +68,8 @@ STOP
     def __str__(self):
         """Return fluka input file as string"""
         return self.template.format(
-            BEAM=Card(tag="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
-            START=Card(tag="START", what=[str(self.number_of_particles)]),
+            BEAM=Card(codewd="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
+            START=Card(codewd="START", what=[str(self.number_of_particles)]),
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions)
         )
