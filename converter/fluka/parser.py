@@ -3,6 +3,7 @@ from converter.fluka.helper_parsers.figure_parser import parse_figures
 from converter.fluka.helper_parsers.region_parser import parse_regions
 from converter.fluka.input import Input
 from converter.fluka.material import MaterialConfig
+from converter.fluka.material import MaterialConfig
 
 
 class FlukaParser(Parser):
@@ -16,6 +17,7 @@ class FlukaParser(Parser):
         self.info['simulator'] = 'fluka'
         self.info['version'] = 'unknown'
         self.input = Input()
+        self.material_config = MaterialConfig()
         self.material_config = MaterialConfig()
 
     def parse_configs(self, json: dict) -> None:
