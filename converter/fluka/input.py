@@ -3,7 +3,8 @@ from converter.fluka.cards.card import Card
 from converter.fluka.cards.figure_card import FiguresCard
 from converter.fluka.cards.region_card import RegionsCard
 from converter.solid_figures import SolidFigure
-
+from converter.fluka.cards.compound_card import CompoundCard
+from converter.fluka.cards.material_card import MaterialCard
 
 @dataclass
 class Input:
@@ -12,6 +13,8 @@ class Input:
     energy_GeV: float = 0.07  # GeV FLUKA specific
     number_of_particles: int = 10000
 
+    materials: list[MaterialCard] = field(default_factory=lambda: [])
+    compounds: list[CompoundCard] = field(default_factory=lambda: [])
     figures: list[SolidFigure] = field(default_factory=lambda: [])
     regions: list = field(default_factory=lambda: [])
 
@@ -68,8 +71,8 @@ STOP
     def __str__(self):
         """Return fluka input file as string"""
         return self.template.format(
-            BEAM=Card(tag="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
-            START=Card(tag="START", what=[str(self.number_of_particles)]),
+            BEAM=Card(codewd="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
+            START=Card(codewd="START", what=[str(self.number_of_particles)]),
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions)
         )

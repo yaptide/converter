@@ -24,6 +24,7 @@ class FlukaParser(Parser):
         self.input.energy_GeV = float(json["beam"]["energy"]) * 1e-3
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
 
+        self._parse_materials(json["materialManager"].get("materials"))
         self.input.figures = parse_figures(json["figureManager"].get('figures'))
         self.input.regions, world_figures = parse_regions(json["zoneManager"], self.input.figures)
         self.input.figures.extend(world_figures)
@@ -40,4 +41,6 @@ class FlukaParser(Parser):
 
     def _parse_materials(self, json: dict) -> None:
         """Parse materials from json."""
-        self.mat_config.parse_materials(json["materialManager"].get("materials"))
+        self.material_config.parse_materials(json)
+        self.input.materials = self.material_config.materials
+        self.input.compounds = self.material_config.compounds
