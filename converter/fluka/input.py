@@ -12,6 +12,8 @@ class Input:
     energy_GeV: float = 0.07  # GeV FLUKA specific
     number_of_particles: int = 10000
 
+    materials: list[Card] = field(default_factory=lambda: [])
+    compounds: list[Card] = field(default_factory=lambda: [])
     figures: list[SolidFigure] = field(default_factory=lambda: [])
     regions: list = field(default_factory=lambda: [])
 
@@ -67,9 +69,11 @@ STOP
 
     def __str__(self):
         """Return fluka input file as string"""
+        materials_str = "\n".join([str(material) for material in self.materials])
+        compounds_str = "\n".join([str(compound) for compound in self.compounds])
         return self.template.format(
             BEAM=Card(codewd="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
             START=Card(codewd="START", what=[str(self.number_of_particles)]),
             FIGURES=FiguresCard(data=self.figures),
-            REGIONS=RegionsCard(data=self.regions)
+            REGIONS=RegionsCard(data=self.regions),
         )
