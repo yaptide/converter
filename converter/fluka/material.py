@@ -138,7 +138,7 @@ class Compound:
 
 
 @dataclass
-class CustomMaterial(Material, MaterialCard):
+class CustomMaterial(MaterialCard, Material):
     """Class representing modified material in FLUKA input."""
 
     def __post_init__(self):
@@ -151,5 +151,5 @@ class CustomMaterial(Material, MaterialCard):
 
 
 @dataclass
-class CustomCompound(Compound, CompoundCard):
+class CustomCompound(CompoundCard, Compound):
     """Class representing modified compound in FLUKA input."""
