@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from converter.common import format_float
 from converter.fluka.cards.card import Card
 from converter.fluka.helper_parsers.beam_parser import BeamShape, FlukaBeam
 
@@ -20,7 +21,11 @@ class BeamCard:
         else:
             shape_what = 0
             x_y_multiplier = 1
-        beam_card.what = [self.data.energy*-1, 0, 0, self.data.shape_x*x_y_multiplier, self.data.shape_y*x_y_multiplier, shape_what]
+        energy = format_float(self.data.energy*-1, 10)
+        shape_x = format_float(self.data.shape_x*x_y_multiplier, 10)
+        shape_y = format_float(self.data.shape_y*x_y_multiplier, 10)
+        beam_card.what = [energy, 0, 0,
+                          shape_x, shape_y, shape_what]
         beam_card.sdum = self.data.particle_name
         if self.data.particle_name == "HEAVYION":
             hi_card = Card(tag="HI-PROPE")
@@ -31,12 +36,27 @@ class BeamCard:
             z_sdum = "NEGATIVE"
         else:
             z_sdum = ""
-        beamposition_card.what = [self.data.beam_pos[0], self.data.beam_pos[1], self.data.beam_pos[2], self.data.beam_dir[0], self.data.beam_dir[1], 0]
+
+        pos_x = format_float(self.data.beam_pos[0], 10)
+        pos_y = format_float(self.data.beam_pos[1], 10)
+        pos_z = format_float(self.data.beam_pos[2], 10)
+        dir_x = format_float(self.data.beam_dir[0], 10)
+        dir_y = format_float(self.data.beam_dir[1], 10)
+        beamposition_card.what = [pos_x, pos_y, pos_z,
+                                  dir_x, dir_y, 0]
         beamposition_card.sdum = z_sdum
 
-        result = beam_card.__str__() + "\n"
+        result = (f"* {self.data.particle_name} beam of energy {energy*-1} GeV\n"
+                  f"* {self.data.shape} shape with x={shape_x} cm, y={shape_y} cm\n")
+        result += beam_card.__str__() + "\n"
         if self.data.particle_name == "HEAVYION":
+            result += "* heavy ion properties: a={self.data.heavy_ion_a}, z={self.data.heavy_ion_z}\n"
             result += hi_card.__str__() + "\n"
+        result += (f"* beam position: ({pos_x}, {pos_y}, {pos_z}) cm\n"
+                   f"* beam direction cosines in respect to x: {dir_x}, y: {dir_y}\n")
+        if self.data.z_negative:
+            result += "* beam direction is negative in respect to z axis\n"
+        else:
+            result += "* beam direction is positive in respect to z axis\n"
         result += beamposition_card.__str__()
-        # TODO: add comments
         return result

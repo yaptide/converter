@@ -1,4 +1,5 @@
-from cmath import cos
+import logging
+from math import cos, radians
 from dataclasses import dataclass
 from enum import Enum
 
@@ -11,12 +12,20 @@ class BeamShape(Enum):
     SQUARE = 2
     CIRCULAR = 3
 
+    def __str__(self):
+        if self == BeamShape.GAUSSIAN:
+            return "gaussian"
+        elif self == BeamShape.SQUARE:
+            return "flat square"
+        elif self == BeamShape.CIRCULAR:
+            return "flat circular"
+
 @dataclass(frozen=False)
 class FlukaBeam:
     """Class representing beam config in a FLUKA input file."""
     energy: float = 150.  # [GeV]
     beam_pos: tuple[float, float, float] = (0, 0, 0)  # [cm]
-    beam_dir: tuple[float, float, float] = (0, 0)  # cosines respective to x and y axes
+    beam_dir: tuple[float, float] = (0, 0)  # cosines respective to x and y axes
     z_negative: bool = False
     shape: BeamShape = BeamShape.GAUSSIAN
     shape_x: float = 0
@@ -49,7 +58,7 @@ particle_dict = {
 
 def convert_energy_to_gev(particle_id: int, energy: float) -> float:
     """Convert energy from MeV/nucl to GeV."""
-    return particle_dict[particle_id] * energy / 1000
+    return particle_dict[particle_id]["a"] * energy / 1000
 
 
 def parse_particle_name(particle_json: dict):
@@ -86,8 +95,12 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     fluka_beam.shape = shape
     fluka_beam.shape_x = shape_x
     fluka_beam.shape_y = shape_y
-    theta, phi, _ = cartesian2spherical(fluka_beam.beam_dir) # convert to cosines
-    fluka_beam.beam_dir = (cos(theta), cos(phi))
-    if fluka_beam.beam_dir[2] < 0:
+    theta, phi, _ = cartesian2spherical(beam_json["direction"])
+    # FLUKA uses angles respective to x and y axes
+    # for example beam going along the z axis has theta = 90, phi = 90
+    theta += 90
+    phi += 90
+    fluka_beam.beam_dir = tuple([cos(radians(theta)), cos(radians(phi))])
+    if beam_json["direction"][2] < 0:
         fluka_beam.z_negative = True
     return fluka_beam
