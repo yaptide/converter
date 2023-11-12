@@ -1,4 +1,3 @@
-import math as m
 from dataclasses import dataclass
 from enum import IntEnum, unique
 from typing import Optional, TypeVar, Type
@@ -142,7 +141,6 @@ BEAMSIGMA       {beam_ext_x} {beam_ext_y}  ! Beam extension
 {optional_sad_parameter_line}
 DELTAE          {delta_e}   ! relative mean energy loss per transportation step
 """
-
 
     def __str__(self) -> str:
         """Return the beam.dat config file as a string."""

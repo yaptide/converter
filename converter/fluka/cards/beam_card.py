@@ -3,11 +3,12 @@ from converter.common import format_float
 from converter.fluka.cards.card import Card
 from converter.fluka.helper_parsers.beam_parser import BeamShape, FlukaBeam
 
+
 @dataclass
 class BeamCard:
     """Class representing description of beam in Fluka input"""
 
-    data: FlukaBeam = field(default_factory=lambda: FlukaBeam())
+    data: FlukaBeam = FlukaBeam()
 
     def __str__(self) -> str:
         """Return the card as a string."""

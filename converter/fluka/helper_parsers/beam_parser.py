@@ -1,4 +1,3 @@
-import logging
 from math import cos, radians
 from dataclasses import dataclass
 from enum import Enum
@@ -15,10 +14,12 @@ class BeamShape(Enum):
     def __str__(self):
         if self == BeamShape.GAUSSIAN:
             return "gaussian"
-        elif self == BeamShape.SQUARE:
+        if self == BeamShape.SQUARE:
             return "flat square"
-        elif self == BeamShape.CIRCULAR:
+        if self == BeamShape.CIRCULAR:
             return "flat circular"
+        return ""
+
 
 @dataclass(frozen=False)
 class FlukaBeam:
@@ -34,6 +35,7 @@ class FlukaBeam:
     heavy_ion_a: int = 1
     heavy_ion_z: int = 1
 
+
 particle_dict = {
     1: {"name": "NEUTRON", "a": 1},
     2: {"name": "PROTON", "a": 1},
@@ -44,9 +46,9 @@ particle_dict = {
     7: {"name": "APROTON", "a": 1},
     8: {"name": "KAON-", "a": 1},
     9: {"name": "KAON+", "a": 1},
-    10: {"name": "KAONZERO", "a": 1}, # k0 ?
-    11: {"name": "KAONLONG", "a": 1}, # k~ ?
-    12: {"name": "", "a": 1}, # gamma
+    10: {"name": "KAONZERO", "a": 1},  # k0 ?
+    11: {"name": "KAONLONG", "a": 1},  # k~ ?
+    12: {"name": "", "a": 1},  # gamma
     15: {"name": "MUON-", "a": 1},
     16: {"name": "MUON+", "a": 1},
     21: {"name": "DEUTERON", "a": 2},
@@ -55,6 +57,7 @@ particle_dict = {
     24: {"name": "4-HELIUM", "a": 4},
     25: {"name": "HEAVYION", "a": 1}
 }
+
 
 def convert_energy_to_gev(particle_id: int, energy: float) -> float:
     """Convert energy from MeV/nucl to GeV."""
@@ -75,15 +78,16 @@ def parse_shape_params(shape_params_json: dict) -> tuple[BeamShape, float, float
     shape = shape_params_json["type"]
     if shape == "Flat circular":
         return BeamShape.CIRCULAR, shape_params_json["x"], shape_params_json["y"]
-    elif shape == "Flat square":
+    if shape == "Flat square":
         return BeamShape.SQUARE, shape_params_json["x"], shape_params_json["y"]
-    elif shape == "Gaussian":
+    if shape == "Gaussian":
         return BeamShape.GAUSSIAN, shape_params_json["x"], shape_params_json["y"]
     raise ValueError("Shape type not supported by FLUKA")
 
 
 def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""
+
     fluka_beam = FlukaBeam()
     fluka_beam.energy = convert_energy_to_gev(beam_json["particle"]["id"], beam_json["energy"])
     fluka_beam.particle_name = parse_particle_name(beam_json["particle"])
@@ -100,7 +104,7 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     # for example beam going along the z axis has theta = 90, phi = 90
     theta += 90
     phi += 90
-    fluka_beam.beam_dir = tuple([cos(radians(theta)), cos(radians(phi))])
+    fluka_beam.beam_dir = (cos(radians(theta)), cos(radians(phi)))
     if beam_json["direction"][2] < 0:
         fluka_beam.z_negative = True
     return fluka_beam
