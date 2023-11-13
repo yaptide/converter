@@ -26,45 +26,41 @@ class MaterialConfig:
     def parse_materials(self, materials: list) -> None:
         """Parse materials and compounds from given list of materials."""
         for material in materials:
-            if material.icru in self.predefined_materials:
+            uuid = material["uuid"]
+            icru = material["icru"]
+            density = material["density"]
+            if icru in self.predefined_materials:
                 if not isclose(
-                    material.density, self.predefined_materials[material.icru].density
-                ) and material.icru not in (0, 1000):
-                    predefined_material = self.predefined_materials[material.icru]
+                    density, self.predefined_materials[icru].density
+                ) and icru not in (0, 1000):
+                    predefined_material = self.predefined_materials[icru]
                     new_material = CustomMaterial(
                         fluka_name=predefined_material.fluka_name,
-                        fluka_number=predefined_material.fluka_number,
                         common_name=predefined_material.common_name,
                         A=predefined_material.A,
                         Z=predefined_material.Z,
-                        density=material.density,
+                        density=density,
                         sdum=self.__generate_name(),
                     )
-                    self.materials[material.uuid] = new_material
+                    self.materials[uuid] = new_material
                 else:
-                    self.materials[material.uuid] = self.predefined_materials[
-                        material.icru
-                    ]
-            elif material.icru in self.predefined_compounds:
-                if not isclose(
-                    material.density, self.predefined_compounds[material.icru].density
-                ):
-                    predefined_compound = self.predefined_compounds[material.icru]
+                    self.materials[uuid] = self.predefined_materials[icru]
+            elif icru in self.predefined_compounds:
+                if not isclose(density, self.predefined_compounds[icru].density):
+                    predefined_compound = self.predefined_compounds[icru]
                     new_compound = CustomCompound(
                         fluka_name=predefined_compound.fluka_name,
                         common_name=predefined_compound.common_name,
-                        density=material.density,
+                        density=density,
                         sdum=self.__generate_name(),
                     )
                     new_compound.add_component(
-                        -material.density / predefined_compound.density,
+                        -density / predefined_compound.density,
                         predefined_compound,
                     )
-                    self.compounds[material.uuid] = new_compound
+                    self.compounds[uuid] = new_compound
                 else:
-                    self.compounds[material.uuid] = self.predefined_compounds[
-                        material.icru
-                    ]
+                    self.compounds[uuid] = self.predefined_compounds[icru]
             else:
                 raise NotImplementedError(
                     "Only predefined materials and compounds are supported."
@@ -72,7 +68,13 @@ class MaterialConfig:
 
     def __load_predifined_materials(self) -> None:
         """Load predefined materials and compounds from file"""
-        with open(Path(".") / "predefined_materials.json", "r") as file:
+        with open(
+            Path("__file__").resolve().parent
+            / "converter"
+            / "fluka"
+            / "predefined_materials.json",
+            "r",
+        ) as file:
             data = json.load(file)
             for material in data["materials"]:
                 new_material = Material(
@@ -83,14 +85,14 @@ class MaterialConfig:
                     Z=material["Z"],
                     density=material["density"],
                 )
-                self.predefined_materials[material["icru_code"]] = new_material
+                self.predefined_materials[material["icru"]] = new_material
             for compound in data["compounds"]:
                 new_compound = Compound(
                     fluka_name=compound["fluka_name"],
                     common_name=compound["common_name"],
                     density=compound["density"],
                 )
-                self.predefined_compounds[compound["icru_code"]] = new_compound
+                self.predefined_compounds[compound["icru"]] = new_compound
 
     def __generate_name(self) -> str:
         """Generate random name for custom material or compound."""
@@ -100,7 +102,7 @@ class MaterialConfig:
                 self.__names.add(new_name)
                 return new_name
 
-    def get_materials(self) -> list:
+    def get_custom_materials(self) -> list:
         """Return list of modified materials."""
         return [
             material
@@ -108,7 +110,7 @@ class MaterialConfig:
             if isinstance(material, CustomMaterial)
         ]
 
-    def get_compounds(self) -> list:
+    def get_custom_compounds(self) -> list:
         """Return list of modified compounds."""
         return [
             compound

@@ -25,8 +25,8 @@ class FlukaParser(Parser):
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
 
         self.material_config.parse_materials(json["materialManager"].get("materials"))
-        self.input.materials = self.material_config.get_materials()
-        self.input.compounds = self.material_config.get_compounds()
+        self.input.materials = self.material_config.get_custom_materials()
+        self.input.compounds = self.material_config.get_custom_compounds()
         self.input.figures = parse_figures(json["figureManager"].get("figures"))
         self.input.regions, world_figures = parse_regions(
             json["zoneManager"], self.input.figures
