@@ -57,6 +57,8 @@ world 5 +figworld -fig0 -fig1 -fig2 -fig3 -fig4
 boundary 5 +figbound -figworld
 END
 GEOEND
+MATERIAL        82.0               11.36                         207.0KAFNAFQO
+COMPOUND       -1.01     WATER                                        QAHFTRXC
 ASSIGNMA    BLCKHOLE   Z_BBODY
 ASSIGNMA         AIR     Z_AIR
 ASSIGNMA       WATER  Z_TARGET

@@ -21,6 +21,7 @@ class MaterialsCompoundsConfig:
         self.compounds = {}
         self.__names = set()
         self.__load_predifined_materials()
+        random.seed(42)
 
     def parse_materials_compounds(self, materials: list, zones: list) -> None:
         """Parse materials and compounds from lists of materials and zones."""
