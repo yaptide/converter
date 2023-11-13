@@ -3,7 +3,7 @@ proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 * beam source
-BEAM           -0.07                                                  PROTON    
+BEAM           -0.07                                                  PROTON
 * beam source position
 BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
@@ -59,9 +59,12 @@ END
 GEOEND
 MATERIAL        82.0               11.36                         207.0KAFNAFQO
 COMPOUND       -1.01     WATER                                        QAHFTRXC
-ASSIGNMA    BLCKHOLE   Z_BBODY
-ASSIGNMA         AIR     Z_AIR
-ASSIGNMA       WATER  Z_TARGET
+ASSIGNMA         AIR   region0
+ASSIGNMA    QAHFTRXC   region1
+ASSIGNMA    KAFNAFQO   region2
+ASSIGNMA         AIR   region3
+ASSIGNMA       WATER     world
+ASSIGNMA    BLCKHOLE  boundary
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&
@@ -89,6 +92,6 @@ USRBIN          -5.0      -0.1       0.0       500         1       500&
 * random number generator settings
 RANDOMIZ                   137
 * number of particles to simulate
-START        10000.0                                                            
+START        10000.0
 STOP
 """

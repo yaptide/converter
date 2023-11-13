@@ -17,7 +17,7 @@ class Card:
 
     def __str__(self) -> str:
         """Return card as string."""
-        return self._format_line()
+        return self._format_line().rstrip()
 
     def _format_line(self) -> str:
         """Return formatted line from given parameters."""

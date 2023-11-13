@@ -31,7 +31,7 @@ class MaterialsCompoundsConfig:
             density = material["density"]
             self.__add_new_material_compound(uuid, icru, density)
         for zone in zones:
-            if "density" in zone["materialPropertiesOverrides"]:
+            if "density" in zone.get("materialPropertiesOverrides", []):
                 uuid = zone["materialUuid"]
                 density = zone["materialPropertiesOverrides"]["density"]
                 icru = zone["customMaterial"]["icru"]
@@ -71,17 +71,12 @@ class MaterialsCompoundsConfig:
             else:
                 self.compounds[uuid] = self.predefined_compounds[icru]
         else:
-            raise NotImplementedError(
-                "Only predefined materials and compounds are supported."
-            )
+            raise NotImplementedError("Only predefined materials and compounds are supported.")
 
     def __load_predifined_materials(self) -> None:
         """Load predefined materials and compounds from file"""
         with open(
-            Path("__file__").resolve().parent
-            / "converter"
-            / "fluka"
-            / "predefined_materials.json",
+            Path("__file__").resolve().parent / "converter" / "fluka" / "predefined_materials.json",
             "r",
         ) as file:
             data = json.load(file)
@@ -115,19 +110,15 @@ class MaterialsCompoundsConfig:
 
     def get_custom_materials(self) -> list:
         """Return list of modified materials."""
-        return [
-            material
-            for material in self.materials.values()
-            if isinstance(material, CustomMaterial)
-        ]
+        return [material for material in self.materials.values() if isinstance(material, CustomMaterial)]
 
     def get_custom_compounds(self) -> list:
         """Return list of modified compounds."""
-        return [
-            compound
-            for compound in self.compounds.values()
-            if isinstance(compound, CustomCompound)
-        ]
+        return [compound for compound in self.compounds.values() if isinstance(compound, CustomCompound)]
+
+    def get_parsed_materials_and_compounds(self) -> dict:
+        """Return dict of parsed materials and compounds."""
+        return self.materials | self.compounds
 
 
 @dataclass

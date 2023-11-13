@@ -16,6 +16,7 @@ class Input:
     compounds: list[Card] = field(default_factory=lambda: [])
     figures: list[SolidFigure] = field(default_factory=lambda: [])
     regions: list = field(default_factory=lambda: [])
+    assignmats: list[Card] = field(default_factory=lambda: [])
 
     template: str = """TITLE
 proton beam simulation
@@ -35,9 +36,7 @@ END
 GEOEND
 {MATERIALS}
 {COMPOUNDS}
-ASSIGNMA    BLCKHOLE   Z_BBODY
-ASSIGNMA         AIR     Z_AIR
-ASSIGNMA       WATER  Z_TARGET
+{ASSIGNMATS}
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&
@@ -73,6 +72,7 @@ STOP
         """Return fluka input file as string"""
         materials_str = "\n".join([str(material) for material in self.materials]).strip()
         compounds_str = "\n".join([str(compound) for compound in self.compounds]).strip()
+        assignmats_str = "\n".join([str(assignmat) for assignmat in self.assignmats]).strip()
         return self.template.format(
             BEAM=Card(codewd="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
             START=Card(codewd="START", what=[str(self.number_of_particles)]),
@@ -80,4 +80,5 @@ STOP
             REGIONS=RegionsCard(data=self.regions),
             MATERIALS=materials_str,
             COMPOUNDS=compounds_str,
+            ASSIGNMATS=assignmats_str,
         )
