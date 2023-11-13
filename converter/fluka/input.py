@@ -33,6 +33,8 @@ END
 {REGIONS}
 END
 GEOEND
+{MATERIALS}
+{COMPOUNDS}
 ASSIGNMA    BLCKHOLE   Z_BBODY
 ASSIGNMA         AIR     Z_AIR
 ASSIGNMA       WATER  Z_TARGET
@@ -69,11 +71,13 @@ STOP
 
     def __str__(self):
         """Return fluka input file as string"""
-        materials_str = "\n".join([str(material) for material in self.materials])
-        compounds_str = "\n".join([str(compound) for compound in self.compounds])
+        materials_str = "\n".join([str(material) for material in self.materials]).strip()
+        compounds_str = "\n".join([str(compound) for compound in self.compounds]).strip()
         return self.template.format(
             BEAM=Card(codewd="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
             START=Card(codewd="START", what=[str(self.number_of_particles)]),
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions),
+            MATERIALS=materials_str,
+            COMPOUNDS=compounds_str,
         )

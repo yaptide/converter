@@ -32,7 +32,7 @@
         {"id": 100, "fluka_name": "WATER", "common_name": "Water", "density": 1.0, "icru": 276},
         {"id": 101, "fluka_name": "POLYSTYR", "common_name": "Polystyrene", "density": 1.06, "icru": 226},
         {"id": 102, "fluka_name": "PLASCINT", "common_name": "Plastic scintillator", "density": 1.032, "icru": 216},
-        {"id": 103, "fluka_name": "PMMA", "common_name": "Polymethyl methacrylate, Plexiglas, Lucite, Perspex", "density": 1.19, "icru": 222},
+        {"id": 103, "fluka_name": "PMMA", "common_name": "Polymethyl methacrylate, Plexiglas, Lucite, Perspex", "density": 1.19, "icru": 223},
         {"id": 104, "fluka_name": "BONECOMP", "common_name": "Compact bone", "density": 1.85, "icru": 119},
         {"id": 105, "fluka_name": "BONECORT", "common_name": "Cortical bone", "density": 1.85, "icru": 120},
         {"id": 106, "fluka_name": "MUSCLESK", "common_name": "Skeletal muscle", "density": 1.04, "icru": 201},
