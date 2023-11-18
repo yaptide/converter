@@ -25,6 +25,12 @@ class BeamCard:
         energy = format_float(self.data.energy*-1, 10)
         shape_x = format_float(self.data.shape_x*x_y_multiplier, 10)
         shape_y = format_float(self.data.shape_y*x_y_multiplier, 10)
+        if self.data.shape == BeamShape.CIRCULAR:
+            # swap x and y if beam is circular
+            # as circular beam is defined maximum and minimum radius in that order
+            # and in radius is provided in y
+            shape_x, shape_y = shape_y, shape_x
+
         beam_card.what = [energy, 0, 0,
                           shape_x, shape_y, shape_what]
         beam_card.sdum = self.data.particle_name
@@ -47,8 +53,11 @@ class BeamCard:
                                   dir_x, dir_y, 0]
         beamposition_card.sdum = z_sdum
 
-        result = (f"* {self.data.particle_name} beam of energy {energy*-1} GeV\n"
-                  f"* {self.data.shape} shape with x={shape_x} cm, y={shape_y} cm\n")
+        result = f"* {self.data.particle_name} beam of energy {energy*-1} GeV\n"
+        if self.data.shape == BeamShape.CIRCULAR:
+            result += f"* {self.data.shape} shape with max radius={shape_x} cm, min radius={shape_y} cm\n"
+        else:
+            result += f"* {self.data.shape} shape with x={shape_x} cm, y={shape_y} cm\n"
         result += beam_card.__str__() + "\n"
         if self.data.particle_name == "HEAVYION":
             result += "* heavy ion properties: a={self.data.heavy_ion_a}, z={self.data.heavy_ion_z}\n"

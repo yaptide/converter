@@ -1,4 +1,4 @@
-from math import cos, radians
+from math import cos, acos, atan, pi
 from dataclasses import dataclass
 from enum import Enum
 
@@ -90,6 +90,19 @@ def parse_shape_params(shape_params_json: dict) -> tuple[BeamShape, float, float
         return BeamShape.GAUSSIAN, shape_params_json["x"], shape_params_json["y"]
     raise ValueError("Shape type not supported by FLUKA")
 
+def cartesian_to_spherical(coords: tuple[float, float, float]):
+    """
+    Convert cartesian coordinates to spherical coordinates
+    and return cosines of angles respective to x and y axes
+    """
+    x, y, z = coords
+    theta = pi/2
+    if x != 0:
+        theta = atan(z/x)
+    phi = pi/2
+    if y != 0:
+        phi = atan((x**2 + z**2)**0.5 / y)
+    return cos(theta), cos(phi)
 
 def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""
@@ -104,12 +117,8 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     fluka_beam.shape = shape
     fluka_beam.shape_x = shape_x
     fluka_beam.shape_y = shape_y
-    theta, phi, _ = cartesian2spherical(beam_json["direction"])
-    # FLUKA uses angles respective to x and y axes
-    # for example beam going along the z axis has theta = 90, phi = 90
-    theta += 90
-    phi += 90
-    fluka_beam.beam_dir = (cos(radians(theta)), cos(radians(phi)))
+    theta, phi = cartesian_to_spherical(beam_json["direction"])
+    fluka_beam.beam_dir = (theta, phi)
     if beam_json["direction"][2] < 0:
         fluka_beam.z_negative = True
     return fluka_beam

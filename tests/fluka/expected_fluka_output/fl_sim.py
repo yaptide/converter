@@ -3,8 +3,8 @@ proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 * PROTON beam of energy 0.07 GeV
-* flat circular shape with x=0.0 cm, y=3.0 cm
-BEAM           -0.07       0.0       0.0       0.0       3.0      -1.0PROTON    
+* flat circular shape with max radius=3.0 cm, min radius=0.0 cm
+BEAM           -0.07       0.0       0.0       3.0       0.0      -1.0PROTON    
 * beam position: (0.0, 0.0, -1.5) cm
 * beam direction cosines in respect to x: 0.0, y: 0.0
 * beam direction is positive in respect to z axis
