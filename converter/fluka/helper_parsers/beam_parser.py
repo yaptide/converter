@@ -4,6 +4,7 @@ from enum import Enum
 
 from converter.common import cartesian2spherical
 
+
 class BeamShape(Enum):
     """Enum representing beam shape"""
 
@@ -24,6 +25,7 @@ class BeamShape(Enum):
 @dataclass(frozen=False)
 class FlukaBeam:
     """Class representing beam config in a FLUKA input file."""
+
     energy: float = 150.  # [GeV]
     beam_pos: tuple[float, float, float] = (0, 0, 0)  # [cm]
     beam_dir: tuple[float, float] = (0, 0)  # cosines respective to x and y axes
@@ -87,7 +89,6 @@ def parse_shape_params(shape_params_json: dict) -> tuple[BeamShape, float, float
 
 def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""
-
     fluka_beam = FlukaBeam()
     fluka_beam.energy = convert_energy_to_gev(beam_json["particle"]["id"], beam_json["energy"])
     fluka_beam.particle_name = parse_particle_name(beam_json["particle"])
