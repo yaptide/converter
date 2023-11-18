@@ -48,9 +48,9 @@ particle_dict = {
     7: {"name": "APROTON", "a": 1},
     8: {"name": "KAON-", "a": 1},
     9: {"name": "KAON+", "a": 1},
-    10: {"name": "KAONZERO", "a": 1},  # k0 ?
-    11: {"name": "KAONLONG", "a": 1},  # k~ ?
-    12: {"name": "", "a": 1},  # gamma
+    10: {"name": "KAONZERO", "a": 1},
+    11: {"name": "KAONLONG", "a": 1},
+    12: {"name": "PHOTON", "a": 1},
     15: {"name": "MUON-", "a": 1},
     16: {"name": "MUON+", "a": 1},
     21: {"name": "DEUTERON", "a": 2},
@@ -61,9 +61,13 @@ particle_dict = {
 }
 
 
-def convert_energy_to_gev(particle_id: int, energy: float) -> float:
+def convert_energy_to_gev(beam_json: dict) -> float:
     """Convert energy from MeV/nucl to GeV."""
-    return particle_dict[particle_id]["a"] * energy / 1000
+    energy = beam_json["energy"] / 1000  # convert to GeV
+    particle = particle_dict[beam_json["particle"]["id"]]
+    if particle["name"] == "HEAVYION":
+        return energy * beam_json["particle"]["a"]
+    return energy * particle["a"]
 
 
 def parse_particle_name(particle_json: dict):
@@ -90,7 +94,7 @@ def parse_shape_params(shape_params_json: dict) -> tuple[BeamShape, float, float
 def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""
     fluka_beam = FlukaBeam()
-    fluka_beam.energy = convert_energy_to_gev(beam_json["particle"]["id"], beam_json["energy"])
+    fluka_beam.energy = convert_energy_to_gev(beam_json)
     fluka_beam.particle_name = parse_particle_name(beam_json["particle"])
     if fluka_beam.particle_name == "HEAVYION":
         fluka_beam.heavy_ion_a = beam_json["particle"]["a"]
