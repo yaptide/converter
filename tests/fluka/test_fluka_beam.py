@@ -21,7 +21,7 @@ def test_parse_fluka_beam(project_fluka_json):
 
 def test_parse_heavy_ions(project_fluka_json):
     """Test if Fluka beam is parsed correctly"""
-    beam_json = project_fluka_json["beam"]
+    beam_json = project_fluka_json["beam"].copy()
     beam_json["particle"]["id"] = 25
     beam_json["particle"]["a"] = 2
     beam_json["particle"]["z"] = 3
