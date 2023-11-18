@@ -11,7 +11,7 @@ from converter.solid_figures import SolidFigure
 class Input:
     """Class mapping of the Fluka input file."""
 
-    beam: FlukaBeam = FlukaBeam()
+    beam: FlukaBeam = field(default_factory=lambda: FlukaBeam())
     number_of_particles: int = 10000
 
     figures: list[SolidFigure] = field(default_factory=lambda: [])
