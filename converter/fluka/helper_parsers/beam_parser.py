@@ -1,8 +1,6 @@
-from math import cos, acos, atan, pi
+from math import cos, atan, pi
 from dataclasses import dataclass
 from enum import Enum
-
-from converter.common import cartesian2spherical
 
 
 class BeamShape(Enum):
@@ -90,6 +88,7 @@ def parse_shape_params(shape_params_json: dict) -> tuple[BeamShape, float, float
         return BeamShape.GAUSSIAN, shape_params_json["x"], shape_params_json["y"]
     raise ValueError("Shape type not supported by FLUKA")
 
+
 def cartesian_to_spherical(coords: tuple[float, float, float]):
     """
     Convert cartesian coordinates to spherical coordinates
@@ -103,6 +102,7 @@ def cartesian_to_spherical(coords: tuple[float, float, float]):
     if y != 0:
         phi = atan((x**2 + z**2)**0.5 / y)
     return cos(theta), cos(phi)
+
 
 def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""

@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from enum import IntEnum, unique
 from typing import Optional, TypeVar, Type
 
-from converter.common import cartesian2spherical
-
 
 T = TypeVar("T", bound="LabelledEnum")
 
@@ -152,11 +150,11 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
         :return: spherical coordinates
         """
         x, y, z = vector
-        r = sqrt(x**2 + y**2 + z**2)
+        r = m.sqrt(x**2 + y**2 + z**2)
         # acos returns the angle in radians between 0 and pi
-        theta = degrees(acos(z / r))
+        theta = m.degrees(m.acos(z / r))
         # atan2 returns the angle in radians between -pi and pi
-        phi = degrees(atan2(y, x))
+        phi = m.degrees(m.atan2(y, x))
         # lets ensure the angle in degrees is always between 0 and 360, as SHIELD-HIT12A requires
         if phi < 0.:
             phi += 360.
