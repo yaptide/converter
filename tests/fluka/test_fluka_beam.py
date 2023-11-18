@@ -4,7 +4,6 @@ from converter.fluka.helper_parsers.beam_parser import BeamShape, parse_beam
 
 def test_parse_fluka_beam(project_fluka_json):
     """Test if Fluka beam is parsed correctly"""
-
     beam_json = project_fluka_json["beam"]
 
     fluka_beam = parse_beam(beam_json)

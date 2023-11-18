@@ -8,7 +8,7 @@ from converter.fluka.helper_parsers.beam_parser import BeamShape, FlukaBeam
 class BeamCard:
     """Class representing description of beam in Fluka input"""
 
-    data: FlukaBeam = field(default_factory=lambda: FlukaBeam())
+    data: FlukaBeam = field(default_factory=lambda: FlukaBeam())  # skipcq: PYL-W0108
 
     def __str__(self) -> str:
         """Return the card as a string."""
