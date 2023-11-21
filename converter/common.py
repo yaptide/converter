@@ -1,5 +1,5 @@
 from pathlib import Path
-from math import log10, ceil, isclose, sqrt, acos, degrees, atan2
+from math import log10, ceil, isclose
 
 
 class Parser:
