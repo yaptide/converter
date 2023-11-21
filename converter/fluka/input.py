@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from converter.fluka.cards.card import Card
 from converter.fluka.cards.figure_card import FiguresCard
 from converter.fluka.cards.region_card import RegionsCard
+from converter.fluka.cards.scoring_card import ScoringCard
 from converter.solid_figures import SolidFigure
 
 
@@ -14,6 +15,7 @@ class Input:
 
     figures: list[SolidFigure] = field(default_factory=lambda: [])
     regions: list = field(default_factory=lambda: [])
+    scoring: list = field(default_factory=lambda: [])
 
     template: str = """TITLE
 proton beam simulation
@@ -71,5 +73,6 @@ STOP
             BEAM=Card(tag="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
             START=Card(tag="START", what=[str(self.number_of_particles)]),
             FIGURES=FiguresCard(data=self.figures),
-            REGIONS=RegionsCard(data=self.regions)
+            REGIONS=RegionsCard(data=self.regions),
+            SCORING=ScoringCard(data=self.scoring)
         )
