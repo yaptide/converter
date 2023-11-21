@@ -9,6 +9,6 @@ def project_fluka_path() -> Path:
 
 @pytest.fixture(scope='session')
 def project_fluka_json(project_fluka_path) -> dict:
-    """Dictionary with project data for SHIELD-HIT12A"""
+    """Dictionary with project data for Fluka"""
     with open(project_fluka_path, 'r') as file_handle:
         return json.load(file_handle)
