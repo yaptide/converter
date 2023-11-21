@@ -24,7 +24,7 @@ class BeamShape(Enum):
 class FlukaBeam:
     """Class representing beam config in a FLUKA input file."""
 
-    energy: float = 150.  # [GeV]
+    energy_MeV: float = 150.
     beam_pos: tuple[float, float, float] = (0, 0, 0)  # [cm]
     beam_dir: tuple[float, float] = (0, 0)  # cosines respective to x and y axes
     z_negative: bool = False
@@ -59,9 +59,9 @@ particle_dict = {
 }
 
 
-def convert_energy_to_gev(beam_json: dict) -> float:
-    """Convert energy from MeV/nucl to GeV."""
-    energy = beam_json["energy"] / 1000  # convert to GeV
+def convert_energy(beam_json: dict) -> float:
+    """Convert energy from MeV/nucl to MeV."""
+    energy = beam_json["energy"]
     particle = particle_dict[beam_json["particle"]["id"]]
     if particle["name"] == "HEAVYION":
         return energy * beam_json["particle"]["a"]
@@ -107,7 +107,7 @@ def cartesian_to_spherical(coords: tuple[float, float, float]):
 def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""
     fluka_beam = FlukaBeam()
-    fluka_beam.energy = convert_energy_to_gev(beam_json)
+    fluka_beam.energy_MeV = convert_energy(beam_json)
     fluka_beam.particle_name = parse_particle_name(beam_json["particle"])
     if fluka_beam.particle_name == "HEAVYION":
         fluka_beam.heavy_ion_a = beam_json["particle"]["a"]

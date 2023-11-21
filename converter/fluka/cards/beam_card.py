@@ -22,7 +22,12 @@ class BeamCard:
         else:
             shape_what = 0
             x_y_multiplier = 1
-        energy = format_float(self.data.energy*-1, 10)
+        # in Fluka input file positive number is interpreted as momentum
+        # and negative as energy
+        # we store energy in FlukaBeam object as positive number,
+        # so we need to multiply it by -1
+        # we also divide it by 1000 to convert from MeV to GeV
+        momentum_or_energy = format_float(-self.data.energy_MeV / 1000, 10)
         shape_x = format_float(self.data.shape_x*x_y_multiplier, 10)
         shape_y = format_float(self.data.shape_y*x_y_multiplier, 10)
         if self.data.shape == BeamShape.CIRCULAR:
@@ -31,7 +36,7 @@ class BeamCard:
             # and in radius is provided in y
             shape_x, shape_y = shape_y, shape_x
 
-        beam_card.what = [energy, 0, 0,
+        beam_card.what = [momentum_or_energy, 0, 0,
                           shape_x, shape_y, shape_what]
         beam_card.sdum = self.data.particle_name
         if self.data.particle_name == "HEAVYION":
@@ -39,6 +44,8 @@ class BeamCard:
             hi_card.what = [self.data.heavy_ion_a, self.data.heavy_ion_z, 0, 0, 0, 0]
 
         beamposition_card = Card(tag="BEAMPOS")
+
+        # z_negative is True if beam direction is negative in respect to z axis
         if self.data.z_negative:
             z_sdum = "NEGATIVE"
         else:
@@ -53,14 +60,14 @@ class BeamCard:
                                   dir_x, dir_y, 0]
         beamposition_card.sdum = z_sdum
 
-        result = f"* {self.data.particle_name} beam of energy {energy*-1} GeV\n"
+        result = f"* {self.data.particle_name} beam of energy {-momentum_or_energy} GeV\n"
         if self.data.shape == BeamShape.CIRCULAR:
             result += f"* {self.data.shape} shape with max radius={shape_x} cm, min radius={shape_y} cm\n"
         else:
             result += f"* {self.data.shape} shape with x={shape_x} cm, y={shape_y} cm\n"
         result += beam_card.__str__() + "\n"
         if self.data.particle_name == "HEAVYION":
-            result += "* heavy ion properties: a={self.data.heavy_ion_a}, z={self.data.heavy_ion_z}\n"
+            result += f"* heavy ion properties: a={self.data.heavy_ion_a}, z={self.data.heavy_ion_z}\n"
             result += hi_card.__str__() + "\n"
         result += (f"* beam position: ({pos_x}, {pos_y}, {pos_z}) cm\n"
                    f"* beam direction cosines in respect to x: {dir_x}, y: {dir_y}\n")

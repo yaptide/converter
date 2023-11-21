@@ -90,22 +90,3 @@ requested length: {n}")
         return 0.
 
     return result
-
-
-def cartesian2spherical(vector: tuple[float, float, float]) -> tuple[float, float, float]:
-    """
-    Transform cartesian coordinates to spherical coordinates.
-
-    :param vector: cartesian coordinates
-    :return: spherical coordinates
-    """
-    x, y, z = vector
-    r = sqrt(x**2 + y**2 + z**2)
-    # acos returns the angle in radians between 0 and pi
-    theta = degrees(acos(z / r))
-    # atan2 returns the angle in radians between -pi and pi
-    phi = degrees(atan2(y, x))
-    # lets ensure the angle in degrees is always between 0 and 360, as SHIELD-HIT12A requires
-    if phi < 0.:
-        phi += 360.
-    return theta, phi, r
