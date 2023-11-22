@@ -15,8 +15,6 @@ class Scoring:
 
 
 def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
-    print("Test")
-
     scorings = []
     for scoring in scorings_json['outputs']:
         scorings.append(
