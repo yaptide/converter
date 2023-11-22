@@ -1,0 +1,11 @@
+class USRBIN():
+    name: str
+    x_min: float
+    x_max: float
+    x_bins: int
+    y_min: float
+    y_max: float
+    y_bins: int
+    z_min: float
+    z_max: float
+    z_bins: int
