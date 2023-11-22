@@ -1,6 +1,7 @@
 from converter.common import Parser
 from converter.fluka.helper_parsers.figure_parser import parse_figures
 from converter.fluka.helper_parsers.region_parser import parse_regions
+from converter.fluka.helper_parsers.scoring_parser import parse_scorings
 from converter.fluka.input import Input
 
 
@@ -24,6 +25,7 @@ class FlukaParser(Parser):
 
         self.input.figures = parse_figures(json["figureManager"].get('figures'))
         self.input.regions, world_figures = parse_regions(json["zoneManager"], self.input.figures)
+        self.input.scorings = parse_scorings(json["detectorManager"], json["scoringManager"])
         self.input.figures.extend(world_figures)
 
     def get_configs_json(self) -> dict:

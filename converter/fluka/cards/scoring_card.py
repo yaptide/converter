@@ -4,7 +4,7 @@ from converter.fluka.cards.card import Card
 
 
 @dataclass
-class ScoringCard(Card):
+class ScoringsCard(Card):
 
     def __str__(self) -> str:
 
