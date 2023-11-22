@@ -5,7 +5,6 @@ from converter.fluka.helper_parsers.scoring_parser import parse_scorings
 
 @pytest.fixture(scope='module')
 def detectors_json(project_fluka_json):
-    """zoneManager part of Fluka project.json file"""
     return project_fluka_json['detectorManager']
 
 
