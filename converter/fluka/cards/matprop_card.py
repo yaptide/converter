@@ -35,4 +35,4 @@ class MatpropsCard:
                 0.0,
             ]
             result += str(Card(self.codewd, what)) + "\n"
-        return result
+        return result.strip()

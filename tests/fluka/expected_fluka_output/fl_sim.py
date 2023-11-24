@@ -57,14 +57,16 @@ world 5 +figworld -fig0 -fig1 -fig2 -fig3 -fig4
 boundary 5 +figbound -figworld
 END
 GEOEND
-MATERIAL        82.0               11.36                         207.0KAFNAFQO
-COMPOUND       -1.01     WATER                                        QAHFTRXC
+MATERIAL         0.0                1.01                 0.0       0.0COM00001
+MATERIAL        82.0               11.36                 0.0       0.0MAT00001
+COMPOUND        -1.0     WATER                                        COM00001
 ASSIGNMA         AIR   region0
-ASSIGNMA    QAHFTRXC   region1
-ASSIGNMA    KAFNAFQO   region2
+ASSIGNMA    COM00001   region1
+ASSIGNMA    MAT00001   region2
 ASSIGNMA         AIR   region3
 ASSIGNMA       WATER     world
 ASSIGNMA    BLCKHOLE  boundary
+
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&

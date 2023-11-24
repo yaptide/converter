@@ -34,5 +34,5 @@ class CompoundsCard:
                 for content, material in compound.composition[i : i + 3]:
                     what.append(content)
                     what.append(material)
-                result += Card(self.codewd, what, sdum) + "\n"
-        return result
+                result += str(Card(self.codewd, what, sdum)) + "\n"
+        return result.strip()

@@ -24,4 +24,4 @@ class AssignmatsCard:
         for material_assignment in self.data:
             what = [material_assignment.material_name, material_assignment.region_name]
             result += str(Card(self.codewd, what)) + "\n"
-        return result
+        return result.strip()

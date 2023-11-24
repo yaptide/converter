@@ -29,4 +29,4 @@ class MaterialsCard:
             what = [material.Z, "", material.density, "", 0, 0]
             sdum = material.fluka_name
             result += str(Card(self.codewd, what, sdum)) + "\n"
-        return result
+        return result.strip()

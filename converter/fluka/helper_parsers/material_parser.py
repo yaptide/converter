@@ -4,6 +4,8 @@ from converter.fluka.predefined_materials import (
     PREDEFINED_COMPOUNDS,
 )
 from converter.fluka.helper_parsers.region_parser import FlukaRegion
+from copy import deepcopy
+
 
 BLACK_HOLE_ICRU = 0
 VACUUM_ICRU = 1000
@@ -34,6 +36,7 @@ class FlukaCompound:
     fluka_name: str = ""
     common_name: str = ""  # Not used
     density: float = 0
+    icru: int = 0
     # composition is a list of tuples (weight fraction, fluka name)
     composition: list[tuple[float, str]] = field(default_factory=list)
 
@@ -57,10 +60,10 @@ class IonisationPotential:
 def load_predefined_materials() -> (list[FlukaMaterial], list[FlukaCompound]):
     """Convert list of dicts of predefined materials and compounds to lists of FlukaMaterial and FlukaCompound objects."""
     predefined_materials = {
-        material.icru: FlukaMaterial(**material) for material in PREDEFINED_MATERIALS
+        material["icru"]: FlukaMaterial(**material) for material in PREDEFINED_MATERIALS
     }
     predefined_compounds = {
-        compound.icru: FlukaCompound(**compound) for compound in PREDEFINED_COMPOUNDS
+        compound["icru"]: FlukaCompound(**compound) for compound in PREDEFINED_COMPOUNDS
     }
     return predefined_materials, predefined_compounds
 
@@ -72,7 +75,7 @@ def parse_materials(
     material_index = compound_index = 1
     # uuid -> material, uuid -> compound
     materials, compounds = {}, {}
-    zones = zones_json["zones"]
+    zones = deepcopy(zones_json["zones"])
     if "worldZone" in zones_json:
         zones.append(zones_json["worldZone"])
 
@@ -126,7 +129,7 @@ def parse_materials(
         # define new compound
         elif icru in predefined_compounds:
             predefined_compound = predefined_compounds[icru]
-            if density != predefined_compound.icru:
+            if density != predefined_compound.density:
                 # To define new compound it is necessary to define new material
                 new_material = FlukaMaterial(
                     fluka_name=f"COM{compound_index:0>5}",
@@ -142,6 +145,8 @@ def parse_materials(
                 compound_index += 1
                 materials[uuid] = new_material
                 compounds[uuid] = new_compound
+            else:
+                materials[uuid] = predefined_compound
         # If icru is not used anywhere above, it means we are dealing
         # with not predefined compound which is not supported for now
         else:
@@ -160,21 +165,23 @@ def assign_materials_to_regions(
     for zone in zones_json["zones"]:
         assignments.append(
             MaterialAssignment(
-                material=materials[zone["materialUuid"]].fluka_name,
-                region=regions[zone["uuid"]].name,
+                material_name=materials[zone["materialUuid"]].fluka_name,
+                region_name=regions[zone["uuid"]].name,
             )
         )
     if "worldZone" in zones_json:
         assignments.append(
             MaterialAssignment(
-                material=materials[zones_json["worldZone"]["materialUuid"]].fluka_name,
-                region=regions[zones_json["worldZone"]["uuid"]].name,
+                material_name=materials[
+                    zones_json["worldZone"]["materialUuid"]
+                ].fluka_name,
+                region_name=regions[zones_json["worldZone"]["uuid"]].name,
             )
         )
         assignments.append(
             MaterialAssignment(
-                material="BLCKHOLE",
-                region=regions[zones_json["worldZone"]["uuid"] + "boundary"].name,
+                material_name="BLCKHOLE",
+                region_name=regions[zones_json["worldZone"]["uuid"] + "boundary"].name,
             )
         )
 

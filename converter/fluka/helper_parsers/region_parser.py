@@ -36,7 +36,7 @@ def parse_regions(
     """
     # Naming is different in Fluka - Fluka zones consist of figures joined by subtractions and intersections
     # Fluka regions consist of zones joined by unions
-    # uuid -> FlukRegion
+    # uuid -> FlukaRegion
     regions = {}
     zone_name = "region{}"
     for idx, zone in enumerate(zones_json["zones"]):
