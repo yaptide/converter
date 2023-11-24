@@ -16,7 +16,7 @@ class MaterialsCard:
         what(5) - 0 - ignored
         what(6) - 0 - natural composition of the what(1) element
         sdum - Name of the material
-    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/material.html#material
+    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/material.html#material # skipcq: FLK-W505
     """
 
     data: list[FlukaMaterial] = field(default_factory=list)

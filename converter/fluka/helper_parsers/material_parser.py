@@ -58,7 +58,10 @@ class IonisationPotential:
 
 
 def load_predefined_materials() -> (list[FlukaMaterial], list[FlukaCompound]):
-    """Convert list of dicts of predefined materials and compounds to lists of FlukaMaterial and FlukaCompound objects."""
+    """
+    Convert list of dicts of predefined materials and compounds to lists of
+    FlukaMaterial and FlukaCompound objects.
+    """
     predefined_materials = {
         material["icru"]: FlukaMaterial(**material) for material in PREDEFINED_MATERIALS
     }
@@ -71,6 +74,7 @@ def load_predefined_materials() -> (list[FlukaMaterial], list[FlukaCompound]):
 def parse_materials(
     materials_json, zones_json: dict
 ) -> (dict[str, FlukaMaterial], dict[str, FlukaCompound]):
+    """Parse materials from json to FlukaMaterial and FlukaCompound objects."""
     predefined_materials, predefined_compounds = load_predefined_materials()
     material_index = compound_index = 1
     # uuid -> material, uuid -> compound

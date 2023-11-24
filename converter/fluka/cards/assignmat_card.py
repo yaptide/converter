@@ -12,7 +12,7 @@ class AssignmatsCard:
         what(1) - material name
         what(2) - region name
         sdum - empty, it's not used
-    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/assignma.html#assignmat
+    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/assignma.html#assignmat # skipcq: FLK-W505
     """
 
     data: list[MaterialAssignment] = field(default_factory=list)

@@ -32,16 +32,16 @@ class FlukaParser(Parser):
         materials, compounds = parse_materials(
             json["materialManager"]["materials"], json["zoneManager"]
         )
-        self.input.materials = list(
+        self.input.materials = [
             material
             for material in materials.values()
             if material.fluka_name.startswith(("MAT", "COM"))
-        )
-        self.input.compounds = list(
+        ]
+        self.input.compounds = [
             compound
             for compound in compounds.values()
             if compound.fluka_name.startswith("COM")
-        )
+        ]
         self.input.assignmats = assign_materials_to_regions(
             materials, regions, json["zoneManager"]
         )

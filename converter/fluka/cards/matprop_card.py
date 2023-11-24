@@ -16,7 +16,7 @@ class MatpropsCard:
         what(5) - empty, default what(4)
         what(6) - 0 step length in assigning indices
         sdum - empty
-    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/mat-prop.html#mat-prop
+    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/mat-prop.html#mat-prop skipcq: FLK-W505
     """
 
     data: list[IonisationPotential] = field(default_factory=list)

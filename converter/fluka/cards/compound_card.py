@@ -18,7 +18,7 @@ class CompoundsCard:
         what(6) - name of third material
         sdum - name of the compound
     If there are more than 3 materials in the compound, another lines are added with same sdum
-    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/compound.html
+    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/compound.html # skipcq: FLK-W505
     """
 
     data: list[FlukaCompound] = field(default_factory=list)
