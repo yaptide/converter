@@ -12,7 +12,7 @@ class BeamCard:
 
     def __str__(self) -> str:
         """Return the card as a string."""
-        beam_card = Card(tag="BEAM")
+        beam_card = Card(codewd="BEAM")
         if self.data.shape == BeamShape.GAUSSIAN:
             shape_what = -1
             x_y_multiplier = -1
@@ -40,10 +40,10 @@ class BeamCard:
                           shape_x, shape_y, shape_what]
         beam_card.sdum = self.data.particle_name
         if self.data.particle_name == "HEAVYION":
-            hi_card = Card(tag="HI-PROPE")
+            hi_card = Card(codewd="HI-PROPE")
             hi_card.what = [self.data.heavy_ion_a, self.data.heavy_ion_z, 0, 0, 0, 0]
 
-        beamposition_card = Card(tag="BEAMPOS")
+        beamposition_card = Card(codewd="BEAMPOS")
 
         # z_negative is True if beam direction is negative in respect to z axis
         if self.data.z_negative:
