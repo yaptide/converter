@@ -1,23 +1,27 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from converter.fluka.cards.card import Card
+from converter.fluka.helper_parsers.material_parser import MaterialAssignment
 
 
 @dataclass
-class AssignMatCard(Card):
+class AssignmatsCard:
     """
     Class representing description of material assignment in FLUKA input.
-    Card consists of:
-    - codewd (str): 'ASSIGNMA'
-    - what (list[str]): list of parameters (see FLUKA manual for details)
-    sdum is not used.
+    Every material assignment is represented by one line:
+        codwed - "ASSIGNMA"
+        what(1) - material name
+        what(2) - region name 
+        sdum - empty, it's not used
+    documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/assignma.html#assignmat
     """
 
-    codewd: str = "ASSIGNMA"
-    region_name: str = ""
-    material_name: str = "BLCKHOLE"
+    data: list[MaterialAssignment] = field(default_factory=list)
+    codewd = "ASSIGNMA"
 
-    def __post_init__(self) -> None:
-        """Set material and region on appropriate positions in what list."""
-        super().__post_init__()
-        self.what[0] = self.material_name
-        self.what[1] = self.region_name
+    def __str__(self) -> str:
+        """Return card as string."""
+        result = ""
+        for material_assignment in self.data:
+            what = [material_assignment.material_name, material_assignment.region_name]
+            result += str(Card(self.codewd, what)) + "\n"
+        return result

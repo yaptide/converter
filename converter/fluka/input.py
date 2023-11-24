@@ -2,6 +2,10 @@ from dataclasses import dataclass, field
 from converter.fluka.cards.card import Card
 from converter.fluka.cards.figure_card import FiguresCard
 from converter.fluka.cards.region_card import RegionsCard
+from converter.fluka.cards.material_card import MaterialsCard
+from converter.fluka.cards.compound_card import CompoundsCard
+from converter.fluka.cards.assignmat_card import AssignmatsCard
+from converter.fluka.cards.matprop_card import MatpropsCard
 from converter.solid_figures import SolidFigure
 
 
@@ -12,11 +16,12 @@ class Input:
     energy_GeV: float = 0.07  # GeV FLUKA specific
     number_of_particles: int = 10000
 
-    materials: list[Card] = field(default_factory=lambda: [])
-    compounds: list[Card] = field(default_factory=lambda: [])
-    figures: list[SolidFigure] = field(default_factory=lambda: [])
-    regions: list = field(default_factory=lambda: [])
-    assignmats: list[Card] = field(default_factory=lambda: [])
+    materials: list = field(default_factory=list)
+    compounds: list = field(default_factory=list)
+    figures: list[SolidFigure] = field(default_factory=list)
+    regions: list = field(default_factory=list)
+    assignmats: list = field(default_factory=list)
+    matprops: list = field(default_factory=list)
 
     template: str = """TITLE
 proton beam simulation
@@ -37,6 +42,7 @@ GEOEND
 {MATERIALS}
 {COMPOUNDS}
 {ASSIGNMATS}
+{MATPROPS}
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&
@@ -70,15 +76,13 @@ STOP
 
     def __str__(self):
         """Return fluka input file as string"""
-        materials_str = "\n".join([str(material) for material in self.materials]).strip()
-        compounds_str = "\n".join([str(compound) for compound in self.compounds]).strip()
-        assignmats_str = "\n".join([str(assignmat) for assignmat in self.assignmats]).strip()
         return self.template.format(
             BEAM=Card(codewd="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
             START=Card(codewd="START", what=[str(self.number_of_particles)]),
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions),
-            MATERIALS=materials_str,
-            COMPOUNDS=compounds_str,
-            ASSIGNMATS=assignmats_str,
+            MATERIALS=MaterialsCard(data=self.materials),
+            COMPOUNDS=CompoundsCard(data=self.compounds),
+            ASSIGNMATS=AssignmatsCard(data=self.assignmats),
+            MATPROPS=MatpropsCard(data=self.matprops),
         )
