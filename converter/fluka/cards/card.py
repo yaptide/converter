@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 
-@dataclass
+@dataclass(frozen=False)
 class Card:
     """Class representing one line (card) in Fluka input."""
 

@@ -1,4 +1,5 @@
 from converter.common import Parser
+from converter.fluka.helper_parsers.beam_parser import parse_beam
 from converter.fluka.helper_parsers.figure_parser import parse_figures
 from converter.fluka.helper_parsers.region_parser import parse_regions
 from converter.fluka.helper_parsers.material_parser import (
@@ -23,8 +24,6 @@ class FlukaParser(Parser):
 
     def parse_configs(self, json: dict) -> None:
         """Parse energy and number of particles from json."""
-        # Since energy in json is in MeV and FLUKA uses GeV, we need to convert it.
-        self.input.energy_GeV = float(json["beam"]["energy"]) * 1e-3
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
         self.input.figures = parse_figures(json["figureManager"].get("figures"))
         regions, world_figures = parse_regions(json["zoneManager"], self.input.figures)
@@ -48,6 +47,7 @@ class FlukaParser(Parser):
         )
         # Placeholder for ionisation potential
         self.input.matprops = set_custom_ionisation_potential(materials, [])
+        self.input.beam = parse_beam(json["beam"])
 
     def get_configs_json(self) -> dict:
         """

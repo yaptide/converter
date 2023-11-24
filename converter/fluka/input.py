@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from converter.fluka.cards.beam_card import BeamCard
 from converter.fluka.cards.card import Card
 from converter.fluka.cards.figure_card import FiguresCard
 from converter.fluka.cards.region_card import RegionsCard
@@ -6,6 +7,7 @@ from converter.fluka.cards.material_card import MaterialsCard
 from converter.fluka.cards.compound_card import CompoundsCard
 from converter.fluka.cards.assignmat_card import AssignmatsCard
 from converter.fluka.cards.matprop_card import MatpropsCard
+from converter.fluka.helper_parsers.beam_parser import FlukaBeam
 from converter.solid_figures import SolidFigure
 
 
@@ -13,7 +15,7 @@ from converter.solid_figures import SolidFigure
 class Input:
     """Class mapping of the Fluka input file."""
 
-    energy_GeV: float = 0.07  # GeV FLUKA specific
+    beam: FlukaBeam = field(default_factory=lambda: FlukaBeam())  # skipcq: PYL-W0108
     number_of_particles: int = 10000
 
     materials: list = field(default_factory=list)
@@ -27,10 +29,7 @@ class Input:
 proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
-* beam source
 {BEAM}
-* beam source position
-BEAMPOS          0.0       0.0    -100.0
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME
     0    0
@@ -77,8 +76,8 @@ STOP
     def __str__(self):
         """Return fluka input file as string"""
         return self.template.format(
-            BEAM=Card(codewd="BEAM", what=[str(-self.energy_GeV)], sdum="PROTON"),
             START=Card(codewd="START", what=[str(self.number_of_particles)]),
+            BEAM=BeamCard(data=self.beam),
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions),
             MATERIALS=MaterialsCard(data=self.materials),
