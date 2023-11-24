@@ -15,12 +15,13 @@ class MaterialsCard:
         what(4) - empty, we are using name-based input
         what(5) - 0 - ignored
         what(6) - 0 - natural composition of the what(1) element
-        sdum - Name of the material 
+        sdum - Name of the material
     documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/material.html#material
-    """ 
+    """
+
     data: list[FlukaMaterial] = field(default_factory=list)
     codewd: str = "MATERIAL"
-    
+
     def __str__(self) -> str:
         """Return card as string."""
         result = ""

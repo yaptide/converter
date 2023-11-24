@@ -26,6 +26,13 @@ class MatpropsCard:
         """Return card as string."""
         result = ""
         for ionisation_potential in self.data:
-            what = [0.0, 0.0, ionisation_potential.ionisation_potential, ionisation_potential.material_name, "", 0.0]
+            what = [
+                0.0,
+                0.0,
+                ionisation_potential.ionisation_potential,
+                ionisation_potential.material_name,
+                "",
+                0.0,
+            ]
             result += str(Card(self.codewd, what)) + "\n"
         return result

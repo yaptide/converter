@@ -10,7 +10,7 @@ class AssignmatsCard:
     Every material assignment is represented by one line:
         codwed - "ASSIGNMA"
         what(1) - material name
-        what(2) - region name 
+        what(2) - region name
         sdum - empty, it's not used
     documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/assignma.html#assignmat
     """
