@@ -7,7 +7,6 @@ from converter.fluka.predefined_materials import (
 from converter.fluka.helper_parsers.region_parser import FlukaRegion
 from copy import deepcopy
 
-
 BLACK_HOLE_ICRU = 0
 VACUUM_ICRU = 1000
 # Single elements that are sent from the UI
@@ -78,21 +77,13 @@ def load_predefined_materials() -> (
     Convert list of dicts of predefined materials and compounds to lists of
     FlukaMaterial and FlukaCompound objects. Also create a dict of icru -> fluka_name.
     """
-    predefined_materials = {
-        material["icru"]: FlukaMaterial(**material) for material in PREDEFINED_MATERIALS
-    }
-    predefined_compounds = {
-        compound["icru"]: FlukaCompound(**compound) for compound in PREDEFINED_COMPOUNDS
-    }
-    icru_to_fluka_name = {
-        material["icru"]: material["fluka_name"] for material in FLUKA_NAMES
-    }
+    predefined_materials = {material["icru"]: FlukaMaterial(**material) for material in PREDEFINED_MATERIALS}
+    predefined_compounds = {compound["icru"]: FlukaCompound(**compound) for compound in PREDEFINED_COMPOUNDS}
+    icru_to_fluka_name = {material["icru"]: material["fluka_name"] for material in FLUKA_NAMES}
     return predefined_materials, predefined_compounds, icru_to_fluka_name
 
 
-def parse_materials(
-    materials_json, zones_json: dict
-) -> (dict[str, FlukaMaterial], dict[str, FlukaCompound]):
+def parse_materials(materials_json, zones_json: dict) -> (dict[str, FlukaMaterial], dict[str, FlukaCompound]):
     """Parse materials from json to FlukaMaterial and FlukaCompound objects."""
     (
         predefined_materials,
@@ -111,17 +102,12 @@ def parse_materials(
     for material in materials_json:
         materials_list.append((material["uuid"], material["icru"], material["density"]))
     for zone in zones:
-        if (
-            "customMaterial" in zone
-            and "density" in zone["materialPropertiesOverrides"]
-        ):
-            materials_list.append(
-                (
-                    zone["customMaterial"]["uuid"],
-                    zone["customMaterial"]["icru"],
-                    zone["materialPropertiesOverrides"]["density"],
-                )
-            )
+        if ("customMaterial" in zone and "density" in zone["materialPropertiesOverrides"]):
+            materials_list.append((
+                zone["customMaterial"]["uuid"],
+                zone["customMaterial"]["icru"],
+                zone["materialPropertiesOverrides"]["density"],
+            ))
 
     for uuid, icru, density in materials_list:
         # Check if material is black hole or vacuum, we can't redefine them,
@@ -206,30 +192,24 @@ def assign_materials_to_regions(
             MaterialAssignment(
                 material_name=materials[zone["materialUuid"]].fluka_name,
                 region_name=regions[zone["uuid"]].name,
-            )
-        )
+            ))
     if "worldZone" in zones_json:
         assignments.append(
             MaterialAssignment(
-                material_name=materials[
-                    zones_json["worldZone"]["materialUuid"]
-                ].fluka_name,
+                material_name=materials[zones_json["worldZone"]["materialUuid"]].fluka_name,
                 region_name=regions[zones_json["worldZone"]["uuid"]].name,
-            )
-        )
+            ))
         assignments.append(
             MaterialAssignment(
                 material_name="BLCKHOLE",
                 region_name=regions[zones_json["worldZone"]["uuid"] + "boundary"].name,
-            )
-        )
+            ))
 
     return assignments
 
 
-def set_custom_ionisation_potential(
-    materials: dict[str, FlukaMaterial], zones_json: dict, materials_json: list[dict]
-) -> list[IonisationPotential]:
+def set_custom_ionisation_potential(materials: dict[str, FlukaMaterial], zones_json: dict,
+                                    materials_json: list[dict]) -> list[IonisationPotential]:
     """Set custom ionisation potential for materials that have it defined."""
     ionisation_potentials = []
 
@@ -238,30 +218,21 @@ def set_custom_ionisation_potential(
             ionisation_potentials.append(
                 IonisationPotential(
                     material_name=materials[zone["materialUuid"]].fluka_name,
-                    ionisation_potential=zone["materialPropertiesOverrides"][
-                        "averageIonisationPotential"
-                    ],
-                )
-            )
-    if "worldZone" in zones_json and "averageIonisationPotential" in zones_json[
-        "worldZone"
-    ].get("materialPropertiesOverrides", []):
+                    ionisation_potential=zone["materialPropertiesOverrides"]["averageIonisationPotential"],
+                ))
+    if "worldZone" in zones_json and "averageIonisationPotential" in zones_json["worldZone"].get(
+            "materialPropertiesOverrides", []):
         ionisation_potentials.append(
             IonisationPotential(
-                material_name=materials[
-                    zones_json["worldZone"]["materialUuid"]
-                ].fluka_name,
-                ionisation_potential=zones_json["worldZone"][
-                    "materialPropertiesOverrides"
-                ]["averageIonisationPotential"],
-            )
-        )
+                material_name=materials[zones_json["worldZone"]["materialUuid"]].fluka_name,
+                ionisation_potential=zones_json["worldZone"]["materialPropertiesOverrides"]
+                ["averageIonisationPotential"],
+            ))
     for material in materials_json:
         if "averageIonisationPotential" in material:
             ionisation_potentials.append(
                 IonisationPotential(
                     material_name=materials[material["uuid"]].fluka_name,
                     ionisation_potential=material["averageIonisationPotential"],
-                )
-            )
+                ))
     return ionisation_potentials

@@ -31,7 +31,7 @@ class CompoundsCard:
             sdum = compound.fluka_name
             for i in range(0, len(compound.composition), 3):
                 what = []
-                for content, material in compound.composition[i : i + 3]:
+                for content, material in compound.composition[i:i + 3]:
                     what.append(content)
                     what.append(material)
                 result += str(Card(self.codewd, what, sdum)) + "\n"
