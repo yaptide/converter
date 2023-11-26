@@ -64,13 +64,13 @@ MATERIAL         0.0                1.01                              COM00001
 MATERIAL        82.0               11.36                              MAT00001
 LOW-MAT     MAT00001                                                  LEAD
 COMPOUND        -1.0     WATER                                        COM00001
+MAT-PROP         0.0       0.0      7.53  MAT00001                 0.0
 ASSIGNMA         AIR   region0
 ASSIGNMA    COM00001   region1
 ASSIGNMA    MAT00001   region2
 ASSIGNMA         AIR   region3
 ASSIGNMA       WATER     world
 ASSIGNMA    BLCKHOLE  boundary
-
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&

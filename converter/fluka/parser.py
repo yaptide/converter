@@ -45,7 +45,9 @@ class FlukaParser(Parser):
         self.input.assignmats = assign_materials_to_regions(
             materials, regions, json["zoneManager"]
         )
-        self.input.matprops = set_custom_ionisation_potential(materials, json["zoneManager"], json["materialManager"]["materials"])
+        self.input.matprops = set_custom_ionisation_potential(
+            materials, json["zoneManager"], json["materialManager"]["materials"]
+        )
         self.input.beam = parse_beam(json["beam"])
 
     def get_configs_json(self) -> dict:
