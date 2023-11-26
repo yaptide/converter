@@ -29,7 +29,7 @@ class FlukaParser(Parser):
         regions, world_figures = parse_regions(json["zoneManager"], self.input.figures)
         self.input.regions = list(regions.values())
         self.input.figures.extend(world_figures)
-        materials, compounds = parse_materials(
+        materials, compounds, self.input.lowmats = parse_materials(
             json["materialManager"]["materials"], json["zoneManager"]
         )
         self.input.materials = [
@@ -45,8 +45,7 @@ class FlukaParser(Parser):
         self.input.assignmats = assign_materials_to_regions(
             materials, regions, json["zoneManager"]
         )
-        # Placeholder for ionisation potential
-        self.input.matprops = set_custom_ionisation_potential(materials, [])
+        self.input.matprops = set_custom_ionisation_potential(materials, json["zoneManager"], json["materialManager"]["materials"])
         self.input.beam = parse_beam(json["beam"])
 
     def get_configs_json(self) -> dict:

@@ -13,8 +13,8 @@ class MaterialsCard:
         what(2) - empty, computed according to what(1)
         what(3) - density in g/cm^3
         what(4) - empty, we are using name-based input
-        what(5) - 0 - ignored
-        what(6) - 0 - natural composition of the what(1) element
+        what(5) - ignored
+        what(6) - default, natural composition of the what(1) element
         sdum - Name of the material
     documentation: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/material.html#material # skipcq: FLK-W505
     """
@@ -26,7 +26,7 @@ class MaterialsCard:
         """Return card as string."""
         result = ""
         for material in self.data:
-            what = [material.Z, "", material.density, "", 0, 0]
+            what = [material.Z, "", material.density, "", "", ""]
             sdum = material.fluka_name
             result += str(Card(self.codewd, what, sdum)) + "\n"
         return result.strip()

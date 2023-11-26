@@ -60,8 +60,9 @@ world 5 +figworld -fig0 -fig1 -fig2 -fig3 -fig4
 boundary 5 +figbound -figworld
 END
 GEOEND
-MATERIAL         0.0                1.01                 0.0       0.0COM00001
-MATERIAL        82.0               11.36                 0.0       0.0MAT00001
+MATERIAL         0.0                1.01                              COM00001
+MATERIAL        82.0               11.36                              MAT00001
+LOW-MAT     MAT00001                                                  LEAD
 COMPOUND        -1.0     WATER                                        COM00001
 ASSIGNMA         AIR   region0
 ASSIGNMA    COM00001   region1

@@ -4,7 +4,7 @@ from converter.fluka.helper_parsers.material_parser import IonisationPotential
 
 
 @dataclass
-class MatpropsCard:
+class MatPropsCard:
     """
     Class representing description of material properties in FLUKA input.
     Every material assignment is represented by one line:

@@ -6,7 +6,8 @@ from converter.fluka.cards.region_card import RegionsCard
 from converter.fluka.cards.material_card import MaterialsCard
 from converter.fluka.cards.compound_card import CompoundsCard
 from converter.fluka.cards.assignmat_card import AssignmatsCard
-from converter.fluka.cards.matprop_card import MatpropsCard
+from converter.fluka.cards.matprop_card import MatPropsCard
+from converter.fluka.cards.lowmat_card import LowMatsCard
 from converter.fluka.helper_parsers.beam_parser import FlukaBeam
 from converter.solid_figures import SolidFigure
 
@@ -24,6 +25,7 @@ class Input:
     regions: list = field(default_factory=list)
     assignmats: list = field(default_factory=list)
     matprops: list = field(default_factory=list)
+    lowmats: list = field(default_factory=list)
 
     template: str = """TITLE
 proton beam simulation
@@ -39,9 +41,10 @@ END
 END
 GEOEND
 {MATERIALS}
+{LOWMATS}
 {COMPOUNDS}
-{ASSIGNMATS}
 {MATPROPS}
+{ASSIGNMATS}
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&
@@ -81,7 +84,8 @@ STOP
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions),
             MATERIALS=MaterialsCard(data=self.materials),
+            LOWMATS=LowMatsCard(data=self.lowmats),
             COMPOUNDS=CompoundsCard(data=self.compounds),
             ASSIGNMATS=AssignmatsCard(data=self.assignmats),
-            MATPROPS=MatpropsCard(data=self.matprops),
+            MATPROPS=MatPropsCard(data=self.matprops),
         )

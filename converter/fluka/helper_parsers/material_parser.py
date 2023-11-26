@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from converter.fluka.predefined_materials import (
     PREDEFINED_MATERIALS,
     PREDEFINED_COMPOUNDS,
+    FLUKA_NAMES,
 )
 from converter.fluka.helper_parsers.region_parser import FlukaRegion
 from copy import deepcopy
@@ -42,6 +43,17 @@ class FlukaCompound:
 
 
 @dataclass
+class FlukaLowMat:
+    """
+    Class representing correspondence between Fluka materials and
+    low-energy neutron cross sections in Fluka input.
+    """
+
+    material_name: str = ""
+    low_energy_neutron_material: str = ""
+
+
+@dataclass
 class MaterialAssignment:
     """Class representing an assignment of a material to a region in Fluka input."""
 
@@ -54,31 +66,35 @@ class IonisationPotential:
     """Class representing an ionisation potential in Fluka input."""
 
     material_name: str = ""
-    ionisation_potential: float = -1.0
+    ionisation_potential: float = 0
 
 
-def load_predefined_materials() -> (list[FlukaMaterial], list[FlukaCompound]):
+def load_predefined_materials() -> (
+    dict[str, FlukaMaterial],
+    dict[str, FlukaCompound],
+    dict[str, str],
+):
     """
     Convert list of dicts of predefined materials and compounds to lists of
-    FlukaMaterial and FlukaCompound objects.
+    FlukaMaterial and FlukaCompound objects. Also create a dict of icru -> fluka_name.
     """
-    predefined_materials = {
-        material["icru"]: FlukaMaterial(**material) for material in PREDEFINED_MATERIALS
-    }
-    predefined_compounds = {
-        compound["icru"]: FlukaCompound(**compound) for compound in PREDEFINED_COMPOUNDS
-    }
-    return predefined_materials, predefined_compounds
+    predefined_materials = {material["icru"]: FlukaMaterial(**material) for material in PREDEFINED_MATERIALS}
+    predefined_compounds = {compound["icru"]: FlukaCompound(**compound) for compound in PREDEFINED_COMPOUNDS}
+    icru_to_fluka_name = {material["icru"]: material["fluka_name"] for material in FLUKA_NAMES}
+    return predefined_materials, predefined_compounds, icru_to_fluka_name
 
 
-def parse_materials(
-    materials_json, zones_json: dict
-) -> (dict[str, FlukaMaterial], dict[str, FlukaCompound]):
+def parse_materials(materials_json, zones_json: dict) -> (dict[str, FlukaMaterial], dict[str, FlukaCompound]):
     """Parse materials from json to FlukaMaterial and FlukaCompound objects."""
-    predefined_materials, predefined_compounds = load_predefined_materials()
+    (
+        predefined_materials,
+        predefined_compounds,
+        icru_to_fluka_name,
+    ) = load_predefined_materials()
     material_index = compound_index = 1
     # uuid -> material, uuid -> compound
     materials, compounds = {}, {}
+    lowmats = []
     zones = deepcopy(zones_json["zones"])
     if "worldZone" in zones_json:
         zones.append(zones_json["worldZone"])
@@ -87,10 +103,7 @@ def parse_materials(
     for material in materials_json:
         materials_list.append((material["uuid"], material["icru"], material["density"]))
     for zone in zones:
-        if (
-            "customMaterial" in zone
-            and "density" in zone["materialPropertiesOverrides"]
-        ):
+        if "customMaterial" in zone and "density" in zone["materialPropertiesOverrides"]:
             materials_list.append(
                 (
                     zone["customMaterial"]["uuid"],
@@ -115,18 +128,28 @@ def parse_materials(
                     density=density,
                     icru=icru,
                 )
+                new_lowmat = FlukaLowMat(
+                    material_name=new_material.fluka_name,
+                    low_energy_neutron_material=icru_to_fluka_name[icru],
+                )
+                lowmats.append(new_lowmat)
                 material_index += 1
                 materials[uuid] = new_material
             else:
                 materials[uuid] = predefined_material
         # Check if material is not predefined single-element
-        elif icru <= SINGLE_ELEMENT_MAX_ICRU:
+        elif icru in icru_to_fluka_name:
             new_material = FlukaMaterial(
                 fluka_name=f"MAT{material_index:0>5}",
                 Z=icru,
                 density=density,
                 icru=icru,
             )
+            new_lowmat = FlukaLowMat(
+                material_name=new_material.fluka_name,
+                low_energy_neutron_material=icru_to_fluka_name[icru],
+            )
+            lowmats.append(new_lowmat)
             material_index += 1
             materials[uuid] = new_material
         # Check if material is predefined compound, if density is different
@@ -152,11 +175,12 @@ def parse_materials(
             else:
                 materials[uuid] = predefined_compound
         # If icru is not used anywhere above, it means we are dealing
-        # with not predefined compound which is not supported for now
+        # with not predefined compound or single-element material
+        # with undefined cross section which is not supported for now
         else:
             raise NotImplementedError(f"Material with icru {icru} is not supported.")
 
-    return materials, compounds
+    return materials, compounds, lowmats
 
 
 def assign_materials_to_regions(
@@ -176,9 +200,7 @@ def assign_materials_to_regions(
     if "worldZone" in zones_json:
         assignments.append(
             MaterialAssignment(
-                material_name=materials[
-                    zones_json["worldZone"]["materialUuid"]
-                ].fluka_name,
+                material_name=materials[zones_json["worldZone"]["materialUuid"]].fluka_name,
                 region_name=regions[zones_json["worldZone"]["uuid"]].name,
             )
         )
@@ -193,16 +215,33 @@ def assign_materials_to_regions(
 
 
 def set_custom_ionisation_potential(
-    materials: dict[str, FlukaMaterial], custom_materials: list
+    materials: dict[str, FlukaMaterial], zones_json: dict, materials_json: list[dict]
 ) -> list[IonisationPotential]:
     """Set custom ionisation potential for materials that have it defined."""
     ionisation_potentials = []
-    for material in custom_materials:
-        if "ionisationPotential" in material:
+
+    for zone in zones_json["zones"]:
+        if "averageIonisationPotential" in zone.get("materialPropertiesOverrides", []):
+            ionisation_potentials.append(
+                IonisationPotential(
+                    material_name=materials[zone["materialUuid"]].fluka_name,
+                    ionisation_potential=zone["materialPropertiesOverrides"]["averageIonisationPotential"],
+                )
+            )
+    if "worldZone" in zones_json:
+        if "averageIonisationPotential" in zones_json["worldZone"].get("materialPropertiesOverrides", []):
+            ionisation_potentials.append(
+                IonisationPotential(
+                    material_name=materials[zones_json["worldZone"]["materialUuid"]].fluka_name,
+                    ionisation_potential=zone["materialPropertiesOverrides"]["averageIonisationPotential"],
+                )
+            )
+    for material in materials_json:
+        if "averageIonisationPotential" in material:
             ionisation_potentials.append(
                 IonisationPotential(
                     material_name=materials[material["uuid"]].fluka_name,
-                    ionisation_potential=material["ionisationPotential"],
+                    ionisation_potential=material["averageIonisationPotential"],
                 )
             )
     return ionisation_potentials

@@ -21,7 +21,7 @@ def materials_json(project_fluka_json):
 
 def test_parse_materials(zones_json, materials_json):
     """Test if materials are parsed correctly"""
-    materials, compounds = parse_materials(materials_json, zones_json)
+    materials, compounds, _ = parse_materials(materials_json, zones_json)
 
     assert "c68fba8d-e146-44df-96f8-f6ab74d48cfa" in materials
     assert "fdd9632f-5e37-4952-81a8-a01d1b9c2842" in materials
@@ -38,7 +38,7 @@ def test_parse_materials(zones_json, materials_json):
 
 def test_assign_materials_to_regions(zones_json, materials_json, project_fluka_json):
     """Test if materials are assigned to regions correctly"""
-    materials, _ = parse_materials(materials_json, zones_json)
+    materials, _, _ = parse_materials(materials_json, zones_json)
     figures = parse_figures(project_fluka_json["figureManager"].get("figures"))
     regions, _ = parse_regions(zones_json, figures)
 

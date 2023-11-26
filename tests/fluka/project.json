@@ -205,7 +205,8 @@
 				"visible": true,
 				"materialUuid": "9dd76291-d711-4838-bf8f-a7695f5344e1",
 				"materialPropertiesOverrides": {
-					"density": 11.36
+					"density": 11.36,
+					"averageIonisationPotential": 7.53
 				},
 				"customMaterial": {
 					"uuid": "9dd76291-d711-4838-bf8f-a7695f5344e1",
