@@ -19,13 +19,11 @@ class ScoringsCard:
         result = ""
 
         for scoring in self.data:
-            first_card = handle_first_card(scoring)
-
+            first_card = self.handle_first_card(scoring)
+            second_card = self.handle_second_card(scoring)
 
             result += first_card
             result += second_card
-
-        """Return the card as a string."""
 
         return result
 
@@ -45,7 +43,7 @@ class ScoringsCard:
 
         return first_card.__str__()
 
-    def handle_first_card(self, scoring: Scoring) -> str:
+    def handle_second_card(self, scoring: Scoring) -> str:
         # TODO
 
         second_card = Card(tag="USRBIN")
