@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class USRBIN():
+class Detector:
     name: str
     x_min: float
     x_max: float

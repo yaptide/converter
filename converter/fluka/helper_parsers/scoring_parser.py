@@ -1,15 +1,10 @@
 from dataclasses import dataclass, field
-from converter.fluka.helper_parsers.detector_parser import USRBIN
-
-
-@dataclass
-class Detector:
-    name: str = ""
+from converter.fluka.helper_parsers.detector_parser import Detector
 
 @dataclass
 class Scoring:
-
     detectorUuid: str
+    detector: Detector
     name: str = ""
     quantity: str = "DOSE"
 
