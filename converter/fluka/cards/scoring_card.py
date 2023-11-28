@@ -28,23 +28,28 @@ class ScoringsCard:
         return result
 
     def handle_first_card(self, scoring: Scoring) -> str:
-        x_max = scoring.detector.x_max
-        y_max = scoring.detector.y_max
-        z_max = scoring.detector.z_max
 
         first_card = Card(tag="USRBIN")
         first_card.what = [
             self.binning_what,
             self.unit_what,
-            x_max,
-            y_max,
-            z_max
+            scoring.detector.x_max,
+            scoring.detector.y_max,
+            scoring.detector.z_max
         ]
 
         return first_card.__str__()
 
     def handle_second_card(self, scoring: Scoring) -> str:
-        # TODO
 
         second_card = Card(tag="USRBIN")
+        second_card.what = [
+            scoring.detector.x_min,
+            scoring.detector.y_min,
+            scoring.detector.z_min,
+            scoring.detector.x_bins,
+            scoring.detector.y_bins,
+            scoring.detector.z_bins,
+        ]
+
         return second_card.__str__()
