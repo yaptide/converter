@@ -1,4 +1,5 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
 from converter.fluka.helper_parsers.detector_parser import Detector, parse_detector
 
 
