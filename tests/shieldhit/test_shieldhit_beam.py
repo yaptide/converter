@@ -9,6 +9,7 @@ def test_generated_beam_dat(project_shieldhit_json, sh12a_parser, tmpdir) -> Non
     with open(output_dir / 'beam.dat') as f:
         input_text = f.read()
         assert input_text
+        assert "JPART0       	2" in input_text
         assert "STRAGG          2" in input_text
         assert "MSCAT           2" in input_text
         assert "NUCRE           1" in input_text
