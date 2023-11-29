@@ -9,4 +9,5 @@ def detectors_json(project_fluka_json):
 
 
 def test_parse_scoring(detectors_json):
-    scorings = parse_detector(detectors_json, 'c5d0bfa1-525a-4c22-bcc6-3b1d40e1fea3')
+    detector = parse_detector(detectors_json, 'c5d0bfa1-525a-4c22-bcc6-3b1d40e1fea3')
+

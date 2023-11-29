@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from converter.fluka.helper_parsers.detector_parser import Detector
+from converter.fluka.helper_parsers.detector_parser import Detector, parse_detector
+
 
 @dataclass
 class Scoring:
@@ -16,7 +17,7 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
             Scoring(
                 detectorUuid=scoring['detectorUuid'],
                 name=scoring['name'],
-                quantity="DOSE"
+                detector=parse_detector(detectors_json, scoring['detectorUuid'])
             )
         )
 
