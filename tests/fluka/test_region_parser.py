@@ -12,6 +12,7 @@ def test_parse_regions(zones_json, project_fluka_json):
     figures = parse_figures(project_fluka_json["figureManager"].get('figures'))
 
     regions, _ = parse_regions(zones_json, figures)
+    regions = list(regions.values())
 
     assert regions[0].name == "region0"
     assert regions[0].figures_operators == [[(BoolOperation.INTERSECTION, "fig0"), (BoolOperation.SUBTRACTION, "fig1"),

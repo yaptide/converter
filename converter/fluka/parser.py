@@ -2,6 +2,11 @@ from converter.common import Parser
 from converter.fluka.helper_parsers.beam_parser import parse_beam
 from converter.fluka.helper_parsers.figure_parser import parse_figures
 from converter.fluka.helper_parsers.region_parser import parse_regions
+from converter.fluka.helper_parsers.material_parser import (
+    parse_materials,
+    assign_materials_to_regions,
+    set_custom_ionisation_potential,
+)
 from converter.fluka.input import Input
 
 
@@ -13,17 +18,26 @@ class FlukaParser(Parser):
 
     def __init__(self) -> None:
         super().__init__()
-        self.info['simulator'] = 'fluka'
-        self.info['version'] = 'unknown'
+        self.info["simulator"] = "fluka"
+        self.info["version"] = "unknown"
         self.input = Input()
 
     def parse_configs(self, json: dict) -> None:
         """Parse energy and number of particles from json."""
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
-
-        self.input.figures = parse_figures(json["figureManager"].get('figures'))
-        self.input.regions, world_figures = parse_regions(json["zoneManager"], self.input.figures)
+        self.input.figures = parse_figures(json["figureManager"].get("figures"))
+        regions, world_figures = parse_regions(json["zoneManager"], self.input.figures)
+        self.input.regions = list(regions.values())
         self.input.figures.extend(world_figures)
+        materials, compounds, self.input.lowmats = parse_materials(json["materialManager"]["materials"],
+                                                                   json["zoneManager"])
+        self.input.materials = [
+            material for material in materials.values() if material.fluka_name.startswith(("MAT", "COM"))
+        ]
+        self.input.compounds = [compound for compound in compounds.values() if compound.fluka_name.startswith("COM")]
+        self.input.assignmats = assign_materials_to_regions(materials, regions, json["zoneManager"])
+        self.input.matprops = set_custom_ionisation_potential(materials, json["zoneManager"],
+                                                              json["materialManager"]["materials"])
         self.input.beam = parse_beam(json["beam"])
 
     def get_configs_json(self) -> dict:

@@ -4,11 +4,11 @@ proton beam simulation
 DEFAULTS                                                              HADROTHE
 * PROTON beam of energy 0.07 GeV
 * flat circular shape with max radius=3.0 cm, min radius=0.0 cm
-BEAM           -0.07       0.0       0.0       3.0       0.0      -1.0PROTON    
+BEAM           -0.07       0.0       0.0       3.0       0.0      -1.0PROTON
 * beam position: (0.0, 0.0, -1.5) cm
 * beam direction cosines in respect to x: 0.0, y: 0.0
 * beam direction is positive in respect to z axis
-BEAMPOS          0.0       0.0      -1.5       0.0       0.0       0.0          
+BEAMPOS          0.0       0.0      -1.5       0.0       0.0       0.0
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME
     0    0
@@ -60,9 +60,17 @@ world 5 +figworld -fig0 -fig1 -fig2 -fig3 -fig4
 boundary 5 +figbound -figworld
 END
 GEOEND
-ASSIGNMA    BLCKHOLE   Z_BBODY
-ASSIGNMA         AIR     Z_AIR
-ASSIGNMA       WATER  Z_TARGET
+MATERIAL         0.0                1.01                              COM00001
+MATERIAL        82.0               11.36                              MAT00001
+LOW-MAT     MAT00001                                                  LEAD
+COMPOUND        -1.0     WATER                                        COM00001
+MAT-PROP         0.0       0.0      7.53  MAT00001                 0.0
+ASSIGNMA         AIR   region0
+ASSIGNMA    COM00001   region1
+ASSIGNMA    MAT00001   region2
+ASSIGNMA         AIR   region3
+ASSIGNMA       WATER     world
+ASSIGNMA    BLCKHOLE  boundary
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&
@@ -90,6 +98,6 @@ USRBIN          -5.0      -0.1       0.0       500         1       500&
 * random number generator settings
 RANDOMIZ                   137
 * number of particles to simulate
-START        10000.0                                                            
+START        10000.0
 STOP
 """
