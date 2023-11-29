@@ -172,7 +172,7 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
         # if particle is heavy ion, add the heavy ion line to the template
         heavy_ion_line = "! no heavy ion"
         if self.particle == 25:
-            heavy_ion_line = BeamConfig.heavy_ion_template.format(a=4, z=2)
+            heavy_ion_line = BeamConfig.heavy_ion_template.format(a=self.heavy_ion_a, z=self.heavy_ion_z)
 
         # if energy cutoffs are defined, add them to the template
         cutoff_line = "! no energy cutoffs"
