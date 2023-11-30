@@ -63,6 +63,7 @@ class ShieldhitParser(Parser):
     def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
         self.beam_config.particle = json["beam"]["particle"]["id"]
+        self.beam_config.particle_name = json["beam"]["particle"].get("name")
         self.beam_config.heavy_ion_a = json["beam"]["particle"]["a"]
         self.beam_config.heavy_ion_z = json["beam"]["particle"]["z"]
         self.beam_config.energy = json["beam"]["energy"]

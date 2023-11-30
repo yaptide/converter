@@ -100,8 +100,9 @@ class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
     particle: int = 2
-    heavy_ion_a: int = 12
-    heavy_ion_z: int = 6
+    particle_name: Optional[str] = None
+    heavy_ion_a: int = 1
+    heavy_ion_z: int = 1
     energy: float = 150.  # [MeV]
     energy_spread: float = 1.5  # [MeV]
     energy_low_cutoff: Optional[float] = None  # [MeV]
@@ -130,7 +131,7 @@ class BeamConfig:
 
     beam_dat_template: str = """
 RNDSEED      	89736501     ! Random seed
-JPART0       	{particle}            ! Incident particle type
+JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
 {optional_heavy_ion_line}
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 {optional_energy_cut_off_line}
@@ -169,6 +170,11 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
         """Return the beam.dat config file as a string."""
         theta, phi, _ = BeamConfig.cartesian2spherical(self.beam_dir)
 
+        # if particle name is defined, add the comment to the template
+        particle_optional_comment = ""
+        if self.particle_name is not None:
+            particle_optional_comment = " ({particle_name})".format(particle_name=self.particle_name)
+
         # if particle is heavy ion, add the heavy ion line to the template
         heavy_ion_line = "! no heavy ion"
         if self.particle == 25:
@@ -196,6 +202,7 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
         # prepare main template
         result = self.beam_dat_template.format(
             particle=self.particle,
+            particle_optional_comment=particle_optional_comment,
             optional_heavy_ion_line=heavy_ion_line,
             energy=float(self.energy),
             energy_spread=float(self.energy_spread),
