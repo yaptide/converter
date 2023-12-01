@@ -172,7 +172,7 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
 
         # if particle name is defined, add the comment to the template
         particle_optional_comment = ""
-        if self.particle_name is not None:
+        if self.particle_name:
             particle_optional_comment = f" ({self.particle_name})"
 
         # if particle is heavy ion, add the heavy ion line to the template
