@@ -663,9 +663,10 @@
             "y": 0
         },
         "particle": {
-            "a": 1,
             "id": 2,
-            "z": 1
+            "a": 1,
+            "z": 1,
+            "name": "Proton"
         },
         "colorHex": 16776960,
         "numberOfParticles": 10000,

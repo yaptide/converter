@@ -1,6 +1,7 @@
 
 RNDSEED      	89736501     ! Random seed
-JPART0       	2            ! Incident particle type
+JPART0       	2            ! Incident particle type (Proton)
+! no heavy ion
 TMAX0      	150.0 1.5       ! Incident energy and energy spread; both in (MeV/nucl)
 TCUT0       0 1000  ! energy cutoffs [MeV]
 NSTAT       10000    0       ! NSTAT, Step of saving

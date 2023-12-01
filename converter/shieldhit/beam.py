@@ -99,6 +99,10 @@ BMODTRANS       {mode}            ! Interpretation of thicknesses data in the co
 class BeamConfig:
     """Class mapping of the beam.dat config file."""
 
+    particle: int = 2
+    particle_name: Optional[str] = None
+    heavy_ion_a: int = 1
+    heavy_ion_z: int = 1
     energy: float = 150.  # [MeV]
     energy_spread: float = 1.5  # [MeV]
     energy_low_cutoff: Optional[float] = None  # [MeV]
@@ -118,6 +122,7 @@ class BeamConfig:
     straggling: StragglingModel = StragglingModel.VAVILOV
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
+    heavy_ion_template = "HIPROJ       	{a} {z}           ! A and Z of the heavy ion"
     energy_cutoff_template = "TCUT0       {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
     sad_template = "BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
@@ -126,7 +131,8 @@ class BeamConfig:
 
     beam_dat_template: str = """
 RNDSEED      	89736501     ! Random seed
-JPART0       	2            ! Incident particle type
+JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
+{optional_heavy_ion_line}
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 {optional_energy_cut_off_line}
 NSTAT       {n_stat:d}    0       ! NSTAT, Step of saving
@@ -164,6 +170,16 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
         """Return the beam.dat config file as a string."""
         theta, phi, _ = BeamConfig.cartesian2spherical(self.beam_dir)
 
+        # if particle name is defined, add the comment to the template
+        particle_optional_comment = ""
+        if self.particle_name:
+            particle_optional_comment = f" ({self.particle_name})"
+
+        # if particle is heavy ion, add the heavy ion line to the template
+        heavy_ion_line = "! no heavy ion"
+        if self.particle == 25:
+            heavy_ion_line = BeamConfig.heavy_ion_template.format(a=self.heavy_ion_a, z=self.heavy_ion_z)
+
         # if energy cutoffs are defined, add them to the template
         cutoff_line = "! no energy cutoffs"
         if self.energy_low_cutoff is not None and self.energy_high_cutoff is not None:
@@ -185,6 +201,9 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
 
         # prepare main template
         result = self.beam_dat_template.format(
+            particle=self.particle,
+            particle_optional_comment=particle_optional_comment,
+            optional_heavy_ion_line=heavy_ion_line,
             energy=float(self.energy),
             energy_spread=float(self.energy_spread),
             optional_energy_cut_off_line=cutoff_line,
