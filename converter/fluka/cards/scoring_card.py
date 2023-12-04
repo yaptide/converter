@@ -14,7 +14,7 @@ def handle_first_card(scoring: Scoring) -> str:
     # Fixed for now
     output_unit = '-21'
 
-    first_card = Card(tag="USRBIN")
+    first_card = Card(codewd="USRBIN")
     first_card.what = [
         binning_what,
         particle_of_scoring,
@@ -30,7 +30,7 @@ def handle_first_card(scoring: Scoring) -> str:
 
 def handle_second_card(scoring: Scoring) -> str:
     """Creates second Scoring card"""
-    second_card = Card(tag="USRBIN")
+    second_card = Card(codewd="USRBIN")
     second_card.what = [
         scoring.detector.x_min,
         scoring.detector.y_min,
