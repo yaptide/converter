@@ -22,9 +22,9 @@ class Input:
 
     materials: list = field(default_factory=list)
     compounds: list = field(default_factory=list)
-    figures: list[SolidFigure] = field(default_factory=lambda: [])
-    regions: list = field(default_factory=lambda: [])
-    scorings: list = field(default_factory=lambda: [])
+    figures: list[SolidFigure] = field(default_factory=list)
+    regions: list = field(default_factory=list)
+    scorings: list = field(default_factory=list)
     assignmats: list = field(default_factory=list)
     matprops: list = field(default_factory=list)
     lowmats: list = field(default_factory=list)

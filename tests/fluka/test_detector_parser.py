@@ -9,5 +9,11 @@ def detectors_json(project_fluka_json):
 
 
 def test_parse_scoring(detectors_json):
-    detector = parse_detector(detectors_json, 'c5d0bfa1-525a-4c22-bcc6-3b1d40e1fea3')
+    detector_dict = next(
+        (detector for detector in detectors_json['detectors'] if detector['uuid'] == 'c5d0bfa1-525a-4c22-bcc6-3b1d40e1fea3'),
+        None
+    )
+    assert detector_dict
 
+    detector = parse_detector(detector_dict)
+    assert detector

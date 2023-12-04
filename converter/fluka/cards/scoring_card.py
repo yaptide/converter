@@ -20,6 +20,7 @@ def handle_first_card(scoring: Scoring) -> str:
 
     return first_card.__str__()
 
+
 def handle_second_card(scoring: Scoring) -> str:
 
     second_card = Card(tag="USRBIN")

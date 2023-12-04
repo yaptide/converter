@@ -14,11 +14,17 @@ class Scoring:
 def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
     scorings = []
     for scoring in scorings_json['outputs']:
+
+        detector = next(
+            (detector for detector in detectors_json['detectors'] if detector['uuid'] == scoring['detectorUuid']),
+            None
+        )
+
         scorings.append(
             Scoring(
                 detectorUuid=scoring['detectorUuid'],
                 name=scoring['name'],
-                detector=parse_detector(detectors_json, scoring['detectorUuid'])
+                detector=parse_detector(detector)
             )
         )
 
