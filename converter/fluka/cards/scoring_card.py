@@ -5,6 +5,7 @@ from converter.fluka.helper_parsers.scoring_parser import Scoring
 
 
 def handle_first_card(scoring: Scoring) -> str:
+    """Creates first Scoring card"""
     # temporary assumption
     binning_what = "10.0"
     unit_what = "11.0"
@@ -22,7 +23,7 @@ def handle_first_card(scoring: Scoring) -> str:
 
 
 def handle_second_card(scoring: Scoring) -> str:
-
+    """Creates second Scoring card"""
     second_card = Card(tag="USRBIN")
     second_card.what = [
         scoring.detector.x_min,
@@ -38,6 +39,7 @@ def handle_second_card(scoring: Scoring) -> str:
 
 @dataclass
 class ScoringsCard:
+    """Class representing ScoringCard"""
 
     data: list[Scoring] = field(default_factory=lambda: [])
 

@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Detector:
+    """Class representing Detector"""
+
     name: str
     x_min: float
     x_max: float
@@ -16,6 +18,7 @@ class Detector:
 
 
 def parse_detector(detector_dict: dict) -> Detector:
+    """Creates detector from dictionary"""
 
     geometry_data = detector_dict['geometryData']
     x_min, y_min, z_min = geometry_data['position']
