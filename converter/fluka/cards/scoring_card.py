@@ -60,9 +60,6 @@ class ScoringsCard:
         for scoring in self.data:
             first_card = handle_first_card(scoring)
             second_card = handle_second_card(scoring)
-
-            result += first_card
-            result += "\n"
-            result += second_card
+            result += f"{first_card}\n{second_card}\n"
 
         return result
