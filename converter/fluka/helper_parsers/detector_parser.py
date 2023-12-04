@@ -20,12 +20,19 @@ class Detector:
 def parse_detector(detector_dict: dict) -> Detector:
     """Creates detector from dictionary"""
     geometry_data = detector_dict['geometryData']
-    x_min, y_min, z_min = geometry_data['position']
     parameters = geometry_data['parameters']
 
-    x_max = x_min + parameters['depth']
-    y_max = y_min + parameters['height']
-    z_max = z_min + parameters['width']
+    depth = parameters['depth']
+    height = parameters['height']
+    width = parameters['width']
+
+    x_min = get_min_coord(geometry_data['position'][0], width)
+    y_min = get_min_coord(geometry_data['position'][1], height)
+    z_min = get_min_coord(geometry_data['position'][2], depth)
+
+    x_max = x_min + width
+    y_max = y_min + height
+    z_max = z_min + depth
 
     x_bins = parameters['xSegments']
     y_bins = parameters['ySegments']
@@ -43,3 +50,8 @@ def parse_detector(detector_dict: dict) -> Detector:
         y_bins=y_bins,
         z_bins=z_bins
     )
+
+
+def get_min_coord(center: float, size: float) -> float:
+    """Returns minimal coordinate basing on center and size"""
+    return center - size / 2

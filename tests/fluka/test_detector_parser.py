@@ -16,4 +16,16 @@ def test_parse_scoring(detectors_json):
     assert detector_dict
 
     detector = parse_detector(detector_dict)
+
     assert detector
+
+    assert detector.name == 'Detector'
+    assert detector.x_min == -0.05
+    assert detector.x_max == 0.05
+    assert detector.x_bins == 1
+    assert detector.y_min == -5
+    assert detector.y_max == 5
+    assert detector.y_bins == 100
+    assert detector.z_min == -6
+    assert detector.z_max == 6
+    assert detector.z_bins == 120

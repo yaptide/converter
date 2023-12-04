@@ -41,7 +41,7 @@ def handle_second_card(scoring: Scoring) -> str:
 class ScoringsCard:
     """Class representing ScoringCard"""
 
-    data: list[Scoring] = field(default_factory=lambda: [])
+    data: list[Scoring] = field(default_factory=list)
 
     def __str__(self) -> str:
         # each Scoring card consists of two cards;
