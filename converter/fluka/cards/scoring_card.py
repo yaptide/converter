@@ -8,16 +8,22 @@ def handle_first_card(scoring: Scoring) -> str:
     """Creates first Scoring card"""
     # temporary assumption
     binning_what = "10.0"
-    unit_what = "11.0"
+    # DOSE according to:
+    # https://flukafiles.web.cern.ch/manual/chapters/particle_and_material_codes/particles_codes.html
+    particle_of_scoring = "DOSE"
+    # Fixed for now
+    output_unit = '-21'
 
     first_card = Card(tag="USRBIN")
     first_card.what = [
         binning_what,
-        unit_what,
+        particle_of_scoring,
+        output_unit,
         scoring.detector.x_max,
         scoring.detector.y_max,
         scoring.detector.z_max
     ]
+    first_card.sdum = 'changeme'
 
     return first_card.__str__()
 
@@ -33,6 +39,7 @@ def handle_second_card(scoring: Scoring) -> str:
         scoring.detector.y_bins,
         scoring.detector.z_bins,
     ]
+    second_card.sdum = '&'
 
     return second_card.__str__()
 
@@ -55,6 +62,7 @@ class ScoringsCard:
             second_card = handle_second_card(scoring)
 
             result += first_card
+            result += "\n"
             result += second_card
 
         return result
