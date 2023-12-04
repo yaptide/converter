@@ -18,3 +18,8 @@ def test_start_line() -> None:
     assert str(Card("START", ["200000"])) == "START       200000.0"
     assert str(Card("START", ["1234567"])) == "START      1234567.0"
 
+
+def test_usrbin_card() -> None:
+    """Test if USRBIN card is formatted properly"""
+    assert str(Card("USRBIN", ["10.0", "DOSE", "-21.0", "7.0", "7.0", "12.1"], "verythin")) == "USRBIN          10.0      DOSE     -21.0       7.0       7.0      12.1verythin"
+    assert str(Card("USRBIN", ["-7.0", "-7.0", "12.0", "35.0", "35.0", "1.0"], "&")) == "USRBIN          -7.0      -7.0      12.0      35.0      35.0       1.0&"
