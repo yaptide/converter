@@ -7,6 +7,7 @@ from converter.shieldhit.parser import BeamConfig, DetectConfig
 _Beam_template = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
+! no heavy ion
 TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
 ! no energy cutoffs
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving

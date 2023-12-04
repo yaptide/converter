@@ -5,28 +5,28 @@
 		"generator": "YaptideEditor.toJSON"
 	},
 	"project": {
-		"title": "fl_sim.inp",
+		"title": "new.json",
 		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
 		"viewManager": {
 			"ViewPanelXY": {
-				"cameraMatrix": [1,0,0,0,0,0.9999999999994954,9.999999999621389e-7,0,0,-9.999999999621389e-7,0.9999999999994954,0,0,-0.00009999999999621423,99.99999999994992,1],
+				"cameraMatrix": [1,0,0,0,0,0.9999999999994953,9.999999999621389e-7,0,0,-9.999999999621389e-7,0.9999999999994953,0,0,-0.00009999999999621423,99.99999999994992,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": true
 				}
 			},
 			"ViewPanel3D": {
-				"cameraMatrix": [0.2122535983173172,0,0.977214618188528,0,0.7612000825425987,0.627087618427578,-0.1653346701450339,0,-0.6127991876124591,0.7789487266918318,0.13310160347149022,0,-21.406705555364876,27.210750882332615,4.649593034811644,1]
+				"cameraMatrix": [0.21225359831731708,-1.1102230246251562e-16,0.977214618188528,0,0.7612000825425987,0.627087618427578,-0.1653346701450338,0,-0.6127991876124591,0.7789487266918319,0.13310160347149022,0,-21.406705555364876,27.210750882332615,4.649593034811644,1]
 			},
 			"ViewPanelY": {
-				"cameraMatrix": [4.4408920985004847e-16,-4.4408920985004847e-16,0.9999999999999681,0,0.9999999999994658,0.0000010000000001397439,-4.4408920985004743e-16,0,-0.0000010000000001397439,0.9999999999994658,4.4408920985004743e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
+				"cameraMatrix": [2.2204460492502423e-16,-4.4408920985004847e-16,0.9999999999999684,0,0.9999999999994659,9.999999996956545e-7,-4.440892098500474e-16,0,-9.99999999917699e-7,0.9999999999994659,2.220446049250237e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": true
 				}
 			},
 			"ViewPanelX": {
-				"cameraMatrix": [-4.440892098500627e-16,1.0000000000000007,0,0,9.99999999806708e-7,-4.440892098500613e-16,0.9999999999994973,0,0.9999999999994973,0,-0.000001000000000139775,0,99.99999999994658,0,-0.0000999999999999799,1],
+				"cameraMatrix": [2.2204460492503146e-16,1.0000000000000007,2.2204460492503146e-16,0,9.99999999695686e-7,-2.220446049250307e-16,0.9999999999994972,0,0.9999999999994972,-2.220446049250307e-16,-9.99999999695686e-7,0,99.99999999994658,0,-0.0000999999999999799,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": true
@@ -176,8 +176,19 @@
 				"name": "Boolean Zone",
 				"type": "BooleanZone",
 				"visible": true,
-				"materialUuid": "a0a41c8b-9c22-42b6-bbfa-a6bad91d088d",
-				"materialPropertiesOverrides": {},
+				"materialUuid": "fdd9632f-5e37-4952-81a8-a01d1b9c2842",
+				"materialPropertiesOverrides": {
+					"density": 1.01
+				},
+				"customMaterial": {
+					"uuid": "fdd9632f-5e37-4952-81a8-a01d1b9c2842",
+					"sanitizedName": "water_liquid",
+					"name": "WATER, LIQUID",
+					"icru": 276,
+					"density": 1,
+					"color": 6256862,
+					"originalMaterialUuid": "a0a41c8b-9c22-42b6-bbfa-a6bad91d088d"
+				},
 				"unionOperations": [[
 						{
 							"mode": "union",
@@ -192,8 +203,20 @@
 				"name": "Boolean Zone_1",
 				"type": "BooleanZone",
 				"visible": true,
-				"materialUuid": "be8b5db0-650e-42a8-b4d0-8cd787dcd7ea",
-				"materialPropertiesOverrides": {},
+				"materialUuid": "9dd76291-d711-4838-bf8f-a7695f5344e1",
+				"materialPropertiesOverrides": {
+					"density": 11.36,
+					"averageIonisationPotential": 7.53
+				},
+				"customMaterial": {
+					"uuid": "9dd76291-d711-4838-bf8f-a7695f5344e1",
+					"sanitizedName": "Pb",
+					"name": "LEAD",
+					"icru": 82,
+					"density": 11.35,
+					"color": 16744448,
+					"originalMaterialUuid": "be8b5db0-650e-42a8-b4d0-8cd787dcd7ea"
+				},
 				"unionOperations": [[
 						{
 							"mode": "union",
@@ -225,7 +248,7 @@
 				}
 			}],
 		"worldZone": {
-			"uuid": "bf849794-8275-4cec-9820-d0b647539896",
+			"uuid": "ce206021-c77d-4a82-b876-fd9ffa4b85e0",
 			"type": "WorldZone",
 			"name": "World Zone",
 			"marginMultiplier": 1.1,
@@ -291,14 +314,6 @@
 		"type": "MaterialManager",
 		"materials": [
 			{
-				"uuid": "be8b5db0-650e-42a8-b4d0-8cd787dcd7ea",
-				"sanitizedName": "Pb",
-				"name": "LEAD",
-				"icru": 82,
-				"density": 11.35,
-				"color": 16744448
-			},
-			{
 				"uuid": "c68fba8d-e146-44df-96f8-f6ab74d48cfa",
 				"sanitizedName": "air_dry_near_sea_level",
 				"name": "AIR, DRY (NEAR SEA LEVEL)",
@@ -316,9 +331,8 @@
 				"color": 6256862
 			}],
 		"selectedMaterials": {
-			"a0a41c8b-9c22-42b6-bbfa-a6bad91d088d": 3,
-			"c68fba8d-e146-44df-96f8-f6ab74d48cfa": 2,
-			"be8b5db0-650e-42a8-b4d0-8cd787dcd7ea": 1
+			"a0a41c8b-9c22-42b6-bbfa-a6bad91d088d": 2,
+			"c68fba8d-e146-44df-96f8-f6ab74d48cfa": 2
 		},
 		"metadata": {
 			"version": "0.11",
@@ -418,5 +432,5 @@
 		"multipleScattering": "Moliere",
 		"stoppingPowerTable": "ICRU91"
 	},
-	"hash": "2c82b47998419f37796cb53795b318fbdf86fd5c"
+	"hash": "616f7739e57df46ce3d9b71a4b882afc0abebbf8"
 }
