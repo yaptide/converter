@@ -17,11 +17,13 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
     """Creates list of Scorings from dictionaries"""
     scorings = []
     for scoring in scorings_json['outputs']:
-
         detector = next(
             (detector for detector in detectors_json['detectors'] if detector['uuid'] == scoring['detectorUuid']),
             None
         )
+
+        if detector['geometryData']['geometryType'] != "Mesh":
+            continue
 
         scorings.append(
             Scoring(

@@ -316,6 +316,26 @@
 						"zSegments": 150
 					}
 				}
+			},
+			{
+				"name": "Detector3",
+				"type": "Detector",
+				"uuid": "1062cd67-4b82-48e7-9c12-4862038066f0",
+				"visible": true,
+				"colorHex": 65535,
+				"geometryData": {
+					"geometryType": "Changeme",
+					"position": [10,20,30],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 5,
+						"height": 10,
+						"depth": 15,
+						"xSegments": 10,
+						"ySegments": 100,
+						"zSegments": 150
+					}
+				}
 			}
 		]
 	},
@@ -398,6 +418,23 @@
 						"modifiers": []
 					}],
 				"detectorUuid": "76b642bf-9304-4b13-bcfc-5c21ff1d26a5",
+				"trace": false
+			},
+			{
+				"name": "third yz slab",
+				"type": "Output",
+				"uuid": "6c5ce1c2-a2d8-48b1-9112-1766b83728df",
+				"quantities": [
+					{
+						"uuid": "ffdd2acd-72ab-4768-ac26-8899a99b10e8",
+						"name": "Fluence",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7a",
+						"keyword": "Fluence",
+						"modifiers": []
+					}],
+				"detectorUuid": "1062cd67-4b82-48e7-9c12-4862038066f0",
 				"trace": false
 			}
 		],
