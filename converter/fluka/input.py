@@ -47,8 +47,6 @@ GEOEND
 {COMPOUNDS}
 {MATPROPS}
 {ASSIGNMATS}
-* generated scoring cards
-{SCORINGS}
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&
@@ -83,7 +81,7 @@ STOP
     def __str__(self):
         """Return fluka input file as string"""
         return self.template.format(
-            START=Card(codewd='START', what=[str(self.number_of_particles)]),
+            START=Card(codewd="START", what=[str(self.number_of_particles)]),
             BEAM=BeamCard(data=self.beam),
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions),

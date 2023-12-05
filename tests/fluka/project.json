@@ -5,7 +5,7 @@
 		"generator": "YaptideEditor.toJSON"
 	},
 	"project": {
-		"title": "fl_sim.inp",
+		"title": "new.json",
 		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
 		"viewManager": {
 			"ViewPanelXY": {
@@ -314,14 +314,6 @@
 		"type": "MaterialManager",
 		"materials": [
 			{
-				"uuid": "be8b5db0-650e-42a8-b4d0-8cd787dcd7ea",
-				"sanitizedName": "Pb",
-				"name": "LEAD",
-				"icru": 82,
-				"density": 11.35,
-				"color": 16744448
-			},
-			{
 				"uuid": "c68fba8d-e146-44df-96f8-f6ab74d48cfa",
 				"sanitizedName": "air_dry_near_sea_level",
 				"name": "AIR, DRY (NEAR SEA LEVEL)",
@@ -339,9 +331,8 @@
 				"color": 6256862
 			}],
 		"selectedMaterials": {
-			"a0a41c8b-9c22-42b6-bbfa-a6bad91d088d": 3,
-			"c68fba8d-e146-44df-96f8-f6ab74d48cfa": 2,
-			"be8b5db0-650e-42a8-b4d0-8cd787dcd7ea": 1
+			"a0a41c8b-9c22-42b6-bbfa-a6bad91d088d": 2,
+			"c68fba8d-e146-44df-96f8-f6ab74d48cfa": 2
 		},
 		"metadata": {
 			"version": "0.11",
