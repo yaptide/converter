@@ -30,7 +30,7 @@ def expected_card() -> str:
     line_one = 'USRBIN          10.0      DOSE     -21.0      0.05       5.0       6.0changeme'
     line_two = 'USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&'
 
-    return f'{line_one}\n{line_two}\n'
+    return f'{line_one}\n{line_two}'
 
 
 @pytest.fixture(scope='module')
@@ -41,7 +41,7 @@ def expected_card_2() -> str:
     line_three = 'USRBIN          10.0      DOSE     -22.0      12.5      25.0      37.5changeme'
     line_four = 'USRBIN           7.5      15.0      22.5      10.0     100.0     150.0&'
 
-    return f'{line_one}\n{line_two}\n{line_three}\n{line_four}\n'
+    return f'{line_one}\n{line_two}\n{line_three}\n{line_four}'
 
 
 def test_scoring_card(detectors_json: dict, scorings_json: dict, expected_card: str) -> None:

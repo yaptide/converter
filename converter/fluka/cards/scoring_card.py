@@ -58,4 +58,4 @@ class ScoringsCard:
             second_card = handle_second_card(scoring)
             result += f'{first_card}\n{second_card}\n'
             default_output_unit += 1
-        return result
+        return result.strip()
