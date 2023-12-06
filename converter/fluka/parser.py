@@ -2,6 +2,7 @@ from converter.common import Parser
 from converter.fluka.helper_parsers.beam_parser import parse_beam
 from converter.fluka.helper_parsers.figure_parser import parse_figures
 from converter.fluka.helper_parsers.region_parser import parse_regions
+from converter.fluka.helper_parsers.scoring_parser import parse_scorings
 from converter.fluka.helper_parsers.material_parser import (
     parse_materials,
     assign_materials_to_regions,
@@ -27,6 +28,7 @@ class FlukaParser(Parser):
         self.input.number_of_particles = json["beam"]["numberOfParticles"]
         self.input.figures = parse_figures(json["figureManager"].get("figures"))
         regions, world_figures = parse_regions(json["zoneManager"], self.input.figures)
+        self.input.scorings = parse_scorings(json["detectorManager"], json["scoringManager"])
         self.input.regions = list(regions.values())
         self.input.figures.extend(world_figures)
         materials, compounds, self.input.lowmats = parse_materials(json["materialManager"]["materials"],

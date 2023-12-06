@@ -1,0 +1,512 @@
+{
+	"metadata": {
+		"version": "0.11",
+		"type": "Editor",
+		"generator": "YaptideEditor.toJSON"
+	},
+	"project": {
+		"title": "new.json",
+		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
+		"viewManager": {
+			"ViewPanelXY": {
+				"cameraMatrix": [1,0,0,0,0,0.9999999999994953,9.999999999621389e-7,0,0,-9.999999999621389e-7,0.9999999999994953,0,0,-0.00009999999999621423,99.99999999994992,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanel3D": {
+				"cameraMatrix": [0.21225359831731708,-1.1102230246251562e-16,0.977214618188528,0,0.7612000825425987,0.627087618427578,-0.1653346701450338,0,-0.6127991876124591,0.7789487266918319,0.13310160347149022,0,-21.406705555364876,27.210750882332615,4.649593034811644,1]
+			},
+			"ViewPanelY": {
+				"cameraMatrix": [2.2204460492502423e-16,-4.4408920985004847e-16,0.9999999999999684,0,0.9999999999994659,9.999999996956545e-7,-4.440892098500474e-16,0,-9.99999999917699e-7,0.9999999999994659,2.220446049250237e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanelX": {
+				"cameraMatrix": [2.2204460492503146e-16,1.0000000000000007,2.2204460492503146e-16,0,9.99999999695686e-7,-2.220446049250307e-16,0.9999999999994972,0,0.9999999999994972,-2.220446049250307e-16,-9.99999999695686e-7,0,99.99999999994658,0,-0.0000999999999999799,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": true
+				}
+			},
+			"ViewPanel": {
+				"cameraMatrix": [0.07426714888874009,0,0.9972383820310657,0,0.1890359579236641,0.9818692455756362,-0.014078039800121761,0,-0.9791576978239105,0.18955944870338465,0.07292062945044075,0,-27.694761919291807,5.361550864645869,2.0625068629119263,1]
+			}
+		},
+		"history": {
+			"undos": [],
+			"redos": []
+		}
+	},
+	"figureManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0F0F",
+		"name": "Figure Manager",
+		"type": "FigureManager",
+		"metadata": {
+			"version": "0.11",
+			"type": "Manager",
+			"generator": "FigureManager.toJSON"
+		},
+		"figures": [
+			{
+				"name": "WorldBox",
+				"type": "BoxFigure",
+				"uuid": "2e74487b-fea8-4ff8-98c3-2794edfe121c",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "BoxGeometry",
+					"position": [0,0,4],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 12,
+						"height": 10,
+						"depth": 10
+					}
+				},
+				"colorHex": 0
+			},
+			{
+				"name": "BoxWaterPhantom",
+				"type": "BoxFigure",
+				"uuid": "9d124449-0df2-4779-8c40-37fe0536d27b",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "BoxGeometry",
+					"position": [0,0,4],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 8,
+						"height": 8,
+						"depth": 8
+					}
+				},
+				"colorHex": 0
+			},
+			{
+				"name": "Cylinder",
+				"type": "CylinderFigure",
+				"uuid": "0719929b-cf7b-43c6-9374-fcb536ebfaf6",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "HollowCylinderGeometry",
+					"position": [0,0,0],
+					"rotation": [0,0,0],
+					"parameters": {
+						"innerRadius": 0,
+						"radius": 4,
+						"depth": 1
+					}
+				},
+				"colorHex": 0
+			},
+			{
+				"name": "Cylinder_1",
+				"type": "CylinderFigure",
+				"uuid": "9e23820f-03ad-4c91-ae74-ccd2d6a5a2c4",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "HollowCylinderGeometry",
+					"position": [0,0,0],
+					"rotation": [0,0,0],
+					"parameters": {
+						"innerRadius": 0,
+						"radius": 2,
+						"depth": 1
+					}
+				},
+				"colorHex": 0
+			},
+			{
+				"name": "Sphere",
+				"type": "SphereFigure",
+				"uuid": "d1548bba-30b3-4691-a149-314d76cbbb95",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "SphereGeometry",
+					"position": [0,11.817210532546778,-14.215841748815455],
+					"rotation": [0,0,0],
+					"parameters": {
+						"radius": 1
+					}
+				},
+				"colorHex": 0
+			}]
+	},
+	"zoneManager": {
+		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
+		"name": "Zone Manager",
+		"type": "ZoneManager",
+		"metadata": {
+			"version": "0.11",
+			"type": "Manager",
+			"generator": "ZoneManager.toJSON"
+		},
+		"zones": [
+			{
+				"uuid": "4bcb6901-ea8a-4a0d-ae12-b750ef3145ce",
+				"name": "MainZone",
+				"type": "BooleanZone",
+				"visible": true,
+				"materialUuid": "c68fba8d-e146-44df-96f8-f6ab74d48cfa",
+				"materialPropertiesOverrides": {},
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "2e74487b-fea8-4ff8-98c3-2794edfe121c"
+						},
+						{
+							"mode": "subtraction",
+							"objectUuid": "9d124449-0df2-4779-8c40-37fe0536d27b"
+						},
+						{
+							"mode": "subtraction",
+							"objectUuid": "0719929b-cf7b-43c6-9374-fcb536ebfaf6"
+						}]],
+				"subscribedObjects": {
+					"2e74487b-fea8-4ff8-98c3-2794edfe121c": 1,
+					"9d124449-0df2-4779-8c40-37fe0536d27b": 1,
+					"0719929b-cf7b-43c6-9374-fcb536ebfaf6": 1
+				}
+			},
+			{
+				"uuid": "b4e9e1e8-86fa-4104-bf75-ef36e77e9f7e",
+				"name": "Boolean Zone",
+				"type": "BooleanZone",
+				"visible": true,
+				"materialUuid": "fdd9632f-5e37-4952-81a8-a01d1b9c2842",
+				"materialPropertiesOverrides": {
+					"density": 1.01
+				},
+				"customMaterial": {
+					"uuid": "fdd9632f-5e37-4952-81a8-a01d1b9c2842",
+					"sanitizedName": "water_liquid",
+					"name": "WATER, LIQUID",
+					"icru": 276,
+					"density": 1,
+					"color": 6256862,
+					"originalMaterialUuid": "a0a41c8b-9c22-42b6-bbfa-a6bad91d088d"
+				},
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "9d124449-0df2-4779-8c40-37fe0536d27b"
+						}]],
+				"subscribedObjects": {
+					"9d124449-0df2-4779-8c40-37fe0536d27b": 1
+				}
+			},
+			{
+				"uuid": "c72a0ee5-ac58-42c1-abcc-2d7e11024564",
+				"name": "Boolean Zone_1",
+				"type": "BooleanZone",
+				"visible": true,
+				"materialUuid": "9dd76291-d711-4838-bf8f-a7695f5344e1",
+				"materialPropertiesOverrides": {
+					"density": 11.36,
+					"averageIonisationPotential": 7.53
+				},
+				"customMaterial": {
+					"uuid": "9dd76291-d711-4838-bf8f-a7695f5344e1",
+					"sanitizedName": "Pb",
+					"name": "LEAD",
+					"icru": 82,
+					"density": 11.35,
+					"color": 16744448,
+					"originalMaterialUuid": "be8b5db0-650e-42a8-b4d0-8cd787dcd7ea"
+				},
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "0719929b-cf7b-43c6-9374-fcb536ebfaf6"
+						},
+						{
+							"mode": "subtraction",
+							"objectUuid": "9e23820f-03ad-4c91-ae74-ccd2d6a5a2c4"
+						}]],
+				"subscribedObjects": {
+					"0719929b-cf7b-43c6-9374-fcb536ebfaf6": 1,
+					"9e23820f-03ad-4c91-ae74-ccd2d6a5a2c4": 1
+				}
+			},
+			{
+				"uuid": "2d9b435d-9e96-4265-98ea-9e93aad482d8",
+				"name": "Boolean Zone_2",
+				"type": "BooleanZone",
+				"visible": true,
+				"materialUuid": "c68fba8d-e146-44df-96f8-f6ab74d48cfa",
+				"materialPropertiesOverrides": {},
+				"unionOperations": [[
+						{
+							"mode": "union",
+							"objectUuid": "9e23820f-03ad-4c91-ae74-ccd2d6a5a2c4"
+						}]],
+				"subscribedObjects": {
+					"9e23820f-03ad-4c91-ae74-ccd2d6a5a2c4": 1
+				}
+			}],
+		"worldZone": {
+			"uuid": "ce206021-c77d-4a82-b876-fd9ffa4b85e0",
+			"type": "WorldZone",
+			"name": "World Zone",
+			"marginMultiplier": 1.1,
+			"autoCalculate": true,
+			"materialUuid": "a0a41c8b-9c22-42b6-bbfa-a6bad91d088d",
+			"visible": false,
+			"geometryData": {
+				"geometryType": "BoxGeometry",
+				"position": [0,0,0],
+				"rotation": [0,0,0],
+				"parameters": {
+					"width": 13.200000000000001,
+					"height": 11,
+					"depth": 11
+				}
+			}
+		}
+	},
+	"detectorManager": {
+		"uuid": "9A7D17B8-BAE4-441F-965F-490CAA617EC6",
+		"name": "Detector Manager",
+		"type": "DetectorManager",
+		"metadata": {
+			"version": "0.11",
+			"type": "Manager",
+			"generator": "DetectorManager.toJSON"
+		},
+		"detectors": [
+			{
+				"name": "Detector",
+				"type": "Detector",
+				"uuid": "c5d0bfa1-525a-4c22-bcc6-3b1d40e1fea3",
+				"visible": true,
+				"colorHex": 65535,
+				"geometryData": {
+					"geometryType": "Mesh",
+					"position": [0,0,0],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 0.1,
+						"height": 10,
+						"depth": 12,
+						"xSegments": 1,
+						"ySegments": 100,
+						"zSegments": 120
+					}
+				}
+			},
+			{
+				"name": "Detector2",
+				"type": "Detector",
+				"uuid": "76b642bf-9304-4b13-bcfc-5c21ff1d26a5",
+				"visible": true,
+				"colorHex": 65535,
+				"geometryData": {
+					"geometryType": "Mesh",
+					"position": [10,20,30],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 5,
+						"height": 10,
+						"depth": 15,
+						"xSegments": 10,
+						"ySegments": 100,
+						"zSegments": 150
+					}
+				}
+			},
+			{
+				"name": "Detector3",
+				"type": "Detector",
+				"uuid": "1062cd67-4b82-48e7-9c12-4862038066f0",
+				"visible": true,
+				"colorHex": 65535,
+				"geometryData": {
+					"geometryType": "Changeme",
+					"position": [10,20,30],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 5,
+						"height": 10,
+						"depth": 15,
+						"xSegments": 10,
+						"ySegments": 100,
+						"zSegments": 150
+					}
+				}
+			}
+		]
+	},
+	"specialComponentsManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0FFF",
+		"name": "Special Components",
+		"type": "SpecialComponentManager",
+		"metadata": {
+			"version": "0.11",
+			"type": "Manager",
+			"generator": "SpecialComponentManager.toJSON"
+		}
+	},
+	"materialManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF",
+		"name": "Material Manager",
+		"type": "MaterialManager",
+		"materials": [
+			{
+				"uuid": "c68fba8d-e146-44df-96f8-f6ab74d48cfa",
+				"sanitizedName": "air_dry_near_sea_level",
+				"name": "AIR, DRY (NEAR SEA LEVEL)",
+				"icru": 104,
+				"density": 0.00120479,
+				"transparent": true,
+				"opacity": 0.05
+			},
+			{
+				"uuid": "a0a41c8b-9c22-42b6-bbfa-a6bad91d088d",
+				"sanitizedName": "water_liquid",
+				"name": "WATER, LIQUID",
+				"icru": 276,
+				"density": 1,
+				"color": 6256862
+			}],
+		"selectedMaterials": {
+			"a0a41c8b-9c22-42b6-bbfa-a6bad91d088d": 2,
+			"c68fba8d-e146-44df-96f8-f6ab74d48cfa": 2
+		},
+		"metadata": {
+			"version": "0.11",
+			"type": "Manager",
+			"generator": "MaterialManager.toJSON"
+		}
+	},
+	"scoringManager": {
+		"name": "Scoring Manager",
+		"type": "ScoringManager",
+		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
+		"outputs": [
+			{
+				"name": "yz slab",
+				"type": "Output",
+				"uuid": "6c5ce1c2-a2d8-48b1-9112-1766b83728df",
+				"quantities": [
+					{
+						"uuid": "ffdd2acd-72ab-4768-ac26-8899a99b10e8",
+						"name": "Fluence",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7a",
+						"keyword": "Fluence",
+						"modifiers": []
+					}],
+				"detectorUuid": "c5d0bfa1-525a-4c22-bcc6-3b1d40e1fea3",
+				"trace": false
+			},
+			{
+				"name": "second yz slab",
+				"type": "Output",
+				"uuid": "6c5ce1c2-a2d8-48b1-9112-1766b83728df",
+				"quantities": [
+					{
+						"uuid": "ffdd2acd-72ab-4768-ac26-8899a99b10e8",
+						"name": "Fluence",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7a",
+						"keyword": "Fluence",
+						"modifiers": []
+					}],
+				"detectorUuid": "76b642bf-9304-4b13-bcfc-5c21ff1d26a5",
+				"trace": false
+			},
+			{
+				"name": "third yz slab",
+				"type": "Output",
+				"uuid": "6c5ce1c2-a2d8-48b1-9112-1766b83728df",
+				"quantities": [
+					{
+						"uuid": "ffdd2acd-72ab-4768-ac26-8899a99b10e8",
+						"name": "Fluence",
+						"type": "Quantity",
+						"visible": true,
+						"filter": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7a",
+						"keyword": "Fluence",
+						"modifiers": []
+					}],
+				"detectorUuid": "1062cd67-4b82-48e7-9c12-4862038066f0",
+				"trace": false
+			}
+		],
+		"filters": [
+			{
+				"uuid": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7a",
+				"name": "Protons",
+				"type": "Filter",
+				"rules": [
+					{
+						"uuid": "321dabed-01d9-4094-adfa-842f83d2361d",
+						"keyword": "Z",
+						"operator": "==",
+						"value": 1
+					},
+					{
+						"uuid": "4200ac98-9c2a-46dd-a8a0-9b62147142d7",
+						"keyword": "A",
+						"operator": "==",
+						"value": 1
+					}]
+			}],
+		"metadata": {
+			"version": "0.11",
+			"type": "Manager",
+			"generator": "ScoringManager.toJSON"
+		}
+	},
+	"beam": {
+		"name": "Beam",
+		"type": "Beam",
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
+		"position": [0,0,-1.5],
+		"direction": [0,0,1],
+		"energy": 70,
+		"energySpread": 0.7,
+		"energyLowCutoff": 0,
+		"energyHighCutoff": 1000,
+		"sigma": {
+			"type": "Flat circular",
+			"x": 0,
+			"y": 3
+		},
+		"sad": {
+			"type": "none",
+			"x": 0,
+			"y": 0
+		},
+		"divergence": {
+			"x": 0,
+			"y": 0,
+			"distanceToFocal": 0
+		},
+		"particle": {
+			"id": 2,
+			"a": 1,
+			"z": 1
+		},
+		"colorHex": 16776960,
+		"numberOfParticles": 10000,
+		"sourceFile": {
+			"value": "",
+			"name": ""
+		},
+		"sourceType": "simple"
+	},
+	"physic": {
+		"energyLoss": 0.03,
+		"enableNuclearReactions": true,
+		"energyModelStraggling": "Vavilov",
+		"multipleScattering": "Moliere",
+		"stoppingPowerTable": "ICRU91"
+	},
+	"hash": "616f7739e57df46ce3d9b71a4b882afc0abebbf8"
+}

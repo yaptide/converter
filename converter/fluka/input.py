@@ -9,6 +9,7 @@ from converter.fluka.cards.assignmat_card import AssignmatsCard
 from converter.fluka.cards.matprop_card import MatPropsCard
 from converter.fluka.cards.lowmat_card import LowMatsCard
 from converter.fluka.helper_parsers.beam_parser import FlukaBeam
+from converter.fluka.cards.scoring_card import ScoringsCard
 from converter.solid_figures import SolidFigure
 
 
@@ -23,6 +24,7 @@ class Input:
     compounds: list = field(default_factory=list)
     figures: list[SolidFigure] = field(default_factory=list)
     regions: list = field(default_factory=list)
+    scorings: list = field(default_factory=list)
     assignmats: list = field(default_factory=list)
     matprops: list = field(default_factory=list)
     lowmats: list = field(default_factory=list)
@@ -45,6 +47,8 @@ GEOEND
 {COMPOUNDS}
 {MATPROPS}
 {ASSIGNMATS}
+* generated scoring cards
+{SCORINGS}
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&
@@ -79,10 +83,11 @@ STOP
     def __str__(self):
         """Return fluka input file as string"""
         return self.template.format(
-            START=Card(codewd="START", what=[str(self.number_of_particles)]),
+            START=Card(codewd='START', what=[str(self.number_of_particles)]),
             BEAM=BeamCard(data=self.beam),
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions),
+            SCORINGS=ScoringsCard(data=self.scorings),
             MATERIALS=MaterialsCard(data=self.materials),
             LOWMATS=LowMatsCard(data=self.lowmats),
             COMPOUNDS=CompoundsCard(data=self.compounds),
