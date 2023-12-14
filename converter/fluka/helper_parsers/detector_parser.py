@@ -1,11 +1,14 @@
 from dataclasses import dataclass
 
+@dataclass
+class Detector:
+    name: str
+
 
 @dataclass
-class MeshDetector:
+class MeshDetector(Detector):
     """Class representing detector with cartesian mesh coordinates"""
 
-    name: str
     x_min: float
     x_max: float
     x_bins: int
