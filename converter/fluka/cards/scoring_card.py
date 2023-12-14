@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 
-from converter.fluka.cards.card import Card
 from converter.fluka.helper_parsers.scoring_parser import Scoring
 
 

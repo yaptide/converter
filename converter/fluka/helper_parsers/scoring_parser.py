@@ -1,6 +1,6 @@
-from dataclasses import dataclass, field
-from converter.fluka.cards.card import Card
+from dataclasses import dataclass
 
+from converter.fluka.cards.card import Card
 from converter.fluka.helper_parsers.detector_parser import MeshDetector
 
 
@@ -21,6 +21,7 @@ class Scoring:
 @dataclass
 class UsrbinCartesianScoring(Scoring):
     """Class representing USRBIN Cartesian Scoring in Fluka"""
+
     detector: MeshDetector
 
     def __str__(self) -> str:
@@ -32,7 +33,6 @@ class UsrbinCartesianScoring(Scoring):
 
     def _handle_first_card(self) -> Card:
         """Creates first Scoring card"""
-
         # Probably we should add some kind of mapping here or when creating cards
         particle_of_scoring = self.quantity
         output_unit = str(self.output_unit * -1)

@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Detector:
+    """Superclass for various detector types"""
+
     name: str
 
 
