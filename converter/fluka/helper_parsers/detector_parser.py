@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Detector:
     name: str
@@ -29,9 +30,9 @@ class MeshDetector(Detector):
         height = parameters['height']
         width = parameters['width']
 
-        x_min = cls.__get_min_coord(geometry_data['position'][0], width)
-        y_min = cls.__get_min_coord(geometry_data['position'][1], height)
-        z_min = cls.__get_min_coord(geometry_data['position'][2], depth)
+        x_min = get_min_coord(geometry_data['position'][0], width)
+        y_min = get_min_coord(geometry_data['position'][1], height)
+        z_min = get_min_coord(geometry_data['position'][2], depth)
 
         x_max = x_min + width
         y_max = y_min + height
@@ -51,10 +52,6 @@ class MeshDetector(Detector):
                             x_bins=x_bins,
                             y_bins=y_bins,
                             z_bins=z_bins)
-
-    def __get_min_coord(center: float, size: float) -> float:
-        """Returns minimal coordinate basing on center and size"""
-        return center - size / 2
 
 
 @dataclass
@@ -85,7 +82,7 @@ class CylinderDetector:
         r_max = parameters['radius']
 
         depth = parameters['depth']
-        z_min = cls.__get_min_coord(geometry_data['position'][2], depth)
+        z_min = get_min_coord(geometry_data['position'][2], depth)
         z_max = z_min + depth
 
         r_bins = parameters['radialSegments']
@@ -94,18 +91,20 @@ class CylinderDetector:
         # default from fluka documentation, not provided in json dict
         phi_bins = 1
 
-        return CylinderDetector(name=detector_dict['name'],
-                                x=x,
-                                y=y,
-                                r_min=r_min,
-                                r_max=r_max,
-                                z_min=z_min,
-                                z_max=z_max,
-                                r_bins=r_bins,
-                                z_bins=z_bins,
-                                phi_bins=phi_bins
+        return CylinderDetector(
+            name=detector_dict['name'],
+            x=x,
+            y=y,
+            r_min=r_min,
+            r_max=r_max,
+            z_min=z_min,
+            z_max=z_max,
+            r_bins=r_bins,
+            z_bins=z_bins,
+            phi_bins=phi_bins
         )
 
-    def __get_min_coord(center: float, size: float) -> float:
-        """Returns minimal coordinate basing on center and size"""
-        return center - size / 2
+
+def get_min_coord(center: float, size: float) -> float:
+    """Returns minimal coordinate basing on center and size"""
+    return center - size / 2
