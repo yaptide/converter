@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from converter.fluka.cards.card import Card
-from converter.fluka.helper_parsers.detector_parser import MeshDetector
+from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector
 
 
 @dataclass
@@ -68,6 +68,6 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
                                        output_unit=21,
                                        quantity='DOSE',
                                        name=scoring['name'],
-                                       detector=MeshDetector.parse_mesh_detector(detector_dict)))
+                                       detector=parse_mesh_detector(detector_dict)))
 
     return scorings

@@ -1,6 +1,6 @@
 import pytest
 
-from converter.fluka.helper_parsers.detector_parser import MeshDetector
+from converter.fluka.helper_parsers.detector_parser import parse_mesh_detector
 
 
 @pytest.fixture(scope='module')
@@ -15,7 +15,7 @@ def test_parse_scoring(detectors_json):
         None)
     assert detector_dict
 
-    detector = MeshDetector.parse_mesh_detector(detector_dict)
+    detector = parse_mesh_detector(detector_dict)
 
     assert detector
 
