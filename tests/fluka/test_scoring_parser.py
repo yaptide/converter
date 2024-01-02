@@ -16,6 +16,6 @@ def test_parse_scoring(detectors_json, scorings_json):
 
     scorings = parse_scorings(detectors_json, scorings_json)
 
-    assert scorings[0].name == 'yz slab'
-    assert scorings[0].detectorUuid == 'c5d0bfa1-525a-4c22-bcc6-3b1d40e1fea3'
-    assert scorings[0].quantity == 'DOSE'
+    assert scorings[0].quantities[0].name == 'Fluence'
+    assert scorings[0].detector.name == 'Detector'
+    assert scorings[0].quantities[0].keyword == 'Fluence'
