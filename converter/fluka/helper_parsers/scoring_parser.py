@@ -3,28 +3,6 @@ from typing import Optional, Union
 
 from converter.fluka.helper_parsers.detector_parser import Detector, parse_detector
 
-# def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
-#     """Creates list of Scorings from dictionaries"""
-#     scorings = []
-#     for scoring in scorings_json['outputs']:
-#         detector = next(
-#             (detector for detector in detectors_json['detectors'] if detector['uuid'] == scoring['detectorUuid']),
-#             None
-#         )
-
-#         if detector['geometryData']['geometryType'] != "Mesh":
-#             continue
-
-#         scorings.append(
-#             Scoring(
-#                 detectorUuid=scoring['detectorUuid'],
-#                 name=scoring['name'],
-#                 detector=parse_detector(detector)
-#             )
-#         )
-
-#     return scorings
-
 _particle_mappings = map[str, str] = {
     'Neutron': 'NEUTRON',
     'Proton': 'PROTON',
@@ -78,9 +56,9 @@ class Quantity:
 class Scoring:
     """Class representing Scorings for Fluka output"""
 
-    output_unit: int
     quantities: list[Quantity]
     detector: Detector
+    output_unit: int = 21
 
 
 def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
@@ -152,19 +130,19 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
 
         quantities: list[Quantity] = []
         for quantity in output['quantities']:
+            scoring_filter = None
             if 'filter' in quantity:
-                scoring_filter = filters[quantity['filter']]
+                scoring_filter = filters.get(quantity['filter'])
+                if scoring_filter is None:
+                    # Skip for not existing filter or not supported filter
+                    continue
 
             quantities.append(
                 Quantity(name=quantity['name'],
                          keyword=quantity['keyword'],
                          scoring_filter=scoring_filter,
                          modifiers=quantity.get('modifiers')))
-        output = Scoring(default_output_unit, [], parse_detector(output))
-        if detector['geometryData']['geometryType'] != 'Mesh':
-            continue
 
-        scorings.append(Scoring(detectorUuid=detector['uuid'], name=detector['name'],
-                                detector=parse_detector(detector)))
+        scorings.append(Scoring(quantities=quantities, detector=parse_detector(detector)))
 
     return scorings
