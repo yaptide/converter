@@ -69,7 +69,7 @@ class Quantity:
     """Class representing Quantity"""
 
     name: str
-    filter: Optional[Union[CustomFilter, ParticleFilter]]
+    scoring_filter: Optional[Union[CustomFilter, ParticleFilter]]
     modifiers: list[any]  # unused
     keyword: str = 'DOSE'
 
@@ -133,14 +133,10 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
     filters: map[str, Union[ParticleFilter, CustomFilter]] = {}
     for filter_dict in scorings_json['filters']:
         # Check if supported filter, ignore otherwise
-        filter = get_filter(filter_dict)
-        if filter is not None:
-            filters[filter_dict['uuid']] = filter
+        scoring_filter = get_filter(filter_dict)
+        if scoring_filter is not None:
+            filters[filter_dict['uuid']] = scoring_filter
 
-    # Iterate over outputs and create cards for quantities
-    # Quantity can use filters (e.g. energy, particle type)
-    default_output_unit = 21
-    outputs: list[Scoring] = []
     scorings: list[Scoring] = []
     for output in scorings_json['outputs']:
         detector = next(
@@ -156,17 +152,13 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
 
         quantities: list[Quantity] = []
         for quantity in output['quantities']:
-            filter_dict = quantity.get('filter')
-            # if filter_dict is not None:
-            #     if filter_dict.get("particle"):
-            #         filter_dict = get_particle_filter(filter_dict)
-            #     else:
-            #         rules: list[FilterRule] = filter_filter_by_its_rules(dict(filter_dict['rules'])
-            #         filter = CustomFilter(name=filter['name'], rules=rules)
+            if 'filter' in quantity:
+                scoring_filter = filters[quantity['filter']]
+
             quantities.append(
                 Quantity(name=quantity['name'],
                          keyword=quantity['keyword'],
-                         filter=filter,
+                         scoring_filter=scoring_filter,
                          modifiers=quantity.get('modifiers')))
         output = Scoring(default_output_unit, [], parse_detector(output))
         if detector['geometryData']['geometryType'] != 'Mesh':
