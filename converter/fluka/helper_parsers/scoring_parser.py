@@ -58,12 +58,10 @@ class UsrbinCartesianScoring(Scoring):
                 self.detector.z_max
             ]
 
-
         return Card(codewd='USRBIN', what=what, sdum='changeme')
 
     def _handle_second_card(self) -> Card:
         """Creates second Scoring card"""
-
         if isinstance(self.detector, CylinderDetector):
             what = [
                 self.detector.r_min,
