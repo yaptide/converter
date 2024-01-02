@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 from converter.fluka.helper_parsers.detector_parser import Detector, parse_detector
 
-_particle_mappings: map[str, str] = {
+_particle_mappings: dict[str, str] = {
     'Neutron': 'NEUTRON',
     'Proton': 'PROTON',
     'Pion π-': 'PION-',
@@ -109,7 +109,7 @@ def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter
 
 def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
     """Creates list of Scorings from dictionaries"""
-    filters: map[str, Union[ParticleFilter, CustomFilter]] = {}
+    filters: dict[str, Union[ParticleFilter, CustomFilter]] = {}
     for filter_dict in scorings_json['filters']:
         # Check if supported filter, ignore otherwise
         scoring_filter = get_filter(filter_dict)
