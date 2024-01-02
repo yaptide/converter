@@ -1,7 +1,15 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 from converter.fluka.cards.card import Card
 from converter.fluka.helper_parsers.scoring_parser import Scoring
+
+
+def handle_scoring_cards(default_output_unit, scoring: Scoring) -> Optional[str]:
+    """Creates Scoring cards"""
+    first_card = handle_first_card(scoring, default_output_unit)
+    second_card = handle_second_card(scoring)
+    return first_card, second_card
 
 
 def handle_first_card(scoring: Scoring, output_unit: int = 21) -> str:
@@ -50,12 +58,12 @@ class ScoringsCard:
         # the second one is continuation of data included in first
 
         # temporary default for no symmetry
-        result = ''
+        result: list[str] = []
 
         default_output_unit = 21
         for scoring in self.data:
-            first_card = handle_first_card(scoring, default_output_unit)
-            second_card = handle_second_card(scoring)
-            result += f'{first_card}\n{second_card}\n'
+            scoring_cards = handle_scoring_cards(default_output_unit, scoring)
+            if scoring_cards:
+                result.append(scoring_cards)
             default_output_unit += 1
-        return result.strip()
+        return '\n'.join(result).strip()
