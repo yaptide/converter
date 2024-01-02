@@ -43,9 +43,9 @@ def expected_card_2() -> str:
 USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
 USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
 AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
-USRBIN          10.0  ALL-PART     -22.0      12.5      25.0      37.5Fluence
+USRBIN          10.0      DOSE     -22.0      12.5      25.0      37.5MyDose
 USRBIN           7.5      15.0      22.5      10.0     100.0     150.0&
-AUXSCORE      USRBIN -100100.0                 2.0       2.0       1.0
+AUXSCORE      USRBIN   NEUTRON                 2.0       2.0       1.0
 """
 
     return lines.strip()

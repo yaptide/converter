@@ -71,7 +71,7 @@ def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
     if particle.get('name') not in _particle_mappings:
         return None
 
-    return ParticleFilter(name=particle['name'], id=filter_dict['uuid'], particle=_particle_mappings[particle['name']])
+    return ParticleFilter(name=particle['name'], particle=_particle_mappings[particle['name']])
 
 
 def get_custom_filter(filter_dict: dict) -> list[CustomFilter]:
