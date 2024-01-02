@@ -3,15 +3,6 @@ from typing import Optional, Union
 
 from converter.fluka.helper_parsers.detector_parser import Detector, parse_detector
 
-
-@dataclass
-class Scoring:
-    """Class representing Scoring"""
-
-    detectorUuid: str
-    detector: Detector
-
-
 # def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
 #     """Creates list of Scorings from dictionaries"""
 #     scorings = []
@@ -84,8 +75,8 @@ class Quantity:
 
 
 @dataclass
-class Output:
-    """Class representing Output"""
+class Scoring:
+    """Class representing Scorings for Fluka output"""
 
     output_unit: int
     quantities: list[Quantity]
@@ -149,7 +140,7 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
     # Iterate over outputs and create cards for quantities
     # Quantity can use filters (e.g. energy, particle type)
     default_output_unit = 21
-    outputs: list[Output] = []
+    outputs: list[Scoring] = []
     scorings: list[Scoring] = []
     for output in scorings_json['outputs']:
         detector = next(
@@ -177,7 +168,7 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
                          keyword=quantity['keyword'],
                          filter=filter,
                          modifiers=quantity.get('modifiers')))
-        output = Output(default_output_unit, [], parse_detector(output))
+        output = Scoring(default_output_unit, [], parse_detector(output))
         if detector['geometryData']['geometryType'] != 'Mesh':
             continue
 
