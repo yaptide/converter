@@ -53,10 +53,7 @@ def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, c
     output_unit = str(output_unit * -1)
 
     first_card = Card(codewd='USRBIN')
-    first_card.what = [
-        binning_what, quantity_to_score, output_unit, quantity.detector.x_max, quantity.detector.y_max,
-        quantity.detector.z_max
-    ]
+    first_card.what = [binning_what, quantity_to_score, output_unit, detector.x_max, detector.y_max, detector.z_max]
     first_card.sdum = short_name(quantity.name)
     output.append(first_card)
 
@@ -102,7 +99,7 @@ def handle_auxscore_filter(quantity: Quantity, score_index: int, score_card_type
     return f'{auxscore!s}'
 
 
-def parse_filter_value() -> Optional[Union[int, str]]:
+def parse_filter_value(filter: Union[CustomFilter, ParticleFilter]) -> Optional[Union[int, str]]:
     """Parses filter value from filter"""
     if isinstance(filter, ParticleFilter):
         return filter.particle
