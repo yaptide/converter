@@ -1,50 +1,115 @@
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Union
 
 from converter.fluka.cards.card import Card
-from converter.fluka.helper_parsers.scoring_parser import Scoring
+from converter.fluka.helper_parsers.detector_parser import Detector
+from converter.fluka.helper_parsers.scoring_parser import CustomFilter, ParticleFilter, Quantity, Scoring
 
 
-def handle_scoring_cards(default_output_unit, scoring: Scoring) -> Optional[str]:
+@dataclass
+class ScoringCardIndexCounter:
+    """Class representing counter for Fluka scoring cards"""
+
+    usrbin_counter: int = 0
+
+
+def handle_scoring_cards(output_unit: int, scoring: Scoring, counter: ScoringCardIndexCounter) -> str:
     """Creates Scoring cards"""
-    first_card = handle_first_card(scoring, default_output_unit)
-    second_card = handle_second_card(scoring)
-    return first_card, second_card
+    output: list[str] = []
+    for quantity in scoring.quantities:
+        usrbin_card = handle_usrbin_scoring(scoring.detector, quantity, output_unit, counter)
+        output.append(usrbin_card)
+    return '\n'.join(output).strip()
 
 
-def handle_first_card(scoring: Scoring, output_unit: int = 21) -> str:
-    """Creates first Scoring card"""
+def short_name(name: str) -> str:
+    """Creates short name for fluka card"""
+    return f'{name[:10]}'
+
+
+def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, counter: ScoringCardIndexCounter) -> str:
+    """Creates USRBIN card"""
+    output: list[str] = []
     # temporary assumption
     binning_what = '10.0'
     # DOSE according to:
     # https://flukafiles.web.cern.ch/manual/chapters/particle_and_material_codes/particles_codes.html
-    particle_of_scoring = 'DOSE'
+    quantity_to_score = ''
+    try_auxscore = False
+    if quantity.keyword == 'Dose':
+        quantity_to_score = 'DOSE'
+        try_auxscore = True
+    elif quantity.scoring_filter == 'Fluency' and isinstance(quantity.scoring_filter, ParticleFilter):
+        # Apply particle from filter if fluency is used
+        quantity_to_score = quantity.scoring_filter.particle
+    elif quantity.scoring_filter == 'Fluency' and isinstance(quantity.scoring_filter, CustomFilter):
+        quantity_to_score = 'ALL-PART'
+        try_auxscore = True
+
+    if not quantity_to_score:
+        return ''
+
     output_unit = str(output_unit * -1)
 
     first_card = Card(codewd='USRBIN')
     first_card.what = [
-        binning_what, particle_of_scoring, output_unit, scoring.detector.x_max, scoring.detector.y_max,
-        scoring.detector.z_max
+        binning_what, quantity_to_score, output_unit, quantity.detector.x_max, quantity.detector.y_max,
+        quantity.detector.z_max
     ]
-    first_card.sdum = 'changeme'
+    first_card.sdum = short_name(quantity.name)
+    output.append(first_card)
 
-    return first_card.__str__()
-
-
-def handle_second_card(scoring: Scoring) -> str:
-    """Creates second Scoring card"""
     second_card = Card(codewd='USRBIN')
     second_card.what = [
-        scoring.detector.x_min,
-        scoring.detector.y_min,
-        scoring.detector.z_min,
-        scoring.detector.x_bins,
-        scoring.detector.y_bins,
-        scoring.detector.z_bins,
+        detector.x_min,
+        detector.y_min,
+        detector.z_min,
+        detector.x_bins,
+        detector.y_bins,
+        detector.z_bins,
     ]
     second_card.sdum = '&'
+    output.append(second_card)
 
-    return second_card.__str__()
+    counter.usrbin_counter += 1
+    if try_auxscore and quantity.scoring_filter:
+        # Add AUXSCORE card for custom filter
+        auxscore_card = handle_auxscore_filter(quantity, counter.usrbin_counter, 'USRBIN')
+        if auxscore_card:
+            output.append(auxscore_card)
+
+    return f'{first_card!s}\n{second_card!s}'
+
+
+def handle_auxscore_filter(quantity: Quantity, score_index: int, score_card_type: str = 'USRBIN') -> str:
+    """Creates AUXSCORE card for previously created card"""
+
+    filter_value: Optional[Union[int, str]] = parse_filter_value(quantity.scoring_filter)
+    if filter_value is None:
+        return ''
+    auxscore = Card(codewd='AUXSCORE')
+    auxscore.what = [
+        score_card_type,
+        filter_value,
+        '',
+        score_index,
+        score_index,
+        1,
+    ]
+    auxscore.sdum = ''
+
+    return f'{auxscore!s}'
+
+
+def parse_filter_value() -> Optional[Union[int, str]]:
+    """Parses filter value from filter"""
+    if isinstance(filter, ParticleFilter):
+        return filter.particle
+    elif isinstance(filter, CustomFilter):
+        filter: CustomFilter
+        return -(filter.z * 100 + filter.a * 100000)
+
+    return None
 
 
 @dataclass
@@ -61,8 +126,9 @@ class ScoringsCard:
         result: list[str] = []
 
         default_output_unit = 21
+        counter = ScoringCardIndexCounter()
         for scoring in self.data:
-            scoring_cards = handle_scoring_cards(default_output_unit, scoring)
+            scoring_cards = handle_scoring_cards(default_output_unit, scoring, counter)
             if scoring_cards:
                 result.append(scoring_cards)
             default_output_unit += 1
