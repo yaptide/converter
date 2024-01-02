@@ -10,8 +10,6 @@ class Scoring:
 
     detectorUuid: str
     detector: Detector
-    name: str = ''
-    quantity: str = 'DOSE'
 
 
 # def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
@@ -60,6 +58,8 @@ __supported_filter_keywords = 'A', 'Z'
 
 
 class CustomFilter:
+    """Class representing CustomFilter"""
+
     name: str
     a: int
     z: int
@@ -67,20 +67,26 @@ class CustomFilter:
 
 @dataclass
 class ParticleFilter:
+    """Class representing ParticleFilter"""
+
     name: str
     particle: str
 
 
 @dataclass
 class Quantity:
+    """Class representing Quantity"""
+
     name: str
-    keyword: Optional[str]
     filter: Optional[Union[CustomFilter, ParticleFilter]]
     modifiers: list[any]  # unused
+    keyword: str = 'DOSE'
 
 
 @dataclass
 class Output:
+    """Class representing Output"""
+
     output_unit: int
     quantities: list[Quantity]
     detector: Detector
