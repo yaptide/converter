@@ -81,7 +81,6 @@ def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, c
 
 def handle_auxscore_filter(quantity: Quantity, score_index: int, score_card_type: str = 'USRBIN') -> str:
     """Creates AUXSCORE card for previously created card"""
-
     filter_value: Optional[Union[int, str]] = parse_filter_value(quantity.scoring_filter)
     if filter_value is None:
         return ''
@@ -99,13 +98,13 @@ def handle_auxscore_filter(quantity: Quantity, score_index: int, score_card_type
     return f'{auxscore!s}'
 
 
-def parse_filter_value(filter: Union[CustomFilter, ParticleFilter]) -> Optional[Union[int, str]]:
+def parse_filter_value(scoring_filter: Union[CustomFilter, ParticleFilter]) -> Optional[Union[int, str]]:
     """Parses filter value from filter"""
-    if isinstance(filter, ParticleFilter):
-        return filter.particle
-    elif isinstance(filter, CustomFilter):
-        filter: CustomFilter
-        return -(filter.z * 100 + filter.a * 100000)
+    if isinstance(scoring_filter, ParticleFilter):
+        return scoring_filter.particle
+    if isinstance(scoring_filter, CustomFilter):
+        scoring_filter: CustomFilter
+        return -(scoring_filter.z * 100 + scoring_filter.a * 100000)
 
     return None
 

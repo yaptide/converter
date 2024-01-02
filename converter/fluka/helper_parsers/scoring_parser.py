@@ -81,19 +81,19 @@ def get_custom_filter(filter_dict: dict) -> list[CustomFilter]:
     """
     if not filter_dict.get('rules'):
         return None
-    else:
-        a = 0
-        z = 0
-        for rule in filter_dict['rules']:
-            if rule['keyword'] not in __supported_filter_keywords:
-                return None
-            if rule['operator'] != '==':
-                return None
-            if rule['keyword'] == 'A':
-                a = rule['value']
-            elif rule['keyword'] == 'Z':
-                z = rule['value']
-        return CustomFilter(name=filter_dict['name'], a=a, z=z)
+
+    a = 0
+    z = 0
+    for rule in filter_dict['rules']:
+        if rule['keyword'] not in __supported_filter_keywords:
+            return None
+        if rule['operator'] != '==':
+            return None
+        if rule['keyword'] == 'A':
+            a = rule['value']
+        elif rule['keyword'] == 'Z':
+            z = rule['value']
+    return CustomFilter(name=filter_dict['name'], a=a, z=z)
 
 
 def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter]]:
@@ -103,8 +103,7 @@ def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter
     """
     if filter_dict.get('particle'):
         return get_particle_filter(filter_dict)
-    else:
-        return get_custom_filter(filter_dict)
+    return get_custom_filter(filter_dict)
 
 
 def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
