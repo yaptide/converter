@@ -37,7 +37,18 @@ class UsrbinCartesianScoring(Scoring):
         # Probably we should add some kind of mapping here or when creating cards
         particle_of_scoring = self.quantity
         output_unit = str(self.output_unit * -1)
-        if isinstance(self.detector, MeshDetector):
+
+        if isinstance(self.detector, CylinderDetector):
+            what = [
+                '11.0',
+                particle_of_scoring,
+                output_unit,
+                self.detector.r_max,
+                self.detector.y,
+                self.detector.z_max
+            ]
+
+        else:
             what = [
                 '10.0',
                 particle_of_scoring,
@@ -46,15 +57,7 @@ class UsrbinCartesianScoring(Scoring):
                 self.detector.y_max,
                 self.detector.z_max
             ]
-        elif isinstance(self.detector, CylinderDetector):
-            what = [
-                '10.0',
-                particle_of_scoring,
-                output_unit,
-                self.detector.r_max,
-                self.detector.y,
-                self.detector.z_max
-            ]
+
 
         return Card(codewd='USRBIN', what=what, sdum='changeme')
 
@@ -66,7 +69,7 @@ class UsrbinCartesianScoring(Scoring):
                 self.detector.r_min,
                 self.detector.x,
                 self.detector.z_min,
-                self.detector.r_min,
+                self.detector.r_bins,
                 self.detector.phi_bins,
                 self.detector.z_bins,
             ]

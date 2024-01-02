@@ -48,6 +48,17 @@ def expected_scores_2() -> str:
     return ''.join(f'{line}\n' for line in lines)
 
 
+@pytest.fixture(scope='module')
+def expected_scores_cylinder() -> str:
+    """Returns expected Fluka scoring card sets"""
+    lines = [
+        'USRBIN          11.0      DOSE     -21.0       1.0       0.0      10.0changeme',
+        'USRBIN           0.0       0.0      -2.0       1.0       1.0     120.0&',
+    ]
+
+    return ''.join(f'{line}\n' for line in lines)
+
+
 def test_scoring_card(detectors_json: dict, scorings_json: dict, expected_scores: str) -> None:
     scorings = parse_scorings(detectors_json, scorings_json)
     scorings_card = ScoringsCard(scorings)
@@ -59,4 +70,4 @@ def test_scoring_card_multiple_scorings(detectors_json_2: dict, scorings_json_2:
     scorings = parse_scorings(detectors_json_2, scorings_json_2)
     scorings_card = ScoringsCard(scorings)
 
-    assert str(scorings_card) == expected_scores_2
+    assert str(scorings_card) == expected_scores_cylinder
