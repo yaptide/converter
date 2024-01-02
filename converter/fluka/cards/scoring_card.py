@@ -39,12 +39,13 @@ def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, c
     if quantity.keyword == 'Dose':
         quantity_to_score = 'DOSE'
         try_auxscore = True
-    elif quantity.scoring_filter == 'Fluency' and isinstance(quantity.scoring_filter, ParticleFilter):
-        # Apply particle from filter if fluency is used
-        quantity_to_score = quantity.scoring_filter.particle
-    elif quantity.scoring_filter == 'Fluency' and isinstance(quantity.scoring_filter, CustomFilter):
-        quantity_to_score = 'ALL-PART'
-        try_auxscore = True
+    elif quantity.keyword == 'Fluence':
+        if isinstance(quantity.scoring_filter, ParticleFilter):
+            # Apply particle from filter if fluency is used
+            quantity_to_score = quantity.scoring_filter.particle
+        elif quantity.keyword == 'Fluence' and isinstance(quantity.scoring_filter, CustomFilter):
+            quantity_to_score = 'ALL-PART'
+            try_auxscore = True
 
     if not quantity_to_score:
         return ''
