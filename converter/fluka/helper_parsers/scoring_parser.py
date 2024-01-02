@@ -26,6 +26,7 @@ _particle_mappings = map[str, str] = {
 __supported_filter_keywords = 'A', 'Z'
 
 
+@dataclass
 class CustomFilter:
     """Class representing CustomFilter"""
 
