@@ -70,4 +70,4 @@ def test_scoring_card_multiple_scorings(detectors_json_2: dict, scorings_json_2:
     scorings = parse_scorings(detectors_json_2, scorings_json_2)
     scorings_card = ScoringsCard(scorings)
 
-    assert str(scorings_card) == expected_scores_cylinder
+    assert str(scorings_card) == expected_scores_2
