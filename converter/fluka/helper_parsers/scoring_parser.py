@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 from converter.fluka.helper_parsers.detector_parser import Detector, parse_detector
 
-_particle_mappings = map[str, str] = {
+_particle_mappings: map[str, str] = {
     'Neutron': 'NEUTRON',
     'Proton': 'PROTON',
     'Pion π-': 'PION-',
@@ -23,7 +23,7 @@ _particle_mappings = map[str, str] = {
     'Heavy ions': 'HEAVYION',
 }
 
-__supported_filter_keywords = 'A', 'Z'
+__supported_filter_keywords = ('A', 'Z')
 
 
 @dataclass
