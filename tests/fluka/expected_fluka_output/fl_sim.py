@@ -74,6 +74,7 @@ ASSIGNMA    BLCKHOLE  boundary
 * generated scoring cards
 USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
 USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
+AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
 * scoring NEUTRON on mesh z
 USRBIN           0.0   NEUTRON       -21       0.5       0.5       5.0n_z
 USRBIN          -0.5      -0.5       0.0         1         1       500&

@@ -29,7 +29,7 @@ def short_name(name: str) -> str:
 
 def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, counter: ScoringCardIndexCounter) -> str:
     """Creates USRBIN card"""
-    output: list[str] = []
+    output: list[Card] = []
     # temporary assumption
     binning_what = '10.0'
     # DOSE according to:
@@ -76,7 +76,7 @@ def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, c
         if auxscore_card:
             output.append(auxscore_card)
 
-    return f'{first_card!s}\n{second_card!s}'
+    return '\n'.join([f'{card!s}' for card in output])
 
 
 def handle_auxscore_filter(quantity: Quantity, score_index: int, score_card_type: str = 'USRBIN') -> str:
