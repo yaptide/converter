@@ -24,7 +24,7 @@ def handle_scoring_cards(output_unit: int, scoring: Scoring, counter: ScoringCar
 
 def short_name(name: str) -> str:
     """Creates short name for fluka card"""
-    return f'{name[:10]}'
+    return name[:10]
 
 
 def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, counter: ScoringCardIndexCounter) -> str:
