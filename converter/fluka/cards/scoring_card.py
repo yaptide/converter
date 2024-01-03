@@ -50,10 +50,12 @@ def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, c
     if not quantity_to_score:
         return ''
 
-    output_unit = str(output_unit * -1)
+    output_unit_in_fluka_convention = str(output_unit * -1)
 
     first_card = Card(codewd='USRBIN')
-    first_card.what = [binning_what, quantity_to_score, output_unit, detector.x_max, detector.y_max, detector.z_max]
+    first_card.what = [
+        binning_what, quantity_to_score, output_unit_in_fluka_convention, detector.x_max, detector.y_max, detector.z_max
+    ]
     first_card.sdum = short_name(quantity.name)
     output.append(first_card)
 
@@ -104,6 +106,9 @@ def parse_filter_value(scoring_filter: Union[CustomFilter, ParticleFilter]) -> O
         return scoring_filter.particle
     if isinstance(scoring_filter, CustomFilter):
         scoring_filter: CustomFilter
+        # According to: https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/auxscore.html#auxscore
+        # We are using -(Z*100 + A*100000) for custom filters to define filter
+        # for particles with atomic number equal to Z and mass number equal to A
         return -(scoring_filter.z * 100 + scoring_filter.a * 100000)
 
     return None

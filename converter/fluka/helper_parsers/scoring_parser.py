@@ -74,10 +74,10 @@ def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
     return ParticleFilter(name=particle['name'], particle=_particle_mappings[particle['name']])
 
 
-def get_custom_filter(filter_dict: dict) -> list[CustomFilter]:
+def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:
     """Creates CustomFilter from dictionary.
 
-    Returns None if filter cannot be created for Fluka.
+    Returns empty list if filter cannot be created for Fluka.
     """
     if not filter_dict.get('rules'):
         return None
