@@ -87,7 +87,7 @@ def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:
     for rule in filter_dict['rules']:
         if rule['keyword'] not in __supported_filter_keywords:
             return None
-        if rule['operator'] != '==':
+        if rule['operator'] != 'equal':
             return None
         if rule['keyword'] == 'A':
             a = rule['value']
