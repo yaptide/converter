@@ -49,7 +49,7 @@ def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, c
                 try_auxscore = True
 
     if not quantity_to_score:
-        return ''
+        return f'* unable to create USRBIN card for {quantity.name[:20]}'
 
     output_unit_in_fluka_convention = str(output_unit * -1)
 
