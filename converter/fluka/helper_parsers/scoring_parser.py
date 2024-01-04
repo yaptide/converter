@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import Union
 
 from converter.fluka.cards.card import Card
-from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector
+from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector, \
+    parse_cylinder_detector
 
 
 @dataclass
@@ -91,12 +92,21 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
         detector_dict = next(
             (detector for detector in detectors_json['detectors'] if detector['uuid'] == scoring['detectorUuid']), None)
 
-        if detector_dict and detector_dict['geometryData']['geometryType'] == 'Mesh':
-            scorings.append(
-                UsrbinCartesianScoring(detectorUuid=scoring['detectorUuid'],
-                                       output_unit=21,
-                                       quantity='DOSE',
-                                       name=scoring['name'],
-                                       detector=parse_mesh_detector(detector_dict)))
+        if detector_dict:
+            if detector_dict['geometryData']['geometryType'] == 'Mesh':
+                scorings.append(
+                    UsrbinCartesianScoring(detectorUuid=scoring['detectorUuid'],
+                                           output_unit=21,
+                                           quantity='DOSE',
+                                           name=scoring['name'],
+                                           detector=parse_mesh_detector(detector_dict)))
+
+            elif detector_dict['geometryData']['geometryType'] == 'Cyl':
+                scorings.append(
+                    UsrbinCartesianScoring(detectorUuid=scoring['detectorUuid'],
+                                           output_unit=21,
+                                           quantity='DOSE',
+                                           name=scoring['name'],
+                                           detector=parse_cylinder_detector(detector_dict)))
 
     return scorings

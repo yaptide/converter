@@ -25,6 +25,16 @@ def detectors_json_2(project2_fluka_json: dict) -> dict:
 
 
 @pytest.fixture(scope='module')
+def scorings_json_3(project3_fluka_json: dict) -> dict:
+    return project3_fluka_json['scoringManager']
+
+
+@pytest.fixture(scope='module')
+def detectors_json_3(project3_fluka_json: dict) -> dict:
+    return project3_fluka_json['detectorManager']
+
+
+@pytest.fixture(scope='module')
 def expected_scores() -> str:
     """Returns expected Fluka scoring card sets"""
     lines = [
@@ -52,8 +62,8 @@ def expected_scores_2() -> str:
 def expected_scores_cylinder() -> str:
     """Returns expected Fluka scoring card sets"""
     lines = [
-        'USRBIN          11.0      DOSE     -21.0       1.0       0.0      10.0changeme',
-        'USRBIN           0.0       0.0      -2.0       1.0       1.0     120.0&',
+        'USRBIN          11.0      DOSE     -21.0       3.0       0.0      21.0changeme',
+        'USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&',
     ]
 
     return ''.join(f'{line}\n' for line in lines)
@@ -71,3 +81,10 @@ def test_scoring_card_multiple_scorings(detectors_json_2: dict, scorings_json_2:
     scorings_card = ScoringsCard(scorings)
 
     assert str(scorings_card) == expected_scores_2
+
+
+def test_scoring_cylinder_detector(detectors_json_3: dict, scorings_json_3: dict, expected_scores_cylinder: str) -> None:
+    scorings = parse_scorings(detectors_json_3, scorings_json_3)
+    scorings_card = ScoringsCard(scorings)
+
+    assert str(scorings_card) == expected_scores_cylinder
