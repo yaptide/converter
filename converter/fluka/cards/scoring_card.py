@@ -43,9 +43,10 @@ def handle_usrbin_scoring(detector: Detector, quantity: Quantity, output_unit, c
         if isinstance(quantity.scoring_filter, ParticleFilter):
             # Apply particle from filter if fluency is used
             quantity_to_score = quantity.scoring_filter.particle
-        elif quantity.keyword == 'Fluence' and isinstance(quantity.scoring_filter, CustomFilter):
+        else:
             quantity_to_score = 'ALL-PART'
-            try_auxscore = True
+            if isinstance(quantity.scoring_filter, CustomFilter):
+                try_auxscore = True
 
     if not quantity_to_score:
         return ''
