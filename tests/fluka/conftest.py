@@ -2,6 +2,7 @@ import json
 import pytest
 from pathlib import Path
 
+
 @pytest.fixture(scope='session')
 def project_fluka_path() -> Path:
     """Path to SHIELD-HIT12A project.json file"""
@@ -38,4 +39,17 @@ def project3_fluka_path() -> Path:
 def project3_fluka_json(project3_fluka_path) -> dict:
     """Dictionary with project data for Fluka"""
     with open(project3_fluka_path, 'r') as file_handle:
+        return json.load(file_handle)
+
+
+@pytest.fixture(scope='session')
+def project4_fluka_path() -> Path:
+    """Path to Fluka project.json file"""
+    return Path(__file__).parent / 'project4.json'
+
+
+@pytest.fixture(scope='session')
+def project4_fluka_json(project4_fluka_path) -> dict:
+    """Dictionary with project data for Fluka"""
+    with open(project4_fluka_path, 'r') as file_handle:
         return json.load(file_handle)
