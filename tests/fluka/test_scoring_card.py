@@ -52,6 +52,18 @@ def expected_scores() -> str:
 USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
 USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
 AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
+"""
+
+    return lines.strip()
+
+
+@pytest.fixture(scope='module')
+def expected_scores_2() -> str:
+    """Returns expected Fluka scoring card sets"""
+    lines = """
+USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
+USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
+AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
 USRBIN          10.0      DOSE     -22.0      12.5      25.0      37.5MyDose
 USRBIN           7.5      15.0      22.5      10.0     100.0     150.0&
 AUXSCORE      USRBIN   NEUTRON                 2.0       2.0       1.0
@@ -61,27 +73,14 @@ AUXSCORE      USRBIN   NEUTRON                 2.0       2.0       1.0
 
 
 @pytest.fixture(scope='module')
-def expected_scores_2() -> str:
-    """Returns expected Fluka scoring card sets"""
-    lines = [
-        'USRBIN          10.0      DOSE     -21.0      0.05       5.0       6.0changeme',
-        'USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&',
-        'USRBIN          10.0      DOSE     -22.0      12.5      25.0      37.5changeme',
-        'USRBIN           7.5      15.0      22.5      10.0     100.0     150.0&',
-    ]
-
-    return ''.join(f'{line}\n' for line in lines)
-
-
-@pytest.fixture(scope='module')
 def expected_scores_cylinder() -> str:
     """Returns expected Fluka scoring card sets"""
-    lines = [
-        'USRBIN          11.0      DOSE     -21.0       3.0       0.0      21.0changeme',
-        'USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&',
-    ]
+    lines = """
+USRBIN          11.0      DOSE     -21.0       3.0       0.0      21.0Dose1
+USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
+"""
 
-    return ''.join(f'{line}\n' for line in lines)
+    return lines.strip()
 
 
 def test_scoring_card(detectors_json: dict, scorings_json: dict, expected_scores: str) -> None:
@@ -98,7 +97,8 @@ def test_scoring_card_multiple_scorings(detectors_json_2: dict, scorings_json_2:
     assert str(scorings_card) == expected_scores_2
 
 
-def test_scoring_cylinder_detector(detectors_json_3: dict, scorings_json_3: dict, expected_scores_cylinder: str) -> None:
+def test_scoring_cylinder_detector(detectors_json_3: dict, scorings_json_3: dict,
+                                   expected_scores_cylinder: str) -> None:
     scorings = parse_scorings(detectors_json_3, scorings_json_3)
     scorings_card = ScoringsCard(scorings)
 
