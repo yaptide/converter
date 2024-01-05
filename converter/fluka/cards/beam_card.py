@@ -41,7 +41,7 @@ class BeamCard:
         beam_card.sdum = self.data.particle_name
         if self.data.particle_name == "HEAVYION":
             hi_card = Card(codewd="HI-PROPE")
-            hi_card.what = [self.data.heavy_ion_a, self.data.heavy_ion_z, 0, 0, 0, 0]
+            hi_card.what = [self.data.heavy_ion_z, self.data.heavy_ion_a, 0, 0, 0, 0]
 
         beamposition_card = Card(codewd="BEAMPOS")
 
