@@ -410,11 +410,11 @@
 				"quantities": [
 					{
 						"uuid": "ffdd2acd-72ab-4768-ac26-8899a99b10e8",
-						"name": "Fluence",
+						"name": "MyDose",
 						"type": "Quantity",
 						"visible": true,
-						"filter": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7a",
-						"keyword": "Fluence",
+						"filter": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7b",
+						"keyword": "Dose",
 						"modifiers": []
 					}],
 				"detectorUuid": "76b642bf-9304-4b13-bcfc-5c21ff1d26a5",
@@ -430,7 +430,7 @@
 						"name": "Fluence",
 						"type": "Quantity",
 						"visible": true,
-						"filter": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7a",
+						"filter": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7b",
 						"keyword": "Fluence",
 						"modifiers": []
 					}],
@@ -456,6 +456,15 @@
 						"operator": "==",
 						"value": 1
 					}]
+			},
+			{
+				"uuid": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7b",
+				"name": "FilterNeutrons",
+				"type": "Filter",
+				"particle": {
+					"id": 1,
+					"name": "Neutron"
+				}
 			}],
 		"metadata": {
 			"version": "0.11",
