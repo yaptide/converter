@@ -29,6 +29,17 @@ def scorings_json_3(project3_fluka_json: dict) -> dict:
     return project3_fluka_json['scoringManager']
 
 
+def expected_card() -> str:
+    """Returns expected Fluka scoring card sets"""
+    lines = """
+USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
+USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
+AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
+"""
+
+    return lines.strip()
+
+
 @pytest.fixture(scope='module')
 def detectors_json_3(project3_fluka_json: dict) -> dict:
     return project3_fluka_json['detectorManager']
@@ -37,12 +48,16 @@ def detectors_json_3(project3_fluka_json: dict) -> dict:
 @pytest.fixture(scope='module')
 def expected_scores() -> str:
     """Returns expected Fluka scoring card sets"""
-    lines = [
-        'USRBIN          10.0      DOSE     -21.0      0.05       5.0       6.0changeme',
-        'USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&'
-    ]
+    lines = """
+USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
+USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
+AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
+USRBIN          10.0      DOSE     -22.0      12.5      25.0      37.5MyDose
+USRBIN           7.5      15.0      22.5      10.0     100.0     150.0&
+AUXSCORE      USRBIN   NEUTRON                 2.0       2.0       1.0
+"""
 
-    return ''.join(f'{line}\n' for line in lines)
+    return lines.strip()
 
 
 @pytest.fixture(scope='module')
