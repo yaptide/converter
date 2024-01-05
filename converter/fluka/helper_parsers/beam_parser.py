@@ -117,7 +117,12 @@ particle_dict = {
 
 
 def convert_energy(beam_json: dict) -> float:
-    """Convert energy from MeV/nucl to MeV."""
+    """
+    Extract energy from beam JSON and provide it in Fluka convention.
+    For particles other than HEAVYIONS (i.e. protons, alpha particles, neutrons, electrons) MeV unit is used.
+    For HEAVYIONS (i.e. nuclei heavier than helium, defined by A and Z numbers) MeV/u is used.
+    Note than MeV/u (atomic mass unit) is not the same as MeV/nucl (number of nucleons)
+    """
     energy = beam_json['energy']
     particle = particle_dict[beam_json['particle']['id']]
     # According to:
