@@ -118,7 +118,7 @@ def parse_materials(materials_json, zones_json: dict) -> (dict[str, FlukaMateria
         # define new material
         elif icru in predefined_materials:
             predefined_material = predefined_materials[icru]
-            if density != predefined_material.density:
+            if density != predefined_material.icru:
                 new_material = FlukaMaterial(
                     fluka_name=f"MAT{material_index:0>5}",
                     Z=icru,
