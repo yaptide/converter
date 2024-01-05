@@ -12,12 +12,12 @@ class BeamShape(Enum):
 
     def __str__(self):
         if self == BeamShape.GAUSSIAN:
-            return "gaussian"
+            return 'gaussian'
         if self == BeamShape.SQUARE:
-            return "flat square"
+            return 'flat square'
         if self == BeamShape.CIRCULAR:
-            return "flat circular"
-        return ""
+            return 'flat circular'
+        return ''
 
 
 @dataclass(frozen=False)
@@ -31,62 +31,121 @@ class FlukaBeam:
     shape: BeamShape = BeamShape.GAUSSIAN
     shape_x: float = 0
     shape_y: float = 0
-    particle_name: str = "PROTON"
+    particle_name: str = 'PROTON'
     heavy_ion_a: int = 1
     heavy_ion_z: int = 1
 
 
 particle_dict = {
-    1: {"name": "NEUTRON", "a": 1},
-    2: {"name": "PROTON", "a": 1},
-    3: {"name": "PION-", "a": 1},
-    4: {"name": "PION+", "a": 1},
-    5: {"name": "PIZERO", "a": 1},
-    6: {"name": "ANEUTRON", "a": 1},
-    7: {"name": "APROTON", "a": 1},
-    8: {"name": "KAON-", "a": 1},
-    9: {"name": "KAON+", "a": 1},
-    10: {"name": "KAONZERO", "a": 1},
-    11: {"name": "KAONLONG", "a": 1},
-    12: {"name": "PHOTON", "a": 1},
-    15: {"name": "MUON-", "a": 1},
-    16: {"name": "MUON+", "a": 1},
-    21: {"name": "DEUTERON", "a": 2},
-    22: {"name": "TRITON", "a": 3},
-    23: {"name": "3-HELIUM", "a": 3},
-    24: {"name": "4-HELIUM", "a": 4},
-    25: {"name": "HEAVYION", "a": 1}
+    1: {
+        'name': 'NEUTRON',
+        'a': 1
+    },
+    2: {
+        'name': 'PROTON',
+        'a': 1
+    },
+    3: {
+        'name': 'PION-',
+        'a': 1
+    },
+    4: {
+        'name': 'PION+',
+        'a': 1
+    },
+    5: {
+        'name': 'PIZERO',
+        'a': 1
+    },
+    6: {
+        'name': 'ANEUTRON',
+        'a': 1
+    },
+    7: {
+        'name': 'APROTON',
+        'a': 1
+    },
+    8: {
+        'name': 'KAON-',
+        'a': 1
+    },
+    9: {
+        'name': 'KAON+',
+        'a': 1
+    },
+    10: {
+        'name': 'KAONZERO',
+        'a': 1
+    },
+    11: {
+        'name': 'KAONLONG',
+        'a': 1
+    },
+    12: {
+        'name': 'PHOTON',
+        'a': 1
+    },
+    15: {
+        'name': 'MUON-',
+        'a': 1
+    },
+    16: {
+        'name': 'MUON+',
+        'a': 1
+    },
+    21: {
+        'name': 'DEUTERON',
+        'a': 2
+    },
+    22: {
+        'name': 'TRITON',
+        'a': 3
+    },
+    23: {
+        'name': '3-HELIUM',
+        'a': 3
+    },
+    24: {
+        'name': '4-HELIUM',
+        'a': 4
+    },
+    25: {
+        'name': 'HEAVYION',
+        'a': 1
+    }
 }
 
 
 def convert_energy(beam_json: dict) -> float:
     """Convert energy from MeV/nucl to MeV."""
-    energy = beam_json["energy"]
-    particle = particle_dict[beam_json["particle"]["id"]]
-    if particle["name"] == "HEAVYION":
-        return energy * beam_json["particle"]["a"]
-    return energy * particle["a"]
+    energy = beam_json['energy']
+    particle = particle_dict[beam_json['particle']['id']]
+    # According to:
+    # https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam
+    if particle['name'] == 'HEAVYION':
+        return energy
+    return energy * particle['a']
 
 
 def parse_particle_name(particle_json: dict):
     """Parse particle ID to FLUKA particle name."""
-    particle_id = particle_json["id"]
+    particle_id = particle_json['id']
     if particle_id in particle_dict:
         particle = particle_dict[particle_id]
-        return particle["name"]
-    raise ValueError("Particle ID not supported by FLUKA")
+        return particle['name']
+    raise ValueError('Particle ID not supported by FLUKA')
 
 
 def parse_shape_params(shape_params_json: dict) -> tuple[BeamShape, float, float]:
     """Parse shape params from JSON to FLUKA shape params."""
-    shape = shape_params_json["type"]
-    if shape == "Flat circular":
-        return BeamShape.CIRCULAR, shape_params_json["x"], shape_params_json["y"]
-    if shape == "Flat square":
-        return BeamShape.SQUARE, shape_params_json["x"], shape_params_json["y"]
-    if shape == "Gaussian":
-        return BeamShape.GAUSSIAN, shape_params_json["x"], shape_params_json["y"]
-    raise ValueError("Shape type not supported by FLUKA")
+    shape = shape_params_json['type']
+    if shape == 'Flat circular':
+        return BeamShape.CIRCULAR, shape_params_json['x'], shape_params_json['y']
+    if shape == 'Flat square':
+        return BeamShape.SQUARE, shape_params_json['x'], shape_params_json['y']
+    if shape == 'Gaussian':
+        return BeamShape.GAUSSIAN, shape_params_json['x'], shape_params_json['y']
+    raise ValueError('Shape type not supported by FLUKA')
 
 
 def cartesian_to_spherical(coords: tuple[float, float, float]):
@@ -95,10 +154,10 @@ def cartesian_to_spherical(coords: tuple[float, float, float]):
     and return cosines of angles respective to x and y axes
     """
     x, y, z = coords
-    theta = pi/2
+    theta = pi / 2
     if x != 0:
-        theta = atan(z/x)
-    phi = pi/2
+        theta = atan(z / x)
+    phi = pi / 2
     if y != 0:
         phi = atan((x**2 + z**2)**0.5 / y)
     return cos(theta), cos(phi)
@@ -108,17 +167,17 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""
     fluka_beam = FlukaBeam()
     fluka_beam.energy_MeV = convert_energy(beam_json)
-    fluka_beam.particle_name = parse_particle_name(beam_json["particle"])
-    if fluka_beam.particle_name == "HEAVYION":
-        fluka_beam.heavy_ion_a = beam_json["particle"]["a"]
-        fluka_beam.heavy_ion_z = beam_json["particle"]["z"]
-    fluka_beam.beam_pos = tuple(beam_json["position"])
-    shape, shape_x, shape_y = parse_shape_params(beam_json["sigma"])
+    fluka_beam.particle_name = parse_particle_name(beam_json['particle'])
+    if fluka_beam.particle_name == 'HEAVYION':
+        fluka_beam.heavy_ion_a = beam_json['particle']['a']
+        fluka_beam.heavy_ion_z = beam_json['particle']['z']
+    fluka_beam.beam_pos = tuple(beam_json['position'])
+    shape, shape_x, shape_y = parse_shape_params(beam_json['sigma'])
     fluka_beam.shape = shape
     fluka_beam.shape_x = shape_x
     fluka_beam.shape_y = shape_y
-    theta, phi = cartesian_to_spherical(beam_json["direction"])
+    theta, phi = cartesian_to_spherical(beam_json['direction'])
     fluka_beam.beam_dir = (theta, phi)
-    if beam_json["direction"][2] < 0:
+    if beam_json['direction'][2] < 0:
         fluka_beam.z_negative = True
     return fluka_beam
