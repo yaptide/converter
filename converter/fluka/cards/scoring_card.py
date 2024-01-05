@@ -5,8 +5,8 @@ from converter.fluka.cards.card import Card
 from converter.fluka.helper_parsers.detector_parser import CylinderDetector, MeshDetector
 from converter.fluka.helper_parsers.scoring_parser import CustomFilter, ParticleFilter, Quantity, Scoring
 
+_DetectorType = type(Union[MeshDetector, CylinderDetector])
 
-_DetectorType = type(Union[MeshDetector, CylinderDetector]) 
 
 @dataclass
 class ScoringCardIndexCounter:
@@ -29,7 +29,8 @@ def short_name(name: str) -> str:
     return name[:10]
 
 
-def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_unit, counter: ScoringCardIndexCounter) -> str:
+def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_unit,
+                          counter: ScoringCardIndexCounter) -> str:
     """Creates USRBIN card"""
     output: list[Card] = []
     # temporary assumption
@@ -70,11 +71,13 @@ def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_un
 def parse_detector(detector, quantity, binning_what, quantity_to_score, output_unit_in_fluka_convention) -> list[Card]:
     """Creates USRBIN card"""
     if isinstance(detector, CylinderDetector):
-        return _parse_cylinder_detector(detector, quantity, binning_what, quantity_to_score, output_unit_in_fluka_convention)
+        return _parse_cylinder_detector(detector, quantity, binning_what, quantity_to_score,
+                                        output_unit_in_fluka_convention)
     return _parse_mesh_detector(detector, quantity, binning_what, quantity_to_score, output_unit_in_fluka_convention)
 
 
-def _parse_mesh_detector(detector: MeshDetector, quantity: Quantity, binning_what: str, quantity_to_score: str, output_unit_in_fluka_convention: str) -> list[Card]:
+def _parse_mesh_detector(detector: MeshDetector, quantity: Quantity, binning_what: str, quantity_to_score: str,
+                         output_unit_in_fluka_convention: str) -> list[Card]:
     """Creates USRBIN card for mesh detector"""
     first_card = Card(codewd='USRBIN')
     first_card.what = [
@@ -96,16 +99,12 @@ def _parse_mesh_detector(detector: MeshDetector, quantity: Quantity, binning_wha
     return [first_card, second_card]
 
 
-def _parse_cylinder_detector(detector: CylinderDetector, quantity: Quantity, binning_what: str, quantity_to_score: str, output_unit_in_fluka_convention: str) -> list[Card]:
+def _parse_cylinder_detector(detector: CylinderDetector, quantity: Quantity, binning_what: str, quantity_to_score: str,
+                             output_unit_in_fluka_convention: str) -> list[Card]:
     """Creates USRBIN card for cylinder detector"""
     first_card = Card(codewd='USRBIN')
     first_card.what = [
-        '11.0',
-        quantity_to_score,
-        output_unit_in_fluka_convention,
-        detector.r_max,
-        detector.y,
-        detector.z_max
+        '11.0', quantity_to_score, output_unit_in_fluka_convention, detector.r_max, detector.y, detector.z_max
     ]
     first_card.sdum = short_name(quantity.name)
 
