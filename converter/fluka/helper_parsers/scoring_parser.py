@@ -21,8 +21,8 @@ class Scoring:
 
 
 @dataclass
-class UsrbinCartesianScoring(Scoring):
-    """Class representing USRBIN Cartesian Scoring in Fluka"""
+class UsrbinScoring(Scoring):
+    """Class representing USRBIN Scoring in Fluka"""
 
     detector: Union[MeshDetector, CylinderDetector]
 
@@ -95,18 +95,18 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
         if detector_dict:
             if detector_dict['geometryData']['geometryType'] == 'Mesh':
                 scorings.append(
-                    UsrbinCartesianScoring(detectorUuid=scoring['detectorUuid'],
-                                           output_unit=21,
-                                           quantity='DOSE',
-                                           name=scoring['name'],
-                                           detector=parse_mesh_detector(detector_dict)))
+                    UsrbinScoring(detectorUuid=scoring['detectorUuid'],
+                                  output_unit=21,
+                                  quantity='DOSE',
+                                  name=scoring['name'],
+                                  detector=parse_mesh_detector(detector_dict)))
 
             elif detector_dict['geometryData']['geometryType'] == 'Cyl':
                 scorings.append(
-                    UsrbinCartesianScoring(detectorUuid=scoring['detectorUuid'],
-                                           output_unit=21,
-                                           quantity='DOSE',
-                                           name=scoring['name'],
-                                           detector=parse_cylinder_detector(detector_dict)))
+                    UsrbinScoring(detectorUuid=scoring['detectorUuid'],
+                                  output_unit=21,
+                                  quantity='DOSE',
+                                  name=scoring['name'],
+                                  detector=parse_cylinder_detector(detector_dict)))
 
     return scorings
