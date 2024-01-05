@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, Union
 
-from converter.fluka.cards.card import Card
 from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector, \
     parse_cylinder_detector
 from converter.fluka.helper_parsers.beam_parser import particle_dict
@@ -91,7 +90,6 @@ def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter
 
 def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
     """Creates list of Scorings from dictionaries"""
-
     filters: dict[str, Union[ParticleFilter, CustomFilter]] = {}
     for filter_dict in scorings_json['filters']:
         # Check if supported filter, ignore otherwise
@@ -137,7 +135,7 @@ def parse_detector(detector_dict: dict) -> Optional[Union[MeshDetector, Cylinder
     """Creates Detector from dictionary"""
     if detector_dict['geometryData']['geometryType'] == 'Mesh':
         return parse_mesh_detector(detector_dict)
-    elif detector_dict['geometryData']['geometryType'] == 'Cyl':
+    if detector_dict['geometryData']['geometryType'] == 'Cyl':
         return parse_cylinder_detector(detector_dict)
 
     return None
