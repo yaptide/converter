@@ -122,8 +122,6 @@ def convert_energy(beam_json: dict) -> float:
     particle = particle_dict[beam_json['particle']['id']]
     # According to:
     # https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam
-    if particle['name'] == 'HEAVYION':
-        return energy
     return energy * particle['a']
 
 
