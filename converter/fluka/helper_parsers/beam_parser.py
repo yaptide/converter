@@ -119,15 +119,21 @@ particle_dict = {
 def convert_energy(beam_json: dict) -> float:
     """
     Extract energy from beam JSON and provide it in Fluka convention.
+
     For particles other than HEAVYIONS (i.e. protons, alpha particles, neutrons, electrons) MeV unit is used.
     For HEAVYIONS (i.e. nuclei heavier than helium, defined by A and Z numbers) MeV/u is used.
-    Note than MeV/u (atomic mass unit) is not the same as MeV/nucl (number of nucleons)
+    Note than MeV/u (atomic mass unit) is not the same as MeV/nucl (number of nucleons).
+    For more details see:
+    https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam.
     """
-    energy = beam_json['energy']
+    energy_MeV_nucl = beam_json['energy']
     particle = particle_dict[beam_json['particle']['id']]
-    # According to:
-    # https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam
-    return energy * particle['a']
+    energy_Fluka_standard = energy_MeV_nucl * particle['a']
+    if particle['name'] == 'HEAVYION':
+        # Assuming that MeV/nucl is a good approximation of MeV/u
+        energy_Fluka_standard = energy_MeV_nucl
+
+    return energy_Fluka_standard
 
 
 def parse_particle_name(particle_json: dict):
