@@ -2,26 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, Union
 
 from converter.fluka.helper_parsers.detector_parser import Detector, parse_detector
-
-_particle_mappings: dict[str, str] = {
-    'Neutron': 'NEUTRON',
-    'Proton': 'PROTON',
-    'Pion π-': 'PION-',
-    'Pion π+': 'PION+',
-    'Anti-neutron': 'ANEUTRON',
-    'Anti-proton': 'APROTON',
-    'Kaon κ-': 'KAON-',
-    'Kaon κ+': 'KAON+',
-    'Kaon κ0': 'KAONZERO',
-    'Kaon κ~': 'AKAONZER',
-    'Muon µ-': 'MUON-',
-    'Muon µ+': 'MUON+',
-    'Deuteron': 'DEUTERON',
-    'Triton': 'TRITON',
-    'Helium-3': 'HELIUM3',
-    'Helium-4': 'HELIUM4',
-    'Heavy ions': 'HEAVYION',
-}
+from converter.fluka.helper_parsers.beam_parser import particle_dict
 
 __supported_filter_keywords = ('A', 'Z')
 
@@ -68,10 +49,10 @@ def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
     Returns None if filter cannot be created for Fluka.
     """
     particle = filter_dict['particle']
-    if particle.get('name') not in _particle_mappings:
+    if particle.get('id') not in particle_dict:
         return None
 
-    return ParticleFilter(name=particle['name'], particle=_particle_mappings[particle['name']])
+    return ParticleFilter(name=particle['name'], particle=particle_dict[particle['id']]['name'])
 
 
 def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:
