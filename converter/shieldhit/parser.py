@@ -4,14 +4,8 @@ import re
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser
-from converter.shieldhit.beam import (
-    BeamConfig,
-    BeamModulator,
-    BeamSourceType,
-    ModulatorInterpretationMode,
-    ModulatorSimulationMethod,
-    MultipleScatteringMode,  # skipcq: FLK-E101
-    StragglingModel)  # skipcq: FLK-E101
+from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
+                                      ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
 from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
@@ -94,10 +88,10 @@ _particle_dict: dict[int, dict] = {
 def parse_scoring_filter(scoring_filter: dict) -> ScoringFilter:
     """Parse scoring filter from JSON
 
-    Generates ScoringFilter from provided scoring filter.
+    Generates a ScoringFilter object from a JSON dictionary.
     """
     if scoring_filter.get("particle"):
-        # If the filter is a particle filter, we need to parse it differently
+        # If the filter is a particle filter, we want to map it to format used by SHIELD-HIT12A
         return ScoringFilter(uuid=scoring_filter["uuid"],
                              name=scoring_filter["name"],
                              rules=_particle_dict[scoring_filter["particle"]["id"]]['filter'])
