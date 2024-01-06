@@ -44,10 +44,11 @@ _particle_dict: dict[int, dict] = {
     #     'name': 'ANEUTRON',
     #     'a': 1
     # },
-    # 7: {
-    #     'name': 'APROTON',
-    #     'a': 1
-    # },
+    7: {
+        'name': 'APROTON',
+        # Use anti-hardon
+        'filter': [('ID', '==', 2)]
+    },
     8: {
         'name': 'KAON-',
         'filter': [('ID', '==', 8)]
