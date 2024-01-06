@@ -64,18 +64,14 @@ particle_dict: dict[int, dict] = {
         'name': 'KAONLONG',
         'filter': [('ID', '==', 11)]
     },
-    # 12: {
-    #     'name': 'PHOTON',
-    #     'a': 1
-    # },
-    # 15: {
-    #     'name': 'MUON-',
-    #     'a': 1
-    # },
-    # 16: {
-    #     'name': 'MUON+',
-    #     'a': 1
-    # },
+    15: {
+        'name': 'MUON-',
+        'filter': [('ID', '==', 15)]
+    },
+    16: {
+        'name': 'MUON+',
+        'filter': [('ID', '==', 16)]
+    },
     21: {
         'name': 'DEUTERON',
         'filter': [('Z', '==', 1), ('A', '==', 2)]
