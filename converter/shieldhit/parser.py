@@ -16,7 +16,7 @@ from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFil
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
 from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
-particle_dict: dict[int, dict] = {
+_particle_dict: dict[int, dict] = {
     1: {
         'name': 'NEUTRON',
         'filter': [
@@ -93,15 +93,14 @@ particle_dict: dict[int, dict] = {
 
 def parse_scoring_filter(scoring_filter: dict) -> ScoringFilter:
     """Parse scoring filter from JSON
-    
+
     Generates ScoringFilter from provided scoring filter.
     """
-
     if scoring_filter.get("particle"):
         # If the filter is a particle filter, we need to parse it differently
         return ScoringFilter(uuid=scoring_filter["uuid"],
                              name=scoring_filter["name"],
-                             rules=particle_dict[scoring_filter["particle"]["id"]]['filter'])
+                             rules=_particle_dict[scoring_filter["particle"]["id"]]['filter'])
 
     return ScoringFilter(uuid=scoring_filter["uuid"],
                          name=scoring_filter["name"],
