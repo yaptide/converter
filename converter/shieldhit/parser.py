@@ -5,11 +5,101 @@ import re
 import converter.solid_figures as solid_figures
 from converter.common import Parser
 from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
-                                      ModulatorSimulationMethod, MultipleScatteringMode,   # skipcq: FLK-E101
-                                      StragglingModel)  # skipcq: FLK-E101
+                                      ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
 from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
+
+_particle_dict: dict[int, dict] = {
+    1: {
+        'name': 'NEUTRON',
+        'filter': [
+            ('Z', '==', 0),
+            ('A', '==', 1),
+        ]
+    },
+    2: {
+        'name': 'PROTON',
+        'filter': [('Z', '==', 1), ('A', '==', 1)]
+    },
+    3: {
+        'name': 'PION-',
+        'filter': [('ID', '==', 3)]
+    },
+    4: {
+        'name': 'PION+',
+        'filter': [('ID', '==', 4)]
+    },
+    5: {
+        'name': 'PIZERO',
+        'filter': [('ID', '==', 5)]
+    },
+    # 6: {
+    #     'name': 'ANEUTRON',
+    #     'a': 1
+    # },
+    7: {
+        'name': 'APROTON',
+        'filter': [('Z', '==', -1), ('A', '==', 3)]
+    },
+    8: {
+        'name': 'KAON-',
+        'filter': [('ID', '==', 8)]
+    },
+    9: {
+        'name': 'KAON+',
+        'filter': [('ID', '==', 9)]
+    },
+    10: {
+        'name': 'KAONZERO',
+        'filter': [('ID', '==', 10)]
+    },
+    11: {
+        'name': 'KAONLONG',
+        'filter': [('ID', '==', 11)]
+    },
+    15: {
+        'name': 'MUON-',
+        'filter': [('ID', '==', 15)]
+    },
+    16: {
+        'name': 'MUON+',
+        'filter': [('ID', '==', 16)]
+    },
+    21: {
+        'name': 'DEUTERON',
+        'filter': [('Z', '==', 1), ('A', '==', 2)]
+    },
+    22: {
+        'name': 'TRITON',
+        'filter': [('Z', '==', 1), ('A', '==', 3)]
+    },
+    23: {
+        'name': '3-HELIUM',
+        'filter': [('Z', '==', 2), ('A', '==', 3)]
+    },
+    24: {
+        'name': '4-HELIUM',
+        'filter': [('Z', '==', 2), ('A', '==', 4)]
+    }
+}
+
+
+def parse_scoring_filter(scoring_filter: dict) -> ScoringFilter:
+    """Parse scoring filter from JSON
+
+    Generates a ScoringFilter object from a JSON dictionary.
+    """
+    if scoring_filter.get("particle"):
+        # If the filter is a particle filter, we want to map it to format used by SHIELD-HIT12A
+        return ScoringFilter(uuid=scoring_filter["uuid"],
+                             name=scoring_filter["name"],
+                             rules=_particle_dict[scoring_filter["particle"]["id"]]['filter'])
+
+    return ScoringFilter(uuid=scoring_filter["uuid"],
+                         name=scoring_filter["name"],
+                         rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
+                                for rule_dict in scoring_filter["rules"]])
 
 
 class ShieldhitParser(Parser):
@@ -42,23 +132,19 @@ class ShieldhitParser(Parser):
                     filename=sourceFile.get('name'),
                     file_content=sourceFile.get('value'),
                     zone_id=zone_id,
-                    simulation=ModulatorSimulationMethod.from_str(
-                        modulator.get('simulationMethod', 'modulus')),
-                    mode=ModulatorInterpretationMode.from_str(
-                        modulator.get('interpretationMode', 'material'))
-                )
+                    simulation=ModulatorSimulationMethod.from_str(modulator.get('simulationMethod', 'modulus')),
+                    mode=ModulatorInterpretationMode.from_str(modulator.get('interpretationMode', 'material')))
 
     def parse_physics(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
         if json.get("physic") is not None:
-            self.beam_config.delta_e = json["physic"].get(
-                "energyLoss", self.beam_config.delta_e)
-            self.beam_config.nuclear_reactions = json["physic"].get(
-                "enableNuclearReactions", self.beam_config.nuclear_reactions)
-            self.beam_config.straggling = StragglingModel.from_str(
-                json["physic"].get("energyModelStraggling", self.beam_config.straggling.value))
-            self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
-                json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value))
+            self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
+            self.beam_config.nuclear_reactions = json["physic"].get("enableNuclearReactions",
+                                                                    self.beam_config.nuclear_reactions)
+            self.beam_config.straggling = StragglingModel.from_str(json["physic"].get(
+                "energyModelStraggling", self.beam_config.straggling.value))
+            self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(json["physic"].get(
+                "multipleScattering", self.beam_config.multiple_scattering.value))
 
     def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
@@ -136,7 +222,8 @@ class ShieldhitParser(Parser):
                         r_bins=parameters["radialSegments"],
                         h_min=position[2] - parameters["depth"] / 2,
                         h_max=position[2] + parameters["depth"] / 2,
-                        h_bins=parameters["zSegments"],))
+                        h_bins=parameters["zSegments"],
+                    ))
 
             elif geometry_type == "Mesh":
                 detectors.append(
@@ -151,14 +238,16 @@ class ShieldhitParser(Parser):
                         y_bins=parameters["ySegments"],
                         z_min=position[2] - parameters["depth"] / 2,
                         z_max=position[2] + parameters["depth"] / 2,
-                        z_bins=parameters["zSegments"],))
+                        z_bins=parameters["zSegments"],
+                    ))
 
             elif geometry_type == "Zone":
                 detectors.append(
                     ScoringZone(
                         uuid=detector_dict["uuid"],
                         name=detector_dict["name"],
-                        first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),))
+                        first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),
+                    ))
 
             elif geometry_type == "All":
                 detectors.append(ScoringGlobal(
@@ -181,16 +270,7 @@ class ShieldhitParser(Parser):
     @staticmethod
     def _parse_filters(json: dict) -> list[ScoringFilter]:
         """Parses scoring filters from the input json."""
-        filters = [
-            ScoringFilter(
-                uuid=filter_dict["uuid"],
-                name=filter_dict["name"],
-                rules=[
-                    (rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
-                    for rule_dict in filter_dict["rules"]],
-
-            ) for filter_dict in json["scoringManager"]["filters"]
-        ]
+        filters = [parse_scoring_filter(filter_dict) for filter_dict in json["scoringManager"]["filters"]]
 
         return filters
 
@@ -202,9 +282,7 @@ class ShieldhitParser(Parser):
                 fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
                 geometry=self._get_detector_by_uuid(output_dict["detectorUuid"])
                 if 'detectorUuid' in output_dict else None,
-                quantities=[
-                    self._parse_output_quantity(quantity)
-                    for quantity in output_dict.get("quantities", [])],
+                quantities=[self._parse_output_quantity(quantity) for quantity in output_dict.get("quantities", [])],
             ) for output_dict in json["scoringManager"]["outputs"]
         ]
 
@@ -253,9 +331,7 @@ class ShieldhitParser(Parser):
             offset=quantity_dict.get("offset", None),
             primaries=quantity_dict.get("primaries", None),
             rescale=quantity_dict.get("rescale", None),
-            material=self._get_material_id(
-                quantity_dict["materialUuid"]) if 'materialUuid' in quantity_dict else None
-        )
+            material=self._get_material_id(quantity_dict["materialUuid"]) if 'materialUuid' in quantity_dict else None)
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
@@ -291,8 +367,7 @@ class ShieldhitParser(Parser):
             diff1_t=diff1_t,
             diff2=diff2,
             diff2_t=diff2_t,
-            settings=self._parse_quantity_settings(quantity_dict)
-        )
+            settings=self._parse_quantity_settings(quantity_dict))
 
     def _get_scoring_filter_by_uuid(self, filter_uuid: str) -> str:
         """Finds scoring filter in the detect_config object by its uuid and returns its simulation name."""
@@ -369,8 +444,7 @@ class ShieldhitParser(Parser):
 
     def _parse_custom_material(self, json: dict) -> None:
         """Parse custom material from JSON and add it to the list of materials"""
-        if ('customMaterial' not in json or
-                json['customMaterial'] is None
+        if ('customMaterial' not in json or json['customMaterial'] is None
                 or 'materialPropertiesOverrides' not in json):
             return
 
@@ -380,20 +454,19 @@ class ShieldhitParser(Parser):
         custom_stopping_power = is_stopping_power_file_available and json['materialPropertiesOverrides'].get(
             'customStoppingPower', False)
 
-        overridden_material = Material(
-            name=f"Custom {json['customMaterial']['name']}",
-            sanitized_name=f"custom_{json['customMaterial']['sanitizedName']}",
-            uuid=json['customMaterial']['uuid'],
-            icru=json['customMaterial']['icru'],
-            density=json['materialPropertiesOverrides'].get('density', json['customMaterial']['density']),
-            custom_stopping_power=custom_stopping_power)
+        overridden_material = Material(name=f"Custom {json['customMaterial']['name']}",
+                                       sanitized_name=f"custom_{json['customMaterial']['sanitizedName']}",
+                                       uuid=json['customMaterial']['uuid'],
+                                       icru=json['customMaterial']['icru'],
+                                       density=json['materialPropertiesOverrides'].get(
+                                           'density', json['customMaterial']['density']),
+                                       custom_stopping_power=custom_stopping_power)
 
         self._add_overridden_material(overridden_material)
 
     def _parse_zones(self, json: dict) -> None:
         """Parse zones from JSON"""
-        self.geo_mat_config.zones = [
-        ]
+        self.geo_mat_config.zones = []
 
         for idx, zone in enumerate(json["zoneManager"]["zones"]):
             self._parse_custom_material(zone)
@@ -405,8 +478,7 @@ class ShieldhitParser(Parser):
                     figures_operators=self._parse_csg_operations(zone["unionOperations"]),
                     material=self._get_material_id(zone["materialUuid"]),
                     material_override=zone.get('materialPropertiesOverrides', None),
-                )
-            )
+                ))
 
         if "worldZone" in json["zoneManager"]:
             self._parse_world_zone(json)

@@ -53,7 +53,7 @@ def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
     if particle.get('id') not in particle_dict:
         return None
 
-    return ParticleFilter(name=particle['name'], particle=particle_dict[particle['id']]['name'])
+    return ParticleFilter(name=filter_dict['name'], particle=particle_dict[particle['id']]['name'])
 
 
 def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:
