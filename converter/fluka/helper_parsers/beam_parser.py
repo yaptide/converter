@@ -112,6 +112,10 @@ particle_dict = {
     25: {
         'name': 'HEAVYION',
         'a': 1
+    },
+    26: {
+        'name': 'ELECTRON',
+        'a': 1
     }
 }
 
