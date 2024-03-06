@@ -9,7 +9,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   smoke-test-on-linux:
     runs-on: ubuntu-latest
     steps:
@@ -24,8 +23,8 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip3 install -r requirements.txt
-          pip3 install -r test_requirements.txt
+          pip install poetry
+          poetry install --only main,test
 
       - name: Run main tests
         run: python -m pytest
@@ -56,8 +55,8 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip3 install -r requirements.txt
-          pip3 install -r test_requirements.txt
+          pip install poetry
+          poetry install --only main,test
 
       - name: Run main tests
         # when triggering tests with `python -m pytest` (instead of simply calling `pytest`) we add current directory to sys.path
@@ -75,11 +74,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip build
-          pip3 install -r requirements.txt
+          python3 -m pip install --upgrade pip
+          pip install poetry
+          poetry install --only main
 
       - name: Make package
-        run: python3 -m build
+        run: poetry build
 
       - name: Archive package as artifacts
         uses: actions/upload-artifact@v3
