@@ -3,8 +3,9 @@ image:
 
 tasks:
    - init: |
-      pip install -r requirements.txt
-      pip install -r test_requirements.txt
+      export POETRY_VIRTUALENVS_CREATE=false
+      pip install poetry && poetry install --only main
+
 vscode:
   extensions:
     - ms-python.python
