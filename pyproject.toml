@@ -1,14 +1,24 @@
 [tool.poetry]
-name = "converter"
+name = "yaptide-converter"
 version = "1.0.0"
 description = "Yet Another Particle Transport IDE - converter"
-authors = []
+authors = ["yaptide team"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
 readme = "README.md"
+
+[tool.project.urls]
+Homepage = "https://github.com/yaptide/converter"
+"Bug Tracker" = "https://github.com/yaptide/converter/issues"
 
 [tool.poetry.dependencies]
 python = "^3.9"
 scipy = "1.12.0"
 
+[tool.project.scripts]
+yaptide-converter = "converter.main:main"
 
 [tool.poetry.group.test.dependencies]
 pytest = "8.0.0"
@@ -17,3 +27,25 @@ flake8 = "7.0.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pycodestyle]
+max-line-length = "120"
+
+[tool.flake8]
+max-line-length = "120"
+
+[tool.yapf]
+based_on_style = "pep8"
+column_limit = "120"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+# Setuptools configuration
+# TODO: Verify if this is necessary/should be migrated for poetry
+#
+#[tool.setuptools]
+#include-package-data = false
+#
+#[tool.setuptools.packages]
+#find = {namespaces = false}
