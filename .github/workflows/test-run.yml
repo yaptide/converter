@@ -10,6 +10,8 @@ on:
 
 jobs:
   smoke-test-on-linux:
+     env:
+      POETRY_VIRTUALENVS_CREATE: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,6 +33,8 @@ jobs:
 
 
   build-and-test:
+    env:
+      POETRY_VIRTUALENVS_CREATE: false
     runs-on: ${{ matrix.platform }}
     needs: smoke-test-on-linux
     strategy:
@@ -63,6 +67,8 @@ jobs:
         run: python -m pytest
 
   make-package:
+    env:
+      POETRY_VIRTUALENVS_CREATE: false
     runs-on: ubuntu-latest
     needs: build-and-test
     steps:
@@ -90,6 +96,8 @@ jobs:
             ./tests/shieldhit/resources
 
   test-package:
+    env:
+      POETRY_VIRTUALENVS_CREATE: false
     runs-on: ubuntu-latest
     strategy:
        matrix:
