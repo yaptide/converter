@@ -10,6 +10,7 @@ classifiers = [
 readme = "README.md"
 repository = "https://github.com/yaptide/converter"
 homepage = "https://github.com/yaptide/converter"
+packages = [{include = "converter"}]
 
 [tool.project.urls]
 "Bug Tracker" = "https://github.com/yaptide/converter/issues"
