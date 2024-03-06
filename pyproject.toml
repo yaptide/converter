@@ -8,9 +8,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 readme = "README.md"
+repository = "https://github.com/yaptide/converter"
+homepage = "https://github.com/yaptide/converter"
 
 [tool.project.urls]
-Homepage = "https://github.com/yaptide/converter"
 "Bug Tracker" = "https://github.com/yaptide/converter/issues"
 
 [tool.poetry.dependencies]
