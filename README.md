@@ -41,23 +41,16 @@ python converter/main.py tests/shieldhit/resources/project.json workspace
 
 ## Testing
 
-To run the unit tests run the following command in the project directory (inside the virtual environment):
+To run the unit tests, you need to install test dependencies with:
 
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-pip install -e .
-pip install -r test_requirements.txt
-pytest
+```shell
+poetry install
+```
 
-# For Windowsfilecmp.cmp(tmp_path / filename, path_to_dir_with_expected_output / filename)
-python -m venv venv
-venv\Scripts\activate.bat
-pip install -r requirements.txt
-pip install -e .
-pip install -r test_requirements.txt
-pytest
+Then you can run the tests with:
+
+```shell
+poetry run pytest
 ```
 
 ## Credits
