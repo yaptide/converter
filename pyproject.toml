@@ -12,14 +12,14 @@ repository = "https://github.com/yaptide/converter"
 homepage = "https://github.com/yaptide/converter"
 packages = [{include = "converter"}]
 
-[tool.project.urls]
+[tool.poetry.urls]
 "Bug Tracker" = "https://github.com/yaptide/converter/issues"
 
 [tool.poetry.dependencies]
 python = "^3.9"
 scipy = "1.12.0"
 
-[tool.project.scripts]
+[tool.poetry.scripts]
 yaptide-converter = "converter.main:main"
 
 [tool.poetry.group.test.dependencies]
