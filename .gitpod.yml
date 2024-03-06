@@ -4,7 +4,7 @@ image:
 tasks:
    - init: |
       export POETRY_VIRTUALENVS_CREATE=false
-      pip install poetry && poetry install --only main
+      pip install poetry && poetry install
 
 vscode:
   extensions:
