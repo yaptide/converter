@@ -42,7 +42,7 @@ column_limit = "120"
 
 [tool.pytest.ini_options]
 log_cli = true
-log_cli_level = INFO
+log_cli_level = "INFO"
 
 testpaths = ["tests"]
 
