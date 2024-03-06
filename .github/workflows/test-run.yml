@@ -10,7 +10,7 @@ on:
 
 jobs:
   smoke-test-on-linux:
-     env:
+    env:
       POETRY_VIRTUALENVS_CREATE: false
     runs-on: ubuntu-latest
     steps:
@@ -30,7 +30,6 @@ jobs:
 
       - name: Run main tests
         run: python -m pytest
-
 
   build-and-test:
     env:
