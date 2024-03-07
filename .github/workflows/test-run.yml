@@ -95,8 +95,6 @@ jobs:
             ./tests/shieldhit/resources
 
   test-package:
-    env:
-      POETRY_VIRTUALENVS_CREATE: false
     runs-on: ubuntu-latest
     strategy:
        matrix:
