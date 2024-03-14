@@ -45,12 +45,3 @@ log_cli = true
 log_cli_level = "INFO"
 
 testpaths = ["tests"]
-
-# Setuptools configuration
-# TODO: Verify if this is necessary/should be migrated for poetry
-#
-#[tool.setuptools]
-#include-package-data = false
-#
-#[tool.setuptools.packages]
-#find = {namespaces = false}
