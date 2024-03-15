@@ -23,7 +23,7 @@ scipy = "1.11.2"
 yaptide-converter = "converter.main:main"
 
 [tool.poetry.group.test.dependencies]
-pytest = "8.0.0"
+pytest = "8.1.1"
 flake8 = "7.0.0"
 
 [build-system]
