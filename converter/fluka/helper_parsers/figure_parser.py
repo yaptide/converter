@@ -1,23 +1,23 @@
 from dataclasses import dataclass, field
 from converter import solid_figures
 from converter.solid_figures import BoxFigure, CylinderFigure, SolidFigure, SphereFigure
-from scipy.spatial.transform import Rotation as R
+from converter.common import rotate
 
 
 @dataclass(frozen=False)
 class FlukaFigure:
     """Abstract class representing Fluka figure"""
 
-    figure_type: str = ""
-    name: str = ""
-    uuid: str = ""
+    figure_type: str = ''
+    name: str = ''
+    uuid: str = ''
 
 
 @dataclass(frozen=False)
 class FlukaBox(FlukaFigure):
     """Class representing Fluka box"""
 
-    figure_type: str = "RPP"
+    figure_type: str = 'RPP'
     x_min: float = 0
     x_max: float = 0
     y_min: float = 0
@@ -30,7 +30,7 @@ class FlukaBox(FlukaFigure):
 class FlukaCylinder(FlukaFigure):
     """Class representing Fluka cylinder"""
 
-    figure_type: str = "RCC"
+    figure_type: str = 'RCC'
     coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
     height_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
     radius: float = 0
@@ -42,7 +42,7 @@ class FlukaCylinder(FlukaFigure):
 class FlukaSphere(FlukaFigure):
     """Class representing Fluka sphere"""
 
-    figure_type: str = "SPH"
+    figure_type: str = 'SPH'
     coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
     radius: float = 0
 
@@ -54,7 +54,7 @@ def parse_box(box: BoxFigure) -> FlukaBox:
     In case the box to parse has rotation applied, we throw an error.
     """
     if (box.rotation[0] != 0 or box.rotation[1] != 0 or box.rotation[2] != 0):
-        raise ValueError("Rotation of box is not supported for Fluka")
+        raise ValueError('Rotation of box is not supported for Fluka')
 
     fluka_box = FlukaBox()
     fluka_box.uuid = box.uuid
@@ -70,8 +70,7 @@ def parse_box(box: BoxFigure) -> FlukaBox:
 
 def parse_cylinder(cylinder: CylinderFigure) -> FlukaCylinder:
     """Parse cylinder to Fluka cylinder"""
-    rotation = R.from_euler('xyz', cylinder.rotation, degrees=True)
-    height_vector = rotation.apply((0, 0, cylinder.height))
+    height_vector = rotate((0, 0, cylinder.height), cylinder.rotation)
 
     fluka_cylinder = FlukaCylinder()
     fluka_cylinder.coordinates = (
@@ -92,9 +91,7 @@ def parse_sphere(sphere: SphereFigure) -> FlukaSphere:
     """Parse sphere to Fluka sphere"""
     fluka_sphere = FlukaSphere()
     fluka_sphere.radius = sphere.radius
-    fluka_sphere.coordinates = (sphere.position[0],
-                                sphere.position[1],
-                                sphere.position[2])
+    fluka_sphere.coordinates = (sphere.position[0], sphere.position[1], sphere.position[2])
     fluka_sphere.uuid = sphere.uuid
     return fluka_sphere
 
@@ -108,19 +105,17 @@ def parse_fluka_figure(figure: SolidFigure) -> FlukaFigure:
     elif type(figure) is SphereFigure:
         fluka_figure = parse_sphere(figure)
     else:
-        raise ValueError(f"Unexpected solid figure type: {figure}")
+        raise ValueError(f'Unexpected solid figure type: {figure}')
 
     return fluka_figure
 
 
 def parse_figures(figures_json) -> list[FlukaFigure]:
     """Parse figures data from JSON to figures data used by Fluka"""
-    raw_figures = [
-            solid_figures.parse_figure(figure_dict) for figure_dict in figures_json
-        ]
+    raw_figures = [solid_figures.parse_figure(figure_dict) for figure_dict in figures_json]
 
     fluka_figures = []
-    figure_name = "fig{}"
+    figure_name = 'fig{}'
 
     for idx, figure in enumerate(raw_figures):
         fluka_figure = parse_fluka_figure(figure)
