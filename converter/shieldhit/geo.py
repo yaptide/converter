@@ -66,7 +66,6 @@ def _parse_box(box: BoxFigure, number: int) -> str:
 
 def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
     """Parse a CylinderFigure into a str representation of SH12A input file."""
-
     height_vect = rotate([0, 0, cylinder.height], cylinder.rotation)
     lower_base_position = (
         cylinder.position[0] - height_vect[0] / 2,

@@ -93,10 +93,7 @@ requested length: {n}')
 
 
 def rotate(vector: list, angles: list, degrees=True) -> list:
-    """
-    Function to rotate a vector around xyz axes
-    """
-
+    """Function to rotate a vector around xyz axes"""
     # Convert angles to radians if degrees is True
 
     rad_angles = [radians(angle) for angle in angles] if degrees else angles
