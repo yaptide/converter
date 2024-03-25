@@ -24,16 +24,13 @@ yaptide-converter = "converter.main:main"
 
 [tool.poetry.group.test.dependencies]
 pytest = "8.1.1"
-flake8 = "7.0.0"
+pre-commit = "3.6.2"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pycodestyle]
-max-line-length = "120"
-
-[tool.flake8]
 max-line-length = "120"
 
 [tool.yapf]
