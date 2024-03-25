@@ -1,8 +1,7 @@
 from typing import Optional
-from converter.common import format_float
+from converter.common import format_float, rotate
 from converter.solid_figures import SolidFigure, BoxFigure, CylinderFigure, SphereFigure
 from dataclasses import dataclass, field
-from scipy.spatial.transform import Rotation as R
 from enum import IntEnum
 
 
@@ -31,15 +30,14 @@ def parse_figure(figure: SolidFigure, number: int) -> str:
     if type(figure) is SphereFigure:
         return _parse_sphere(figure, number)
 
-    raise ValueError(f"Unexpected solid figure type: {figure}")
+    raise ValueError(f'Unexpected solid figure type: {figure}')
 
 
 def _parse_box(box: BoxFigure, number: int) -> str:
     """Parse a BoxFigure into a str representation of SH12A input file."""
-    rotation = R.from_euler('xyz', box.rotation, degrees=True)
-    x_vec = rotation.apply([box.x_edge_length, 0, 0])
-    y_vec = rotation.apply([0, box.y_edge_length, 0])
-    z_vec = rotation.apply([0, 0, box.z_edge_length])
+    x_vec = rotate([box.x_edge_length, 0, 0], box.rotation)
+    y_vec = rotate([0, box.y_edge_length, 0], box.rotation)
+    z_vec = rotate([0, 0, box.z_edge_length], box.rotation)
     diagonal_vec = x_vec + y_vec + z_vec
     start_position = (
         box.position[0] - diagonal_vec[0] / 2,
@@ -68,8 +66,8 @@ def _parse_box(box: BoxFigure, number: int) -> str:
 
 def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
     """Parse a CylinderFigure into a str representation of SH12A input file."""
-    rotation = R.from_euler('xyz', cylinder.rotation, degrees=True)
-    height_vect = rotation.apply([0, 0, cylinder.height])
+
+    height_vect = rotate([0, 0, cylinder.height], cylinder.rotation)
     lower_base_position = (
         cylinder.position[0] - height_vect[0] / 2,
         cylinder.position[1] - height_vect[1] / 2,
@@ -119,15 +117,15 @@ class Material:
     property_template_name = """{name}\n"""
 
     def __str__(self) -> str:
-        result = self.property_template.format(name="MEDIUM", value=self.idx)
-        result += self.property_template.format(name="ICRU", value=self.icru)
+        result = self.property_template.format(name='MEDIUM', value=self.idx)
+        result += self.property_template.format(name='ICRU', value=self.icru)
         if self.density is not None:
-            result += self.property_template.format(name="RHO", value=format_float(self.density, 10))
+            result += self.property_template.format(name='RHO', value=format_float(self.density, 10))
 
         if self.custom_stopping_power:
-            result += self.property_template_name.format(name="LOADDEDX")
+            result += self.property_template_name.format(name='LOADDEDX')
 
-        result += "END\n"
+        result += 'END\n'
         return result
 
 
@@ -148,8 +146,8 @@ class Zone:
     def __str__(self) -> str:
         return self.zone_template.format(
             id=self.id,
-            operators='OR'.join(
-                ['  '.join([f'{id:+5}' for id in figure_set]) for figure_set in self.figures_operators]),
+            operators='OR'.join(['  '.join([f'{id:+5}' for id in figure_set])
+                                 for figure_set in self.figures_operators]),
         )
 
 
@@ -173,7 +171,7 @@ class GeoMatConfig:
     ])
     zones: list[Zone] = field(default_factory=lambda: [
         Zone(
-            uuid="",
+            uuid='',
             id=1,
             figures_operators=[{
                 1,
@@ -181,13 +179,13 @@ class GeoMatConfig:
             material=1,
         ),
         Zone(
-            uuid="",
+            uuid='',
             id=2,
             figures_operators=[{-1, 2}],
             material=1000,
         ),
         Zone(
-            uuid="",
+            uuid='',
             id=3,
             figures_operators=[{-2, 3}],
             material=0,
@@ -196,7 +194,7 @@ class GeoMatConfig:
     materials: list[Material] = field(default_factory=lambda: [Material('', '', '', 276)])
     jdbg1: int = 0
     jdbg2: int = 0
-    title: str = "Unnamed geometry"
+    title: str = 'Unnamed geometry'
     available_custom_stopping_power_files: dict[int, StoppingPowerFile] = field(default_factory=lambda: {})
 
     geo_template: str = """
@@ -217,14 +215,14 @@ class GeoMatConfig:
         """Generate material_id, zone_id pairs string (for geo.dat)."""
         # Cut lists into chunks of max size 14
         zone_ids = [
-            "".join([f'{id:>5}' for id in row])
+            ''.join([f'{id:>5}' for id in row])
             for row in GeoMatConfig._split_zones_to_rows([zone.id for zone in self.zones])
         ]
         material_ids = [
-            "".join([f'{mat:>5}' for mat in row])
+            ''.join([f'{mat:>5}' for mat in row])
             for row in GeoMatConfig._split_zones_to_rows([zone.material for zone in self.zones])
         ]
-        return "\n".join([*zone_ids, *material_ids])
+        return '\n'.join([*zone_ids, *material_ids])
 
     def get_geo_string(self) -> str:
         """Generate geo.dat config."""
@@ -233,8 +231,8 @@ class GeoMatConfig:
             jdbg2=self.jdbg2,
             title=self.title,
             # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
-            figures="".join([parse_figure(figure, idx + 1) for idx, figure in enumerate(self.figures)])[1:],
-            zones_geometries="".join([str(zone) for zone in self.zones])[1:],
+            figures=''.join([parse_figure(figure, idx + 1) for idx, figure in enumerate(self.figures)])[1:],
+            zones_geometries=''.join([str(zone) for zone in self.zones])[1:],
             zones_materials=self._get_zone_material_string(),
         )
 
@@ -247,4 +245,4 @@ class GeoMatConfig:
             material.idx = idx + 1
             material_strings.append(str(material))
 
-        return "".join(material_strings)
+        return ''.join(material_strings)
