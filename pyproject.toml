@@ -24,7 +24,7 @@ yaptide-converter = "converter.main:main"
 
 [tool.poetry.group.test.dependencies]
 pytest = "8.1.1"
-pre-commit = "3.6.2"
+pre-commit = "3.7.0"
 
 [build-system]
 requires = ["poetry-core"]
