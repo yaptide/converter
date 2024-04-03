@@ -18,7 +18,7 @@ packages = [{include = "converter"}]
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
 # locked due to limitations in the current version supported by Pyodeide used in Web App
-scipy = "1.11.2"
+scipy = "1.13.0"
 [tool.poetry.scripts]
 yaptide-converter = "converter.main:main"
 
