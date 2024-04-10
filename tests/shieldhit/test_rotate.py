@@ -1,6 +1,5 @@
-from converter.common import rotate
+from converter.common import rotate, format_float
 from scipy.spatial.transform import Rotation
-from converter.common import format_float
 import pytest
 
 
@@ -13,7 +12,6 @@ import pytest
     ])
 def test_rotate(vector, angles, precision=8):
     """Test the rotate function with various inputs. Expects angles as degrees"""
-
     # Rotate using custom function
     result = rotate(vector, angles)
 
@@ -21,7 +19,7 @@ def test_rotate(vector, angles, precision=8):
     r = Rotation.from_euler('xyz', angles, degrees=True)
     result_scipy = r.apply(vector)
 
-    for i in range(len(result)):
-        assert format_float(result[i], precision) == format_float(
-            result_scipy[i], precision
-        ), f'Expected {format_float(result_scipy[i], precision)}, but got {format_float(result[i], precision)}'
+    for idx, element in enumerate(result):
+        assert format_float(element, precision) == format_float(
+            result_scipy[idx], precision
+        ), f'Expected {format_float(result_scipy[idx], precision)}, but got {format_float(element, precision)}'
