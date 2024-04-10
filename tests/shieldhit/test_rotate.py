@@ -13,7 +13,7 @@ import pytest
     ])
 def test_rotate(vector, angles, precision=8):
     """Test the rotate function with various inputs. Expects angles as degrees"""
-    
+
     # Rotate using custom function
     result = rotate(vector, angles)
 
@@ -22,4 +22,6 @@ def test_rotate(vector, angles, precision=8):
     result_scipy = r.apply(vector)
 
     for i in range(len(result)):
-        assert format_float(result[i], precision) == format_float(result_scipy[i], precision), f'Expected {format_float(result_scipy[i], precision)}, but got {format_float(result[i], precision)}'
+        assert format_float(result[i], precision) == format_float(
+            result_scipy[i], precision
+        ), f'Expected {format_float(result_scipy[i], precision)}, but got {format_float(result[i], precision)}'
