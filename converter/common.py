@@ -113,4 +113,4 @@ def rotate(vector: list, angles: list, degrees=True) -> list:
     new_x2 = new_x * cos(rad_angles[2]) - new_y * sin(rad_angles[2])
     new_y2 = new_x * sin(rad_angles[2]) + new_y * cos(rad_angles[2])
 
-    return [round(new_x2, 8), round(new_y2, 8), round(new_z2, 8)]
+    return [new_x2, new_y2, new_z2]
