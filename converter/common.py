@@ -92,8 +92,15 @@ requested length: {n}')
     return result
 
 
-def rotate(vector: list, angles: list, degrees=True) -> list:
-    """Function to rotate a vector around xyz axes"""
+def rotate(vector: list[float], angles: list[float], degrees: bool = True) -> list[float]:
+    """
+    Rotate a vector in 3D around XYZ axes, assuming Euler angles.
+
+    Proper Euler angles uses z-x-z, x-y-x, y-z-y, z-y-z, x-z-x, y-x-y axis sequences, here we stick to other convention called Tait-Bryan angles.
+    First we rotate vector around X axis by first angle, then around Y axis and finally around Z axis, The individual rotations are usually known as yap, pitch and roll.
+
+    If degrees is True, then the given angle are assumed to be in degrees. Otherwise radians are used.
+    """
     # Convert angles to radians if degrees is True
 
     rad_angles = [radians(angle) for angle in angles] if degrees else angles
@@ -102,15 +109,18 @@ def rotate(vector: list, angles: list, degrees=True) -> list:
     new_x, new_y, new_z = 0, 0, 0
 
     # Rotation around x-axis
+    new_x = x
     new_y = y * cos(rad_angles[0]) - z * sin(rad_angles[0])
     new_z = y * sin(rad_angles[0]) + z * cos(rad_angles[0])
 
     # Rotation around y-axis
-    new_x = x * cos(rad_angles[1]) + new_z * sin(rad_angles[1])
-    new_z2 = -x * sin(rad_angles[1]) + new_z * cos(rad_angles[1])
+    new_x2 = new_x * cos(rad_angles[1]) + new_z * sin(rad_angles[1])
+    new_y2 = new_y
+    new_z2 = -new_x * sin(rad_angles[1]) + new_z * cos(rad_angles[1])
 
     # Rotation around z-axis
-    new_x2 = new_x * cos(rad_angles[2]) - new_y * sin(rad_angles[2])
-    new_y2 = new_x * sin(rad_angles[2]) + new_y * cos(rad_angles[2])
+    new_x3 = new_x2 * cos(rad_angles[2]) - new_y2 * sin(rad_angles[2])
+    new_y3 = new_x2 * sin(rad_angles[2]) + new_y2 * cos(rad_angles[2])
+    new_z3 = new_z2
 
-    return [new_x2, new_y2, new_z2]
+    return [new_x3, new_y3, new_z3]
