@@ -96,8 +96,10 @@ def rotate(vector: list[float], angles: list[float], degrees: bool = True) -> li
     """
     Rotate a vector in 3D around XYZ axes, assuming Euler angles.
 
-    Proper Euler angles uses z-x-z, x-y-x, y-z-y, z-y-z, x-z-x, y-x-y axis sequences, here we stick to other convention called Tait-Bryan angles.
-    First we rotate vector around X axis by first angle, then around Y axis and finally around Z axis, The individual rotations are usually known as yap, pitch and roll.
+    Proper Euler angles uses z-x-z, x-y-x, y-z-y, z-y-z, x-z-x, y-x-y axis sequences, here we
+    stick to other convention called Tait-Bryan angles. First we rotate vector around X axis by first
+    angle, then around Y axis and finally around Z axis, The individual rotations are
+    usually known as yaw, pitch and roll.
 
     If degrees is True, then the given angle are assumed to be in degrees. Otherwise radians are used.
     """

@@ -1,4 +1,4 @@
-from converter.common import rotate, format_float
+from converter.common import rotate
 from scipy.spatial.transform import Rotation
 import numpy as np
 import pytest
