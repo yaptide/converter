@@ -17,14 +17,16 @@ packages = [{include = "converter"}]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.13"
-# locked due to limitations in the current version supported by Pyodeide used in Web App
-scipy = "1.11.2"
+
 [tool.poetry.scripts]
 yaptide-converter = "converter.main:main"
 
 [tool.poetry.group.test.dependencies]
 pytest = "8.1.1"
 pre-commit = "3.7.0"
+# scipy is needed in unit tests to cross check if rotation method works properly
+scipy = "1.13.0"
+
 
 [build-system]
 requires = ["poetry-core"]
