@@ -1,6 +1,6 @@
 from converter.common import rotate
 from scipy.spatial.transform import Rotation
-import numpy as np
+import math
 import pytest
 
 
@@ -11,12 +11,12 @@ import pytest
                                                    ([-1, -2, -3], [45, 45, 45], True), ([0, 1, 1], [45, 0, 0], True),
                                                    ([2, 4, -7], [23, -82, 213], True), ([1, 0, 0], [0, 0, 0], True),
                                                    ([0, 1, 0], [0, 0, 0], True), ([0, 0, 1], [0, 0, 0], True),
-                                                   ([1, 0, 0], [np.pi / 2, 0, 0], False),
-                                                   ([0, 1, 0], [np.pi / 2, 0, 0], False),
-                                                   ([0, 0, 1], [np.pi / 2, 0, 0], False),
-                                                   ([0, 1, 0], [0, np.pi / 2, 0], False),
-                                                   ([0, 0, 1], [0, 0, np.pi / 2], False),
-                                                   ([2, 4, -1], [np.pi / 4, np.pi / 3, np.pi / 2], False),
+                                                   ([1, 0, 0], [math.pi / 2, 0, 0], False),
+                                                   ([0, 1, 0], [math.pi / 2, 0, 0], False),
+                                                   ([0, 0, 1], [math.pi / 2, 0, 0], False),
+                                                   ([0, 1, 0], [0, math.pi / 2, 0], False),
+                                                   ([0, 0, 1], [0, 0, math.pi / 2], False),
+                                                   ([2, 4, -1], [math.pi / 4, math.pi / 3, math.pi / 2], False),
                                                    ([0, 0, 0], [45, 45, 45], True), ([0, 0, 1], [90, 0, 0], True),
                                                    ([0, 0, 1], [0, 0, 90], True), ([0, 0, 1], [0, 0, 180], True)])
 def test_rotate(vector: list[float], angles: list[float], degrees: bool):

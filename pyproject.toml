@@ -24,7 +24,7 @@ yaptide-converter = "converter.main:main"
 [tool.poetry.group.test.dependencies]
 pytest = "8.1.1"
 pre-commit = "3.7.0"
-# locked due to limitations in the current version supported by Pyodeide used in Web App - might be upgraded if web won't need it
+# scipy is needed in unit tests to cross check if rotation method works properly
 scipy = "1.13.0"
 
 
