@@ -8,7 +8,7 @@ import pytest
                                            ([1, 1, 1], [-45, -30, -60]), ([1, 1, 1], [270, 180, 360]),
                                            ([-1, -2, -3], [45, 45, 45]), ([0, 1, 1], [45, 0, 0]),
                                            ([2, 4, -7], [23, -82, 213])])
-def test_rotate(vector, angles, precision=8):
+def test_rotate(vector: list[float], angles: list[float]):
     """Test the rotate function with various inputs. Expects angles as degrees"""
     # Rotate using custom function
     result = rotate(vector, angles)
@@ -17,7 +17,4 @@ def test_rotate(vector, angles, precision=8):
     r = Rotation.from_euler('xyz', angles, degrees=True)
     result_scipy = r.apply(vector)
 
-    for idx, element in enumerate(result):
-        assert format_float(element, precision) == format_float(
-            result_scipy[idx], precision
-        ), f'Expected {format_float(result_scipy[idx], precision)}, but got {format_float(element, precision)}'
+    assert pytest.approx(result) == result_scipy
