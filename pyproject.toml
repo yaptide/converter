@@ -25,7 +25,7 @@ yaptide-converter = "converter.main:main"
 pytest = "8.2.2"
 pre-commit = "3.7.1"
 # scipy is needed in unit tests to cross check if rotation method works properly
-scipy = "1.13.0"
+scipy = "1.13.1"
 
 
 [build-system]
