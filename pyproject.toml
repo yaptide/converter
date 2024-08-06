@@ -23,7 +23,7 @@ yaptide-converter = "converter.main:main"
 
 [tool.poetry.group.test.dependencies]
 pytest = "8.2.2"
-pre-commit = "3.7.1"
+pre-commit = "3.8.0"
 # scipy is needed in unit tests to cross check if rotation method works properly
 scipy = "1.13.1"
 
