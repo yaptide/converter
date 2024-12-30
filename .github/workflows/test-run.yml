@@ -20,7 +20,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
@@ -38,12 +38,14 @@ jobs:
     needs: smoke-test-on-linux
     strategy:
       matrix:
+        platform: ['windows-latest', 'macos-latest', 'ubuntu-latest']
         python-version: ['3.11']
-        platform: ['windows-latest', 'macos-latest']
         include:
           - python-version: '3.9'
             platform: 'ubuntu-latest'
           - python-version: '3.10'
+            platform: 'ubuntu-latest'
+          - python-version: '3.12'
             platform: 'ubuntu-latest'
 
     steps:
@@ -98,7 +100,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
        matrix:
-         python-version: ['3.9', '3.10', '3.11']
+         python-version: ['3.9', '3.10', '3.11', '3.12']
     needs: make-package
     steps:
       - name: Fetch package as artifacts
