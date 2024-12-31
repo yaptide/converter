@@ -510,6 +510,9 @@ class ShieldhitParser(Parser):
             # Add the figure that will serve as a black hole wrapper around the world zone
             black_hole_figure = solid_figures.parse_figure(world_zone)
 
+            # Change the name to Black Hole Wrapper
+            black_hole_figure.name = 'Black Hole Wrapper'
+
             # Make the figure slightly bigger. It will form the black hole wrapper around the simulation.
             black_hole_figure.expand(1.)
 
