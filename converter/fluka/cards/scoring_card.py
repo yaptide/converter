@@ -55,6 +55,12 @@ def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_un
 
     output_unit_in_fluka_convention = str(output_unit * -1)
 
+    # Make sure that name is processed only once
+    if not quantity.name_processed:
+        # Make each scoring distinct by adding output_unit to the name of scoring
+        quantity.name += f'_{output_unit}'
+        quantity.name_processed = True
+
     output.extend(parse_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention))
 
     counter.usrbin_counter += 1
@@ -70,8 +76,7 @@ def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_un
 def parse_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention) -> list[Card]:
     """Creates USRBIN card"""
     if isinstance(detector, CylinderDetector):
-        return _parse_cylinder_detector(detector, quantity, quantity_to_score,
-                                        output_unit_in_fluka_convention)
+        return _parse_cylinder_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention)
     return _parse_mesh_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention)
 
 
@@ -167,7 +172,6 @@ class ScoringsCard:
 
         # temporary default for no symmetry
         result: list[str] = []
-
         default_output_unit = 21
         counter = ScoringCardIndexCounter()
         for scoring in self.data:

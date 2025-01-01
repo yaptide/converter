@@ -30,6 +30,7 @@ class Quantity:
     """Class representing Quantity"""
 
     name: str
+    name_processed = False
     scoring_filter: Optional[Union[CustomFilter, ParticleFilter]]
     modifiers: list[any]  # unused
     keyword: str = 'DOSE'
