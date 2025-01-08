@@ -38,8 +38,16 @@ def _parse_box(box: BoxFigure, number: int) -> str:
     x_vec = rotate([box.x_edge_length, 0, 0], box.rotation)
     y_vec = rotate([0, box.y_edge_length, 0], box.rotation)
     z_vec = rotate([0, 0, box.z_edge_length], box.rotation)
-    diagonal_vec = [x_vec[i] + y_vec[i] + z_vec[i] for i in range(3)]
-    start_position = [box.position[i] - diagonal_vec[i] / 2 for i in range(3)]
+    diagonal_vec = [
+        x_vec[0] + y_vec[0] + z_vec[0],
+        x_vec[1] + y_vec[1] + z_vec[1],
+        x_vec[2] + y_vec[2] + z_vec[2],
+    ]
+    start_position = (
+        box.position[0] - diagonal_vec[0] / 2,
+        box.position[1] - diagonal_vec[1] / 2,
+        box.position[2] - diagonal_vec[2] / 2,
+    )
 
     box_template = """
 * Box: {name}, Dimensions: {x_edge_length} x {y_edge_length} x {z_edge_length}, Position: {position}, Rotation: {rotation}
