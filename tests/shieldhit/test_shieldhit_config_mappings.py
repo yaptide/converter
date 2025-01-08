@@ -55,10 +55,22 @@ Output
 
 _Geo_template_default = """
     0    0          Unnamed geometry
+* cylinder 
+* bottom center (+0.0, +10.0, +10.0), spanning vector (+0.0, -20.0, +0.0),
+* radius +10.0, height +20.0 cm
+* rotation angles: 90.0*, 0.0*, 0.0*
   RCC    1       0.0      10.0      10.0       0.0     -20.0       0.0
                 10.0
+* cylinder 
+* bottom center (+0.0, +12.5, +7.5), spanning vector (+0.0, -25.0, +0.0),
+* radius +15.0, height +25.0 cm
+* rotation angles: 90.0*, 0.0*, 0.0*
   RCC    2       0.0      12.5       7.5       0.0     -25.0       0.0
                 15.0
+* cylinder 
+* bottom center (+0.0, +15.0, +5.0), spanning vector (+0.0, -30.0, +0.0),
+* radius +20.0, height +30.0 cm
+* rotation angles: 90.0*, 0.0*, 0.0*
   RCC    3       0.0      15.0       5.0       0.0     -30.0       0.0
                 20.0
   END
@@ -88,6 +100,8 @@ def test_default_detect_config_str() -> None:
 
 def test_default_geo_config_str() -> None:
     """Test if the default MatConfig str representation is correct."""
+    print(GeoMatConfig().get_geo_string())
+    print(_Geo_template_default)
     assert GeoMatConfig().get_geo_string() == _Geo_template_default
 
 
