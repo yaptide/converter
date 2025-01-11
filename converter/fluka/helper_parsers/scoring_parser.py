@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, Union
-import hashlib
+import hashlib, base64
 
 from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector, \
     parse_cylinder_detector
@@ -37,12 +37,23 @@ class Quantity:
     keyword: str = 'DOSE'
 
     def name_string(self) -> str:
-        """Generate a 10-character string based on the name and output_unit."""
+
         # Create a consistent hash based on the name and output_unit
-        hash_input = f'{self.name}-{self.output_unit}'.encode('utf-8')
-        hash_value = int(hashlib.sha256(hash_input).hexdigest(), 16)
+        generated_hash = self.generate_custom_hash(f'{self.name}_{self.output_unit}', 5)
+
         # Generate the string in the desired format
-        return f'{self.name[:4]}_{abs(hash_value) % (10 ** 5):05}'
+        return f'{self.name[:4]}_{generated_hash}'
+
+    def generate_custom_hash(self, input_string, length=10):
+        # Generate a SHA-256 hash
+        hash_object = hashlib.sha256(input_string.encode())
+        # Get the binary digest
+        binary_hash = hash_object.digest()
+        # Encode it in base64 and replace non-alphanumeric characters
+        base64_hash = base64.urlsafe_b64encode(binary_hash).decode('utf-8')
+        # Remove padding '=' and truncate to the desired length
+        custom_hash = base64_hash.replace('=', '')[:length]
+        return custom_hash
 
 
 @dataclass

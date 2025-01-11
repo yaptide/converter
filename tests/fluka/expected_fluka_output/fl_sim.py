@@ -72,7 +72,7 @@ ASSIGNMA         AIR   region3
 ASSIGNMA       WATER     world
 ASSIGNMA    BLCKHOLE  boundary
 * generated scoring cards
-USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Flue_16255
+USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Flue_TzG3O
 USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
 AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
 * random number generator settings
