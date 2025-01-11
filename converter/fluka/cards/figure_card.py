@@ -48,11 +48,15 @@ class FiguresCard:
                 vector_x = format_float(figure.height_vector[0], n=16)
                 vector_y = format_float(figure.height_vector[1], n=16)
                 vector_z = format_float(figure.height_vector[2], n=16)
+                top_x = format_float(figure.coordinates[0] + figure.height_vector[0], n=16)
+                top_y = format_float(figure.coordinates[1] + figure.height_vector[1], n=16)
+                top_z = format_float(figure.coordinates[2] + figure.height_vector[2], n=16)
                 radius = format_float(figure.radius, n=16)
                 height = format_float(figure.height, n=16)
                 line += (f"* cylinder {figure.name}\n"
                          f"* bottom center ({x:+#}, {y:+#}, {z:+#}),"
-                         f" spanning vector ({vector_x:+#}, {vector_y:+#}, {vector_z:+#}),\n"
+                         f" top center ({top_x:+#}, {top_y:+#}, {top_z:+#})\n"
+                         f"* spanning vector ({vector_x:+#}, {vector_y:+#}, {vector_z:+#})\n"
                          f"* radius {radius:+#}, height {height:+#} cm\n"
                          f"* rotation angles: {figure.rotation[0]}*, "
                          f"{figure.rotation[1]}*, {figure.rotation[2]}*\n"

@@ -82,16 +82,26 @@ def _parse_box(box: BoxFigure, number: int) -> str:
 def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
     """Parse a CylinderFigure into a str representation of SH12A input file."""
     height_vect = rotate([0, 0, cylinder.height], cylinder.rotation)
-    lower_base_position = [cylinder.position[i] - height_vect[i] / 2 for i in range(3)]
-
+    lower_base_position = (
+        cylinder.position[0] - height_vect[0] / 2,
+        cylinder.position[1] - height_vect[1] / 2,
+        cylinder.position[2] - height_vect[2] / 2,
+    )
+    top_base_position = (
+        lower_base_position[0] + height_vect[0],
+        lower_base_position[1] + height_vect[1],
+        lower_base_position[2] + height_vect[2],
+    )
+    
     rcc_template = """
 * cylinder {name}
-* bottom center ({p1:+#}, {p2:+#}, {p3:+#}), spanning vector ({p4:+#}, {p5:+#}, {p6:+#}),
+* bottom center ({p1:+#}, {p2:+#}, {p3:+#}), top center ({p8:+#}, {p9:+#}, {p10:+#}),
+* spanning vector ({p4:+#}, {p5:+#}, {p6:+#}),
 * radius {p7:+#}, height {height:+#} cm
 * rotation angles: {rot_x}*, {rot_y}*, {rot_z}*
   RCC {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
           {p7:>10}"""
-
+    
     return rcc_template.format(
         name=cylinder.name,
         height=format_float(cylinder.height, 16),
@@ -106,6 +116,9 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
         p5=format_float(height_vect[1], 10),
         p6=format_float(height_vect[2], 10),
         p7=format_float(cylinder.radius_top, 10),
+        p8=format_float(top_base_position[0], 10),
+        p9=format_float(top_base_position[1], 10),
+        p10=format_float(top_base_position[2], 10),
     )
 
 
