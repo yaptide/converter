@@ -40,13 +40,13 @@ class Quantity:
     def name_string(self) -> str:
         """Generate unique name for scoring based on its name and output_unit"""
         # Create a consistent hash based on the name and output_unit
-        generated_hash = self.generate_custom_hash(f'{self.name}_{self.output_unit}', 5)
+        generated_hash = Quantity.generate_custom_hash(f'{self.name}_{self.output_unit}', 5)
 
         # Generate the string in the desired format
         return f'{self.name[:4]}_{generated_hash}'
 
     @staticmethod
-    def generate_custom_hash(self, input_string, length=10):
+    def generate_custom_hash(input_string, length=10):
         """Generate custom hash with specific length based on input string"""
         # Generate a SHA-256 hash
         hash_object = hashlib.sha256(input_string.encode())
