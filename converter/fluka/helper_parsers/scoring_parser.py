@@ -40,23 +40,10 @@ class Quantity:
     def name_string(self) -> str:
         """Generate unique name for scoring based on its name and output_unit"""
         # Create a consistent hash based on the name and output_unit
-        generated_hash = Quantity.generate_custom_hash(f'{self.name}_{self.output_unit}', 5)
+        generated_hash = generate_custom_hash(f'{self.name}_{self.output_unit}', 5)
 
         # Generate the string in the desired format
         return f'{self.name[:4]}_{generated_hash}'
-
-    @staticmethod
-    def generate_custom_hash(input_string, length=10):
-        """Generate custom hash with specific length based on input string"""
-        # Generate a SHA-256 hash
-        hash_object = hashlib.sha256(input_string.encode())
-        # Get the binary digest
-        binary_hash = hash_object.digest()
-        # Encode it in base64 and replace non-alphanumeric characters
-        base64_hash = base64.urlsafe_b64encode(binary_hash).decode('utf-8')
-        # Remove padding '=' and truncate to the desired length
-        custom_hash = base64_hash.replace('=', '')[:length]
-        return custom_hash
 
 
 @dataclass
@@ -164,3 +151,16 @@ def parse_detector(detector_dict: dict) -> Optional[Union[MeshDetector, Cylinder
         return parse_cylinder_detector(detector_dict)
 
     return None
+
+
+def generate_custom_hash(input_string, length=10):
+    """Generate custom hash with specific length based on input string"""
+    # Generate a SHA-256 hash
+    hash_object = hashlib.sha256(input_string.encode())
+    # Get the binary digest
+    binary_hash = hash_object.digest()
+    # Encode it in base64 and replace non-alphanumeric characters
+    base64_hash = base64.urlsafe_b64encode(binary_hash).decode('utf-8')
+    # Remove padding '=' and truncate to the desired length
+    custom_hash = base64_hash.replace('=', '')[:length]
+    return custom_hash
