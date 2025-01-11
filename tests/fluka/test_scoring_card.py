@@ -97,7 +97,7 @@ USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 def expected_scores_4() -> str:
     """Returns expected Fluka scoring card sets"""
     lines = """
-USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_To_-l6m6
+USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_To_al6m6
 USRBIN          -2.5      -2.5       3.0       1.0       1.0     100.0&
 USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_Pr_EWZdl
 USRBIN          -2.5      -2.5       3.0       1.0       1.0     100.0&
@@ -123,7 +123,7 @@ USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_C__w6biy
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN-1200600.0                10.0      10.0       1.0
-USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_He_WQwN-
+USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_He_WQwNa
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN -400200.0                11.0      11.0       1.0
 USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_B__WYZoZ

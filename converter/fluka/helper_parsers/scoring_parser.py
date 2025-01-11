@@ -154,13 +154,15 @@ def parse_detector(detector_dict: dict) -> Optional[Union[MeshDetector, Cylinder
 
 
 def generate_custom_hash(input_string, length=10):
-    """Generate custom hash with specific length based on input string"""
+    """Generate custom hash with specific length consisting of only 0-9, a-z and A-Z characters"""
     # Generate a SHA-256 hash
     hash_object = hashlib.sha256(input_string.encode())
     # Get the binary digest
     binary_hash = hash_object.digest()
-    # Encode it in base64 and replace non-alphanumeric characters
-    base64_hash = base64.urlsafe_b64encode(binary_hash).decode('utf-8')
+    # Encode it in standard base64
+    base64_hash = base64.b64encode(binary_hash).decode('utf-8')
+    # Replace '+' and '/' with alphanumeric characters (e.g., 'a' and 'b')
+    base64_hash = base64_hash.replace('+', 'a').replace('/', 'b')
     # Remove padding '=' and truncate to the desired length
     custom_hash = base64_hash.replace('=', '')[:length]
     return custom_hash
