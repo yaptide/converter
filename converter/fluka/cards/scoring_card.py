@@ -55,11 +55,8 @@ def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_un
 
     output_unit_in_fluka_convention = str(output_unit * -1)
 
-    # Make sure that name is processed only once
-    if not quantity.name_processed:
-        # Make each scoring distinct by adding output_unit to the name of scoring
-        quantity.name += f'_{output_unit}'
-        quantity.name_processed = True
+    # save output_unit to quantity object for later unique name generation
+    quantity.output_unit = output_unit
 
     output.extend(parse_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention))
 
@@ -87,7 +84,7 @@ def _parse_mesh_detector(detector: MeshDetector, quantity: Quantity, quantity_to
     first_card.what = [
         '10.0', quantity_to_score, output_unit_in_fluka_convention, detector.x_max, detector.y_max, detector.z_max
     ]
-    first_card.sdum = short_name(quantity.name)
+    first_card.sdum = short_name(quantity.name_string())
 
     second_card = Card(codewd='USRBIN')
     second_card.what = [
@@ -110,7 +107,7 @@ def _parse_cylinder_detector(detector: CylinderDetector, quantity: Quantity, qua
     first_card.what = [
         '11.0', quantity_to_score, output_unit_in_fluka_convention, detector.r_max, detector.y, detector.z_max
     ]
-    first_card.sdum = short_name(quantity.name)
+    first_card.sdum = short_name(quantity.name_string())
 
     second_card = Card(codewd='USRBIN')
     second_card.what = [

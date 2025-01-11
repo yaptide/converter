@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional, Union
+import hashlib
 
 from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector, \
     parse_cylinder_detector
@@ -30,10 +31,18 @@ class Quantity:
     """Class representing Quantity"""
 
     name: str
-    name_processed = False
+    output_unit: Optional[int]
     scoring_filter: Optional[Union[CustomFilter, ParticleFilter]]
     modifiers: list[any]  # unused
     keyword: str = 'DOSE'
+
+    def name_string(self) -> str:
+        """Generate a 10-character string based on the name and output_unit."""
+        # Create a consistent hash based on the name and output_unit
+        hash_input = f'{self.name}-{self.output_unit}'.encode('utf-8')
+        hash_value = int(hashlib.sha256(hash_input).hexdigest(), 16)
+        # Generate the string in the desired format
+        return f'{self.name[:4]}_{abs(hash_value) % (10 ** 5):05}'
 
 
 @dataclass
@@ -123,6 +132,7 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
 
             quantities.append(
                 Quantity(name=quantity['name'],
+                         output_unit=None,
                          keyword=quantity['keyword'],
                          scoring_filter=scoring_filter,
                          modifiers=quantity.get('modifiers')))
