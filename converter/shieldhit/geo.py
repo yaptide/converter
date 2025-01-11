@@ -99,7 +99,7 @@ def _parse_cylinder(cylinder: CylinderFigure, number: int) -> str:
 * radius {p7:+#}, height {height:+#} cm
 * rotation angles: {rot_x}*, {rot_y}*, {rot_z}*
   RCC {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
-          {p7:>10}"""    
+          {p7:>10}"""
     return rcc_template.format(
         name=cylinder.name,
         height=format_float(cylinder.height, 16),
