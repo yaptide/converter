@@ -47,7 +47,7 @@ def detectors_json_4(project4_fluka_json: dict) -> dict:
 def expected_card() -> str:
     """Returns expected Fluka scoring card sets"""
     lines = """
-USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
+USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence_21
 USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
 AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
 """
@@ -59,7 +59,7 @@ AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
 def expected_scores() -> str:
     """Returns expected Fluka scoring card sets"""
     lines = """
-USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
+USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Flue_TzG3O
 USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
 AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
 """
@@ -71,10 +71,10 @@ AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
 def expected_scores_2() -> str:
     """Returns expected Fluka scoring card sets"""
     lines = """
-USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Fluence
+USRBIN          10.0  ALL-PART     -21.0      0.05       5.0       6.0Flue_TzG3O
 USRBIN         -0.05      -5.0      -6.0       1.0     100.0     120.0&
 AUXSCORE      USRBIN -100100.0                 1.0       1.0       1.0
-USRBIN          10.0      DOSE     -22.0      12.5      25.0      37.5MyDose
+USRBIN          10.0      DOSE     -22.0      12.5      25.0      37.5MyDo_dX4W2
 USRBIN           7.5      15.0      22.5      10.0     100.0     150.0&
 AUXSCORE      USRBIN   NEUTRON                 2.0       2.0       1.0
 """
@@ -86,7 +86,7 @@ AUXSCORE      USRBIN   NEUTRON                 2.0       2.0       1.0
 def expected_scores_cylinder() -> str:
     """Returns expected Fluka scoring card sets"""
     lines = """
-USRBIN          11.0      DOSE     -21.0       3.0       0.0      21.0Dose1
+USRBIN          11.0      DOSE     -21.0       3.0       0.0      21.0Dose_Tt536
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 """
 
@@ -97,36 +97,36 @@ USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 def expected_scores_4() -> str:
     """Returns expected Fluka scoring card sets"""
     lines = """
-USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_Total
+USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_To_al6m6
 USRBIN          -2.5      -2.5       3.0       1.0       1.0     100.0&
-USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_Proton
+USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_Pr_EWZdl
 USRBIN          -2.5      -2.5       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN    PROTON                 2.0       2.0       1.0
-USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_He3
+USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_He_q3AVx
 USRBIN          -2.5      -2.5       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN  3-HELIUM                 3.0       3.0       1.0
-USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_C_Cus
+USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_C__8Y1Bp
 USRBIN          -2.5      -2.5       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN-1200600.0                 4.0       4.0       1.0
-USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_He_Cus
+USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_He_oeZGk
 USRBIN          -2.5      -2.5       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN -400200.0                 5.0       5.0       1.0
-USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_B_Cus
+USRBIN          10.0      DOSE     -21.0       2.5       2.5      21.0D_B__HBQJv
 USRBIN          -2.5      -2.5       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN -900400.0                 6.0       6.0       1.0
-USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_Total
+USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_To_SNVdq
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
-USRBIN          11.0    PROTON     -22.0       2.5       0.0      21.0F_Proton
+USRBIN          11.0    PROTON     -22.0       2.5       0.0      21.0F_Pr_7CgH1
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
-USRBIN          11.0  3-HELIUM     -22.0       2.5       0.0      21.0F_He3
+USRBIN          11.0  3-HELIUM     -22.0       2.5       0.0      21.0F_He_KCn1N
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
-USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_C_Cus
+USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_C__w6biy
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN-1200600.0                10.0      10.0       1.0
-USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_He_Cus
+USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_He_WQwNa
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN -400200.0                11.0      11.0       1.0
-USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_B_Cus
+USRBIN          11.0  ALL-PART     -22.0       2.5       0.0      21.0F_B__WYZoZ
 USRBIN           0.0       0.0       3.0       1.0       1.0     100.0&
 AUXSCORE      USRBIN -900400.0                12.0      12.0       1.0
 """

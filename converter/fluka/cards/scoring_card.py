@@ -55,6 +55,9 @@ def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_un
 
     output_unit_in_fluka_convention = str(output_unit * -1)
 
+    # save output_unit to quantity object for later unique name generation
+    quantity.output_unit = output_unit
+
     output.extend(parse_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention))
 
     counter.usrbin_counter += 1
@@ -70,8 +73,7 @@ def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_un
 def parse_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention) -> list[Card]:
     """Creates USRBIN card"""
     if isinstance(detector, CylinderDetector):
-        return _parse_cylinder_detector(detector, quantity, quantity_to_score,
-                                        output_unit_in_fluka_convention)
+        return _parse_cylinder_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention)
     return _parse_mesh_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention)
 
 
@@ -82,7 +84,7 @@ def _parse_mesh_detector(detector: MeshDetector, quantity: Quantity, quantity_to
     first_card.what = [
         '10.0', quantity_to_score, output_unit_in_fluka_convention, detector.x_max, detector.y_max, detector.z_max
     ]
-    first_card.sdum = short_name(quantity.name)
+    first_card.sdum = short_name(quantity.name_string())
 
     second_card = Card(codewd='USRBIN')
     second_card.what = [
@@ -105,7 +107,7 @@ def _parse_cylinder_detector(detector: CylinderDetector, quantity: Quantity, qua
     first_card.what = [
         '11.0', quantity_to_score, output_unit_in_fluka_convention, detector.r_max, detector.y, detector.z_max
     ]
-    first_card.sdum = short_name(quantity.name)
+    first_card.sdum = short_name(quantity.name_string())
 
     second_card = Card(codewd='USRBIN')
     second_card.what = [
@@ -167,7 +169,6 @@ class ScoringsCard:
 
         # temporary default for no symmetry
         result: list[str] = []
-
         default_output_unit = 21
         counter = ScoringCardIndexCounter()
         for scoring in self.data:

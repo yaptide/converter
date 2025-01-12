@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Union
+import hashlib
+import base64
 
 from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector, \
     parse_cylinder_detector
@@ -30,9 +32,18 @@ class Quantity:
     """Class representing Quantity"""
 
     name: str
+    output_unit: Optional[int]
     scoring_filter: Optional[Union[CustomFilter, ParticleFilter]]
     modifiers: list[any]  # unused
     keyword: str = 'DOSE'
+
+    def name_string(self) -> str:
+        """Generate unique name for scoring based on its name and output_unit"""
+        # Create a consistent hash based on the name and output_unit
+        generated_hash = generate_custom_hash(f'{self.name}_{self.output_unit}', 5)
+
+        # Generate the string in the desired format
+        return f'{self.name[:4]}_{generated_hash}'
 
 
 @dataclass
@@ -122,6 +133,7 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
 
             quantities.append(
                 Quantity(name=quantity['name'],
+                         output_unit=None,
                          keyword=quantity['keyword'],
                          scoring_filter=scoring_filter,
                          modifiers=quantity.get('modifiers')))
@@ -139,3 +151,18 @@ def parse_detector(detector_dict: dict) -> Optional[Union[MeshDetector, Cylinder
         return parse_cylinder_detector(detector_dict)
 
     return None
+
+
+def generate_custom_hash(input_string, length=10):
+    """Generate custom hash with specific length consisting of only 0-9, a-z and A-Z characters"""
+    # Generate a SHA-256 hash
+    hash_object = hashlib.sha256(input_string.encode())
+    # Get the binary digest
+    binary_hash = hash_object.digest()
+    # Encode it in standard base64
+    base64_hash = base64.b64encode(binary_hash).decode('utf-8')
+    # Replace '+' and '/' with alphanumeric characters (e.g., 'a' and 'b')
+    base64_hash = base64_hash.replace('+', 'a').replace('/', 'b')
+    # Remove padding '=' and truncate to the desired length
+    custom_hash = base64_hash.replace('=', '')[:length]
+    return custom_hash
