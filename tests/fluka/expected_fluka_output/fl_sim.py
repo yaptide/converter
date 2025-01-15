@@ -25,13 +25,15 @@ RPP fig0 -6.0 +6.0 -5.0 +5.0 -1.0 +9.0
 * X, Y, Z side lengths: +8.0, +8.0, +8.0
 RPP fig1 -4.0 +4.0 -4.0 +4.0 +0.0 +8.0
 * cylinder fig2
-* bottom center (+0.0, +0.0, -0.5), spanning vector (+0.0, +0.0, +1.0),
+* bottom center (+0.0, +0.0, -0.5), top center (+0.0, +0.0, +0.5)
+* spanning vector (+0.0, +0.0, +1.0)
 * radius +4.0, height +1.0 cm
 * rotation angles: 0*, 0*, 0*
 RCC fig2 +0.0 +0.0 -0.5 +0.0 +0.0
 +1.0 +4.0
 * cylinder fig3
-* bottom center (+0.0, +0.0, -0.5), spanning vector (+0.0, +0.0, +1.0),
+* bottom center (+0.0, +0.0, -0.5), top center (+0.0, +0.0, +0.5)
+* spanning vector (+0.0, +0.0, +1.0)
 * radius +2.0, height +1.0 cm
 * rotation angles: 0*, 0*, 0*
 RCC fig3 +0.0 +0.0 -0.5 +0.0 +0.0
