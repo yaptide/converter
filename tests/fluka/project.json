@@ -2,7 +2,7 @@
 	"metadata": {
 		"version": "0.11",
 		"type": "Editor",
-		"generator": "YaptideEditor.toJSON"
+		"generator": "YaptideEditor.toSerialized"
 	},
 	"project": {
 		"title": "new.json",
@@ -48,7 +48,7 @@
 		"metadata": {
 			"version": "0.11",
 			"type": "Manager",
-			"generator": "FigureManager.toJSON"
+			"generator": "FigureManager.toSerialized"
 		},
 		"figures": [
 			{
@@ -142,7 +142,7 @@
 		"metadata": {
 			"version": "0.11",
 			"type": "Manager",
-			"generator": "ZoneManager.toJSON"
+			"generator": "ZoneManager.toSerialized"
 		},
 		"zones": [
 			{
@@ -274,7 +274,7 @@
 		"metadata": {
 			"version": "0.11",
 			"type": "Manager",
-			"generator": "DetectorManager.toJSON"
+			"generator": "DetectorManager.toSerialized"
 		},
 		"detectors": [
 			{
@@ -305,7 +305,7 @@
 		"metadata": {
 			"version": "0.11",
 			"type": "Manager",
-			"generator": "SpecialComponentManager.toJSON"
+			"generator": "SpecialComponentManager.toSerialized"
 		}
 	},
 	"materialManager": {
@@ -337,7 +337,7 @@
 		"metadata": {
 			"version": "0.11",
 			"type": "Manager",
-			"generator": "MaterialManager.toJSON"
+			"generator": "MaterialManager.toSerialized"
 		}
 	},
 	"scoringManager": {
@@ -384,7 +384,7 @@
 		"metadata": {
 			"version": "0.11",
 			"type": "Manager",
-			"generator": "ScoringManager.toJSON"
+			"generator": "ScoringManager.toSerialized"
 		}
 	},
 	"beam": {
