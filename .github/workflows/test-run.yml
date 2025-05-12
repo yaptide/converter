@@ -26,7 +26,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install poetry
-          poetry install --only main,test
+          poetry install --only test
 
       - name: Run main tests
         run: python -m pytest
@@ -65,7 +65,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install poetry
-          poetry install --only main,test
+          poetry install --only test
 
       - name: Run main tests
         run: python -m pytest
@@ -86,7 +86,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install poetry
-          poetry install --only main
+          poetry install
 
       - name: Make package
         run: poetry build
