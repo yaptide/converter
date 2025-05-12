@@ -16,7 +16,7 @@ packages = [{include = "converter"}]
 "Bug Tracker" = "https://github.com/yaptide/converter/issues"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.9,<3.14"
 
 [tool.poetry.scripts]
 yaptide-converter = "converter.main:main"
