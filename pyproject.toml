@@ -1,35 +1,43 @@
-[tool.poetry]
+[project]
 name = "yaptide-converter"
 version = "1.0.0"
 description = "Yet Another Particle Transport IDE - converter"
-authors = ["yaptide team"]
+authors = [{name = "yaptide team"}] # PEP 621 author format
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
 readme = "README.md"
-repository = "https://github.com/yaptide/converter"
-homepage = "https://github.com/yaptide/converter"
-packages = [{include = "converter"}]
+requires-python = ">=3.9,<3.14"
 
-[tool.poetry.urls]
+[project.urls]
+"Homepage" = "https://github.com/yaptide/converter" # Renamed from repository
 "Bug Tracker" = "https://github.com/yaptide/converter/issues"
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-
-[tool.poetry.scripts]
+[project.scripts]
 yaptide-converter = "converter.main:main"
+
+
+[tool.poetry]
+# Keep this section for Poetry-specific configurations not covered by PEP 621
+packages = [{include = "converter"}]
+
+[tool.poetry.group.test]
+optional = true # Mark as optional so it's not installed by default
 
 [tool.poetry.group.test.dependencies]
 pytest = "8.3.5"
 pre-commit = "4.2.0"
 # scipy is needed in unit tests to cross check if rotation method works properly
-scipy = "1.13.1"
-
+# Use conditional dependencies based on Python version
+scipy = [
+    { version = "1.13.1", python = "3.9" },
+    { version = "1.15.1", python = ">=3.10,<3.14" } # For Python 3.10 and up, within project's range
+]
+numpy = "^2.0.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"] # Ensure poetry-core is at least 1.0 for PEP 517 compliance
 build-backend = "poetry.core.masonry.api"
 
 [tool.pycodestyle]
@@ -42,5 +50,4 @@ column_limit = "120"
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "INFO"
-
 testpaths = ["tests"]
