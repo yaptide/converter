@@ -29,8 +29,11 @@ optional = true # Mark as optional so it's not installed by default
 pytest = "8.3.5"
 pre-commit = "4.2.0"
 # scipy is needed in unit tests to cross check if rotation method works properly
-scipy = "1.13.1"
-
+# Use conditional dependencies based on Python version
+scipy = [
+    { version = "1.13.1", python = "3.9" },
+    { version = "1.15.1", python = ">=3.10,<3.14" } # For Python 3.10 and up, within project's range
+]
 [build-system]
 requires = ["poetry-core>=1.0.0"] # Ensure poetry-core is at least 1.0 for PEP 517 compliance
 build-backend = "poetry.core.masonry.api"
