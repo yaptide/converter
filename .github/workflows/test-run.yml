@@ -26,7 +26,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install poetry
-          poetry install --only test
+          poetry install --with test
 
       - name: Run main tests
         run: python -m pytest
@@ -47,10 +47,8 @@ jobs:
             platform: 'ubuntu-latest'
           - python-version: '3.11'
             platform: 'ubuntu-latest'
-          - python-version: '3.12'
+          - python-version: '3.13'
             platform: 'ubuntu-latest'
-          - python-version: '3.12'
-            platform: 'windows-latest'
 
     steps:
       - name: Checkout
@@ -65,7 +63,7 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           pip install poetry
-          poetry install --only test
+          poetry install --with test
 
       - name: Run main tests
         run: python -m pytest

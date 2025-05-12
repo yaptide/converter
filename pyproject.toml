@@ -17,16 +17,19 @@ requires-python = ">=3.9,<3.14"
 [project.scripts]
 yaptide-converter = "converter.main:main"
 
-[project.optional-dependencies]
-test = [
-    "pytest==8.3.5",
-    "pre-commit==4.2.0",
-    "scipy==1.13.1",
-]
 
 [tool.poetry]
 # Keep this section for Poetry-specific configurations not covered by PEP 621
 packages = [{include = "converter"}]
+
+[tool.poetry.group.test]
+optional = true # Mark as optional so it's not installed by default
+
+[tool.poetry.group.test.dependencies]
+pytest = "8.3.5"
+pre-commit = "4.2.0"
+# scipy is needed in unit tests to cross check if rotation method works properly
+scipy = "1.13.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"] # Ensure poetry-core is at least 1.0 for PEP 517 compliance
