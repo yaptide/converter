@@ -27,7 +27,7 @@ optional = true # Mark as optional so it's not installed by default
 
 [tool.poetry.group.test.dependencies]
 pytest = "8.4.1"
-pre-commit = "4.2.0"
+pre-commit = "4.3.0"
 # scipy is needed in unit tests to cross check if rotation method works properly
 # Use conditional dependencies based on Python version
 scipy = [
