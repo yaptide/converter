@@ -4,6 +4,7 @@ from converter.shieldhit.parser import ShieldhitParser
 from converter.topas.parser import TopasParser
 from converter.common import Parser
 from converter.fluka.parser import FlukaParser
+from converter.geant4.parser import Geant4Parser
 
 
 def get_parser_from_str(parser_type: str) -> Parser:
@@ -15,6 +16,8 @@ def get_parser_from_str(parser_type: str) -> Parser:
         return TopasParser()
     if parser_type.lower() == 'fluka':
         return FlukaParser()
+    if parser_type.lower() == 'geant4':
+        return Geant4Parser()
 
     print(f"Invalid parser type \"{parser_type}\".")
     raise ValueError("Parser type must be either 'shieldhit', 'topas' or 'fluka'.")

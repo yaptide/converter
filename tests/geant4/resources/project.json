@@ -1,0 +1,338 @@
+{
+	"metadata": {
+		"version": "0.12",
+		"type": "Editor",
+		"generator": "YaptideEditor.toSerialized"
+	},
+	"project": {
+		"title": "proton_pencil_beam_geant4",
+		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
+		"viewManager": {
+			"ViewPanelXY": {
+				"cameraMatrix": [1,0,0,0,0,0.999999999999496,9.999999998910844e-7,0,0,-9.999999998910844e-7,0.999999999999496,0,0,-0.0000999999999891088,99.99999999994995,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": false
+				}
+			},
+			"ViewPanel3D": {
+				"cameraMatrix": [0.05814482888859139,0,0.9983081582725426,0,0.3562814940847079,0.9341482171271004,-0.020751033974893633,0,-0.9325677861937345,0.3568852875060259,0.054315888241437904,0,-32.97153410262506,12.22409719181355,0.7628195419010333,1]
+			},
+			"ViewPanelY": {
+				"cameraMatrix": [2.2204460492502386e-16,-5.5511151231255966e-17,0.9999999999999665,0,0.9999999999994648,0.0000010000000000287205,-1.6653345369376761e-16,0,-9.999999999732094e-7,0.9999999999994648,1.1102230246251175e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": false
+				}
+			},
+			"ViewPanelX": {
+				"cameraMatrix": [-2.2204460492503146e-16,1.0000000000000007,1.421084916408689e-10,0,9.9999999986222e-7,-1.4210854715201973e-10,0.9999999999994978,0,0.9999999999994977,2.2204460492503082e-16,-9.999999999177312e-7,0,99.99999999994895,1.4210854715202004e-14,-0.0000999999999999823,1],
+				"clipPlane": {
+					"planeConstant": 0,
+					"visible": false
+				}
+			},
+			"ViewPanel": {
+				"cameraMatrix": [0.07426714888874009,0,0.9972383820310657,0,0.1890359579236641,0.9818692455756362,-0.014078039800121761,0,-0.9791576978239105,0.18955944870338465,0.07292062945044075,0,-27.694761919291807,5.361550864645869,2.0625068629119263,1]
+			}
+		},
+		"history": {
+			"undos": [],
+			"redos": []
+		},
+		"simulator": "geant4"
+	},
+	"figureManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0F0F",
+		"name": "Figure Manager",
+		"type": "FigureManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "FigureManager.toSerialized"
+		},
+		"figures": [
+			{
+				"name": "World",
+				"type": "CylinderFigure",
+				"uuid": "bd9533dc-2611-4645-801b-883953916fd6",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "HollowCylinderGeometry",
+					"position": [0,0,10.5],
+					"rotation": [0,0,0],
+					"parameters": {
+						"innerRadius": 0,
+						"radius": 6,
+						"depth": 24
+					}
+				},
+				"colorHex": 0,
+				"children": [
+					{
+						"name": "Vacuum_cylinder",
+						"type": "CylinderFigure",
+						"uuid": "f94994c6-a14e-4a40-97cc-84caa873075e",
+						"visible": true,
+						"geometryData": {
+							"geometryType": "HollowCylinderGeometry",
+							"position": [0,0,0],
+							"rotation": [0,0,0],
+							"parameters": {
+								"innerRadius": 0,
+								"radius": 5.5,
+								"depth": 22
+							}
+						},
+						"colorHex": 0,
+						"children": [
+							{
+								"name": "Water_phantom_cylinder",
+								"type": "CylinderFigure",
+								"uuid": "31e3ac1c-ea6c-43a0-9533-8316748f6f0c",
+								"visible": true,
+								"geometryData": {
+									"geometryType": "HollowCylinderGeometry",
+									"position": [0,0,-0.5],
+									"rotation": [0,0,0],
+									"parameters": {
+										"innerRadius": 0,
+										"radius": 5,
+										"depth": 20
+									}
+								},
+								"colorHex": 0,
+								"children": [],
+								"simulationMaterial": {
+									"icru": 276,
+									"name": "WATER, LIQUID",
+									"sanitized_name": "water_liquid",
+									"density": 1,
+									"geant4_name": "G4_WATER"
+								}
+							}],
+						"simulationMaterial": {
+							"icru": 1000,
+							"name": "VACUUM",
+							"sanitized_name": "vacuum",
+							"density": 0,
+							"geant4_name": "G4_Galactic"
+						}
+					}],
+				"simulationMaterial": {
+					"icru": 0,
+					"name": "BLACK HOLE",
+					"sanitized_name": "black_hole",
+					"density": 0,
+					"geant4_name": "BlackHole"
+				}
+			}]
+	},
+	"zoneManager": {
+		"uuid": "368269D3-6F9B-4241-84A0-5D908D10E196",
+		"name": "Zone Manager",
+		"type": "ZoneManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "ZoneManager.toSerialized"
+		},
+		"zones": [],
+		"worldZone": {
+			"uuid": "12c8d4b0-838b-46b0-81e2-0a4008dea8f4",
+			"type": "WorldZone",
+			"name": "World Zone",
+			"marginMultiplier": 1.1,
+			"autoCalculate": false,
+			"materialUuid": "a2f08097-a999-4a4f-8371-e919e2f999a7",
+			"visible": false,
+			"geometryData": {
+				"geometryType": "BoxGeometry",
+				"position": [0,0,10.5],
+				"rotation": [0,0,0],
+				"parameters": {
+					"width": 0,
+					"height": 0,
+					"depth": 0
+				}
+			}
+		}
+	},
+	"detectorManager": {
+		"uuid": "9A7D17B8-BAE4-441F-965F-490CAA617EC6",
+		"name": "Detector Manager",
+		"type": "DetectorManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "DetectorManager.toSerialized"
+		},
+		"detectors": [
+			{
+				"name": "CylZ_Mesh",
+				"uuid": "67e59e3d-0d36-4fcc-9a28-29bc044a6d72",
+				"type": "Detector",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "Cyl",
+					"position": [0,0,10],
+					"rotation": [0,0,0],
+					"parameters": {
+						"radius": 5,
+						"innerRadius": 0,
+						"depth": 20,
+						"radialSegments": 1,
+						"zSegments": 400
+					}
+				},
+				"colorHex": 65535
+			},
+			{
+				"name": "YZ_Mesh",
+				"uuid": "116f105e-c987-4602-9913-8dd0ef2affaa",
+				"type": "Detector",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "Mesh",
+					"position": [0,0,10],
+					"rotation": [0,0,0],
+					"parameters": {
+						"width": 0.5,
+						"height": 4,
+						"depth": 20,
+						"xSegments": 1,
+						"ySegments": 80,
+						"zSegments": 100
+					}
+				},
+				"colorHex": 65535
+			},
+			{
+				"name": "EntrySlab",
+				"uuid": "590c80b4-bb94-4c44-8a06-2eb58dcb1f37",
+				"type": "Detector",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "Cyl",
+					"position": [0,0,0.05],
+					"rotation": [0,0,0],
+					"parameters": {
+						"radius": 5,
+						"innerRadius": 0,
+						"depth": 0.1,
+						"radialSegments": 1,
+						"zSegments": 1
+					}
+				},
+				"colorHex": 65535
+			},
+			{
+				"name": "PeakSlab",
+				"uuid": "310462e1-62ab-47aa-9aa9-c1e641b7d4ed",
+				"type": "Detector",
+				"visible": true,
+				"geometryData": {
+					"geometryType": "Cyl",
+					"position": [0,0,15.35],
+					"rotation": [0,0,0],
+					"parameters": {
+						"radius": 5,
+						"innerRadius": 0,
+						"depth": 0.1,
+						"radialSegments": 1,
+						"zSegments": 1
+					}
+				},
+				"colorHex": 65535
+			}]
+	},
+	"specialComponentsManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0F0FFF",
+		"name": "Special Components",
+		"type": "SpecialComponentManager",
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "SpecialComponentManager.toSerialized"
+		}
+	},
+	"materialManager": {
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0FFFFFFF",
+		"name": "Material Manager",
+		"type": "MaterialManager",
+		"materials": [
+			{
+				"uuid": "a2f08097-a999-4a4f-8371-e919e2f999a7",
+				"sanitizedName": "vacuum",
+				"name": "VACUUM",
+				"icru": 1000,
+				"density": 0,
+				"color": 196613
+			}],
+		"selectedMaterials": {},
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "MaterialManager.toSerialized"
+		}
+	},
+	"scoringManager": {
+		"name": "Scoring Manager",
+		"type": "ScoringManager",
+		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
+		"outputs": [],
+		"filters": [],
+		"metadata": {
+			"version": "0.12",
+			"type": "Manager",
+			"generator": "ScoringManager.toSerialized"
+		}
+	},
+	"beam": {
+		"name": "Beam",
+		"type": "Beam",
+		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
+		"position": [0,0,0],
+		"direction": [0,0,1],
+		"energy": 150,
+		"energySpread": 1.5,
+		"energyLowCutoff": 0,
+		"energyHighCutoff": 1000,
+		"sigma": {
+			"type": "Gaussian",
+			"x": 0,
+			"y": 0
+		},
+		"sad": {
+			"type": "none",
+			"x": 0,
+			"y": 0
+		},
+		"divergence": {
+			"x": 0,
+			"y": 0,
+			"distanceToFocal": 0
+		},
+		"particle": {
+			"id": 2,
+			"name": "Proton",
+			"a": 1,
+			"z": 1
+		},
+		"colorHex": 16776960,
+		"numberOfParticles": 10000,
+		"sourceFile": {
+			"value": "",
+			"name": ""
+		},
+		"sourceType": "simple"
+	},
+	"physic": {
+		"energyLoss": 0.03,
+		"enableNuclearReactions": true,
+		"energyModelStraggling": "Vavilov",
+		"multipleScattering": "Moliere",
+		"stoppingPowerTable": "ICRU91"
+	},
+	"hash": "ce5f117b649c9d1e35c4070f55d403b66be378fd"
+}
