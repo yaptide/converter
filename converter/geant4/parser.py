@@ -1,5 +1,5 @@
 from converter.common import Parser
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET # deepsource ignore BAN-B405: using defusedxml.defuse_stdlib()
 from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
 import defusedxml
