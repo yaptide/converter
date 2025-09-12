@@ -1,9 +1,10 @@
 from converter.common import Parser
+from converter.geant4.Geant4MarcoGenerator import Geant4MacroGenerator
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
-from converter.geant4.Geant4MarcoGenerator import Geant4MacroGenerator
+
 
 _MM_PER_CM = 10.0
 _EPS = 1e-9

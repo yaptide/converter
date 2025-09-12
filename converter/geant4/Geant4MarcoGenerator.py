@@ -113,7 +113,8 @@ class Geant4MacroGenerator:
 
         self.lines.append("/score/close\n")
 
-    def _append_mesh(self, detector: Dict[str, Any], geom_type: str, params: Dict[str, Any], pos_det: List[float]) -> None:
+    def _append_mesh(self, detector: Dict[str, Any], geom_type: str,
+                     params: Dict[str, Any], pos_det: List[float]) -> None:
         """Append a mesh (cylinder or box) for a detector."""
         name = detector.get("name", "UnknownDetector")
         if geom_type.lower() in ["cyl", "cylinder"]:
@@ -137,10 +138,12 @@ class Geant4MacroGenerator:
             self.lines.append(f"/score/mesh/boxSize {width} {height} {depth} cm")
             self.lines.append(f"/score/mesh/nBin {n_x} {n_y} {n_z}")
 
-    def _append_probe(self, detector: Dict[str, Any], geom_type: str, params: Dict[str, Any], pos_det: List[float]) -> None:
+    def _append_probe(self, detector: Dict[str, Any], geom_type: str,
+                      params: Dict[str, Any], pos_det: List[float]) -> None:
         """Append a probe scoring for KineticEnergySpectrum quantities."""
         name = detector.get("name", "UnknownDetector")
-        size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"] else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
+        size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"]\
+            else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
         self.lines.append(f"/score/create/probe {name} {size} cm")
         self.lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
 
