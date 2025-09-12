@@ -21,23 +21,28 @@ GEANT4_QUANTITY_MAP = {
     "KineticEnergySpectrum": "cellFlux",
 }
 
+
 class Geant4MacroGenerator:
     """Generate Geant4 mac (beam + scoring + run)."""
 
     def __init__(self, data: Dict[str, Any]) -> None:
+        """Initialize with JSON data."""
         self.data = data
+        self.lines: List[str] = []
+        self.probe_histograms: List[Dict[str, Any]] = []
+        self.probe_counter = 0
 
     def generate(self) -> str:
-        lines: List[str] = []
+        """Generate full Geant4 macro content."""
+        self._append_initialization()
+        self._append_scoring()
+        self._append_histograms()
+        self._append_run()
+        self._append_results()
+        return "\n".join(self.lines)
 
-        # ===========================
-        # Run initializaition
-        # ===========================
-        lines.append("/run/initialize\n")
-        lines.append("##########################################")
-        lines.append("####### Particle Source definition #######")
-        lines.append("##########################################\n")
-
+    def _append_initialization(self) -> None:
+        """Append particle source and run initialization."""
         beam = self.data.get("beam", {})
         particle = beam.get("particle", {}).get("name", "proton")
         pos = beam.get("position", [0, 0, 0])
@@ -46,22 +51,30 @@ class Geant4MacroGenerator:
         sigma = beam.get("energySpread", 0)
         energy_high = beam.get("energyHighCutoff", 1000)
 
-        lines.append("/gps/verbose 0")
-        lines.append(f"/gps/particle {particle.lower()}")
-        lines.append(f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm")
-        lines.append("/gps/pos/type Beam")
-        lines.append(f"/gps/direction {direction[0]} {direction[1]} {direction[2]}")
-        lines.append("/gps/ene/type Gauss")
-        lines.append(f"/gps/ene/mono {energy} MeV")
-        lines.append(f"/gps/ene/sigma {sigma} MeV")
-        lines.append(f"/gps/ene/max {energy_high} MeV\n")
+        self.lines.extend([
+            "/run/initialize\n",
+            "##########################################",
+            "####### Particle Source definition #######",
+            "##########################################\n",
+            "/gps/verbose 0",
+            f"/gps/particle {particle.lower()}",
+            f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm",
+            "/gps/pos/type Beam",
+            f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
+            "/gps/ene/type Gauss",
+            f"/gps/ene/mono {energy} MeV",
+            f"/gps/ene/sigma {sigma} MeV",
+            f"/gps/ene/max {energy_high} MeV\n"
+        ])
 
-        # ===========================
-        # Scoring
-        # ===========================
-        lines.append("##########################################")
-        lines.append("################ Scoring #################")
-        lines.append("##########################################\n")
+    # -------------------- Scoring --------------------
+    def _append_scoring(self) -> None:
+        """Append all detector scoring blocks."""
+        self.lines.extend([
+            "##########################################",
+            "################ Scoring #################",
+            "##########################################\n"
+        ])
 
         detectors = {d["uuid"]: d for d in self.data.get("detectorManager", {}).get("detectors", [])}
         outputs = self.data.get("scoringManager", {}).get("outputs", [])
@@ -72,98 +85,125 @@ class Geant4MacroGenerator:
             detector_uuid = output.get("detectorUuid")
             detector_quantities.setdefault(detector_uuid, []).extend(output.get("quantities", []))
 
-        probe_histograms: List[Dict[str, Any]] = []
-        probe_counter = 0
-
         for detector_uuid, quantities in detector_quantities.items():
             detector = detectors.get(detector_uuid)
             if not detector:
                 continue
+            self._append_detector_scoring(detector, quantities, filters)
 
-            name = detector.get("name", "UnknownDetector")
-            geom = detector.get("geometryData", {})
-            geom_type = geom.get("geometryType", "Box")
-            params = geom.get("parameters", {})
-            pos_det = geom.get("position", [0, 0, 0])
+    def _append_detector_scoring(self, detector: Dict[str, Any], quantities: List[Dict[str, Any]],
+                                 filters: Dict[str, Any]) -> None:
+        """Append scoring for a single detector including mesh/probe and quantities."""
+        name = detector.get("name", "UnknownDetector")
+        geom = detector.get("geometryData", {})
+        geom_type = geom.get("geometryType", "Box")
+        params = geom.get("parameters", {})
+        pos_det = geom.get("position", [0, 0, 0])
 
-            is_probe = any(q.get("keyword") == "KineticEnergySpectrum" for q in quantities)
-            if is_probe:
-                if geom_type.lower() in ["cyl", "cylinder"]:
-                    size = params.get("radius", 1)
-                else:
-                    size = max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
-                lines.append(f"/score/create/probe {name} {size} cm")
-                lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
-            else:
-                if geom_type.lower() in ["cyl", "cylinder"]:
-                    lines.append(f"/score/create/cylinderMesh {name}")
-                    lines.append(f"/score/mesh/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
-                    radius = params.get("radius", 1)
-                    depth = params.get("depth", 1)
-                    n_radial = params.get("radialSegments", 1)
-                    n_z = params.get("zSegments", 1)
-                    lines.append(f"/score/mesh/cylinderSize {radius} {depth} cm")
-                    lines.append(f"/score/mesh/nBin {n_radial} {n_z} 1")
-                else:
-                    lines.append(f"/score/create/boxMesh {name}")
-                    lines.append(f"/score/mesh/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
-                    width = params.get("width", 1)
-                    height = params.get("height", 1)
-                    depth = params.get("depth", 1)
-                    n_x = params.get("xSegments", 1)
-                    n_y = params.get("ySegments", 1)
-                    n_z = params.get("zSegments", 1)
-                    lines.append(f"/score/mesh/boxSize {width} {height} {depth} cm")
-                    lines.append(f"/score/mesh/nBin {n_x} {n_y} {n_z}")
+        is_probe = any(q.get("keyword") == "KineticEnergySpectrum" for q in quantities)
 
-            for quantity in quantities:
-                keyword = quantity.get("keyword", "")
-                qname = quantity.get("name", keyword)
-                mapped_keyword = GEANT4_QUANTITY_MAP.get(keyword, keyword.lower())
-                lines.append(f"/score/quantity/{mapped_keyword} {qname}")
-                if keyword == "KineticEnergySpectrum":
-                    probe_histograms.append({
-                        "quantity": qname,
-                        "detector": name,
-                        "bins": quantity.get("histogramNBins", 1),
-                        "min": quantity.get("histogramMin", 1),
-                        "max": quantity.get("histogramMax", 1),
-                        "unit": quantity.get("histogramUnit", "MeV")
-                    })
+        if is_probe:
+            self._append_probe(detector, geom_type, params, pos_det)
+        else:
+            self._append_mesh(detector, geom_type, params, pos_det)
 
-                filter_uuid = quantity.get("filter")
-                if filter_uuid and filter_uuid in filters:
-                    filt = filters[filter_uuid]
-                    particle_types = filt.get("data", {}).get("particleTypes", [])
-                    if particle_types:
-                        pt_names = " ".join([GEANT4_PARTICLE_MAP.get(pt["id"], pt["name"]) for pt in particle_types])
-                        lines.append(f"/score/filter/particle {filt['name']} {pt_names}")
+        for quantity in quantities:
+            # <-- tutaj przekazujemy name
+            self._append_quantity(quantity, filters, name)
 
-            lines.append("/score/close\n")
+        self.lines.append("/score/close\n")
 
+    def _append_mesh(self, detector: Dict[str, Any], geom_type: str, params: Dict[str, Any], pos_det: List[float]) -> None:
+        """Append a mesh (cylinder or box) for a detector."""
+        name = detector.get("name", "UnknownDetector")
+        if geom_type.lower() in ["cyl", "cylinder"]:
+            self.lines.append(f"/score/create/cylinderMesh {name}")
+            self.lines.append(f"/score/mesh/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
+            radius = params.get("radius", 1)
+            depth = params.get("depth", 1)
+            n_radial = params.get("radialSegments", 1)
+            n_z = params.get("zSegments", 1)
+            self.lines.append(f"/score/mesh/cylinderSize {radius} {depth} cm")
+            self.lines.append(f"/score/mesh/nBin {n_radial} {n_z} 1")
+        else:
+            self.lines.append(f"/score/create/boxMesh {name}")
+            self.lines.append(f"/score/mesh/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
+            width = params.get("width", 1)
+            height = params.get("height", 1)
+            depth = params.get("depth", 1)
+            n_x = params.get("xSegments", 1)
+            n_y = params.get("ySegments", 1)
+            n_z = params.get("zSegments", 1)
+            self.lines.append(f"/score/mesh/boxSize {width} {height} {depth} cm")
+            self.lines.append(f"/score/mesh/nBin {n_x} {n_y} {n_z}")
 
-        for hist in probe_histograms:
+    def _append_probe(self, detector: Dict[str, Any], geom_type: str, params: Dict[str, Any], pos_det: List[float]) -> None:
+        """Append a probe scoring for KineticEnergySpectrum quantities."""
+        name = detector.get("name", "UnknownDetector")
+        size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"] else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
+        self.lines.append(f"/score/create/probe {name} {size} cm")
+        self.lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
+
+    def _append_quantity(self, quantity: Dict[str, Any], filters: Dict[str, Any], detector_name: str) -> None:
+        """Append a quantity and its filter for a detector."""
+        keyword = quantity.get("keyword", "")
+        qname = quantity.get("name", keyword)
+        mapped_keyword = GEANT4_QUANTITY_MAP.get(keyword, keyword.lower())
+        self.lines.append(f"/score/quantity/{mapped_keyword} {qname}")
+
+        if keyword == "KineticEnergySpectrum":
+            self.probe_histograms.append({
+                "quantity": qname,
+                "detector": detector_name,
+                "bins": quantity.get("histogramNBins", 1),
+                "min": quantity.get("histogramMin", 0),
+                "max": quantity.get("histogramMax", 1),
+                "unit": quantity.get("histogramUnit", "MeV")
+            })
+
+        filter_uuid = quantity.get("filter")
+        if filter_uuid and filter_uuid in filters:
+            filt = filters[filter_uuid]
+            particle_types = filt.get("data", {}).get("particleTypes", [])
+            if particle_types:
+                pt_names = " ".join([GEANT4_PARTICLE_MAP.get(pt["id"], pt["name"]) for pt in particle_types])
+                self.lines.append(f"/score/filter/particle {filt['name']} {pt_names}")
+
+    # -------------------- Histograms for probes --------------------
+    def _append_histograms(self) -> None:
+        """Append a histogram for a probe"""
+        for hist in self.probe_histograms:
             qname = hist["quantity"]
             det_name = hist["detector"]
-            arbitrary_name = f"{qname}_differential_{probe_counter}"
-            lines.append(f"/analysis/h1/create {qname} {arbitrary_name} {hist['bins']} {hist['min']} {hist['max']} {hist['unit']}")
-            lines.append(f"/score/fill1D {probe_counter} {det_name} {qname}")
-            probe_counter += 1
+            arbitrary_name = f"{qname}_differential_{self.probe_counter}"
+            self.lines.append(f"/analysis/h1/create {qname} {arbitrary_name} {hist['bins']} "
+                              f"{hist['min']} {hist['max']} {hist['unit']}")
+            self.lines.append(f"/score/fill1D {self.probe_counter} {det_name} {qname}")
+            self.probe_counter += 1
 
-        # ===========================
-        # Run beam
-        # ===========================
-        lines.append("\n##########################################")
-        lines.append("################## Run ###################")
-        lines.append("##########################################\n")
-        lines.append(f"/run/beamOn {beam.get('numberOfParticles', 10000)}\n")
+    # -------------------- Run --------------------
+    def _append_run(self) -> None:
+        """Append run section"""
+        beam = self.data.get("beam", {})
+        self.lines.extend([
+            "\n##########################################",
+            "################## Run ###################",
+            "##########################################\n",
+            f"/run/beamOn {beam.get('numberOfParticles', 10000)}\n"
+        ])
 
-        # ===========================
-        # Collect results
-        # ============================
-        lines.append("##########################################")
-        lines.append("############ Collect results #############")
-        lines.append("##########################################\n")
+    # -------------------- Results --------------------
+    def _append_results(self) -> None:
+        """Append results section"""
+        detectors = {d["uuid"]: d for d in self.data.get("detectorManager", {}).get("detectors", [])}
+        outputs = self.data.get("scoringManager", {}).get("outputs", [])
+
+        self.lines.extend([
+            "##########################################",
+            "############ Collect results #############",
+            "##########################################\n"
+        ])
+
         for output in outputs:
             detector_uuid = output.get("detectorUuid")
             detector = detectors.get(detector_uuid)
@@ -173,6 +213,4 @@ class Geant4MacroGenerator:
             for quantity in output.get("quantities", []):
                 qname = quantity.get("name", quantity.get("keyword", "UnknownQuantity"))
                 filename = f"{name}_{qname}.txt"
-                lines.append(f"/score/dumpQuantityToFile {name} {qname} {filename}")
-
-        return "\n".join(lines)
+                self.lines.append(f"/score/dumpQuantityToFile {name} {qname} {filename}")
