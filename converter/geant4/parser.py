@@ -1,10 +1,7 @@
 from converter.common import Parser
-import defusedxml
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from typing import Dict, Tuple, Optional, Set
-
-defusedxml.defuse_stdlib()
 
 _MM_PER_CM = 10.0
 _EPS = 1e-9
