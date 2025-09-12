@@ -1,12 +1,10 @@
 from converter.common import Parser
 import defusedxml
-
-defusedxml.defuse_stdlib()
-
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from typing import Dict, Tuple, Optional, Set
 
+defusedxml.defuse_stdlib()
 
 _MM_PER_CM = 10.0
 _EPS = 1e-9
@@ -27,6 +25,7 @@ def _to_pascal_case(s: str) -> str:
 
 class Geant4Parser(Parser):
     """Parser that converts JSON to GDML format for geant4 simulations ( for now )"""
+
     def __init__(self) -> None:
         """Init the parser with empty GDML content."""
         super().__init__()
@@ -34,7 +33,7 @@ class Geant4Parser(Parser):
         self._gdml_content: str = ""
 
     def parse_configs(self, json_data: dict) -> None:
-        """Parse the provided JSON configuration and generate GDML content. """
+        """Parse the provided JSON configuration and generate GDML content."""
         if "figureManager" in json_data and json_data["figureManager"]["figures"]:
             # we assume that first figure in json is always World (the root of our tree)
             world_figure_json = json_data["figureManager"]["figures"][0]
