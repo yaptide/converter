@@ -1,4 +1,3 @@
-# deepcode ignore S314: using defusedxml and not parsing xml (creating new one)
 from converter.common import Parser
 import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
