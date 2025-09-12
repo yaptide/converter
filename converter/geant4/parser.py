@@ -1,8 +1,6 @@
 from converter.common import Parser
-import defusedxml
-defusedxml.defuse_stdlib()
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
+import xml.etree.ElementTree as ET # noqa: S314
+from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
 
 _MM_PER_CM = 10.0
@@ -48,7 +46,7 @@ class Geant4Parser(Parser):
     def _prettify_xml(root: ET.Element) -> str:
         """Return a pretty-printed XML string for a given ElementTree root."""
         xml_bytes = ET.tostring(root, "utf-8")
-        pretty = minidom.parseString(xml_bytes).toprettyxml(indent="  ")
+        pretty = parseString(xml_bytes).toprettyxml(indent="  ")
         pretty_no_decl = "\n".join(pretty.split("\n")[1:])
         return '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n' + pretty_no_decl
 
