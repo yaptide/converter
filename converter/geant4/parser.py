@@ -1,4 +1,6 @@
 from converter.common import Parser
+import defusedxml
+defusedxml.defuse_stdlib()
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from typing import Dict, Tuple, Optional, Set
