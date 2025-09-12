@@ -1,5 +1,5 @@
 from converter.common import Parser
-import xml.etree.ElementTree as ET # noqa: S314
+import xml.etree.ElementTree as ET  #noqa
 from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
 
