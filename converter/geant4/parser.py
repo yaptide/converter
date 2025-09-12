@@ -1,10 +1,9 @@
 from converter.common import Parser
-import xml.etree.ElementTree as ET # deepsource ignore BAN-B405: using defusedxml.defuse_stdlib()
+# skipcq: BAN-B405
+import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
-import defusedxml
 
-defusedxml.defuse_stdlib()
 
 _MM_PER_CM = 10.0
 _EPS = 1e-9
