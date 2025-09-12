@@ -1,7 +1,11 @@
+# deepcode ignore S314: using defusedxml and not parsing xml (creating new one)
 from converter.common import Parser
-import xml.etree.ElementTree as ET  #noqa
+import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
+import defusedxml
+
+defusedxml.defuse_stdlib()
 
 _MM_PER_CM = 10.0
 _EPS = 1e-9
