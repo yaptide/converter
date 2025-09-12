@@ -1,30 +1,42 @@
-
 from converter.common import Parser
+import defusedxml
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 from typing import Dict, Tuple, Optional, Set
 
+defusedxml.defuse_stdlib()
+
 _MM_PER_CM = 10.0
+_EPS = 1e-9
+
 
 def _to_mm_str(val_cm: float) -> str:
+    """Convert a value in cmo mm and return it as a string"""
+
     mm = val_cm * _MM_PER_CM
-    if abs(mm - int(mm)) < 1e-9:
+    if abs(mm - int(mm)) < _EPS:
         return str(int(mm))
     return f"{mm:g}"
 
-def _pascal(s: str) -> str:
-    return "".join(part.capitalize() for part in s.replace("_", " ").split())
+
+def _to_pascal_case(s: str) -> str:
+    """Convert a string with underscores to PascalCase from snake like case"""
+    return "".join(part.capitalize() for part in s.split("_"))
+
 
 class Geant4Parser(Parser):
+    """ Parser that converts JSON to GDML format for geant4 simulations ( for now )"""
 
     def __init__(self) -> None:
+        """Init the parser with empty GDML content."""
         super().__init__()
         self.info["simulator"] = "geant4"
         self._gdml_content: str = ""
 
-
     def parse_configs(self, json_data: dict) -> None:
+        """ Parse the provided JSON configuration and generate GDML content. """
         if "figureManager" in json_data and json_data["figureManager"]["figures"]:
+            # we assume that first figure in json is always World (the root of our tree)
             world_figure_json = json_data["figureManager"]["figures"][0]
             self._gdml_content = self._generate_gdml(world_figure_json)
         else:
@@ -33,8 +45,17 @@ class Geant4Parser(Parser):
     def get_configs_json(self) -> dict:
         return {"geometry.gdml": self._gdml_content}
 
+    @staticmethod
+    def _prettify_xml(root: ET.Element) -> str:
+
+        xml_bytes = ET.tostring(root, "utf-8")
+        pretty = minidom.parseString(xml_bytes).toprettyxml(indent="  ")
+        pretty_no_decl = "\n".join(pretty.split("\n")[1:])
+        return '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n' + pretty_no_decl
 
     def _generate_gdml(self, world: dict) -> str:
+        """ Generate GDML from gemetry node"""
+
         gdml_root = ET.Element("gdml", {
             "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
             "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
@@ -62,12 +83,11 @@ class Geant4Parser(Parser):
         world_logic_name = self._choose_logic_name(world)
         ET.SubElement(setup_xml, "world", {"ref": world_logic_name})
 
-        xml_bytes = ET.tostring(gdml_root, "utf-8")
-        pretty = minidom.parseString(xml_bytes).toprettyxml(indent="  ")
-        pretty_no_decl = "\n".join(pretty.split("\n")[1:])
-        return '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n' + pretty_no_decl
+        return self._prettify_xml(gdml_root)
 
     def _generate_empty_gdml(self) -> str:
+        """ Generate empty GDML from gemetry node"""
+
         root = ET.Element("gdml", {
             "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
             "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
@@ -85,13 +105,11 @@ class Geant4Parser(Parser):
         setup = ET.SubElement(root, "setup", {"name": "Default", "version": "1.0"})
         ET.SubElement(setup, "world", {"ref": "logicWorld"})
 
-        xml_bytes = ET.tostring(root, "utf-8")
-        pretty = minidom.parseString(xml_bytes).toprettyxml(indent="  ")
-        pretty_no_decl = "\n".join(pretty.split("\n")[1:])
-        return '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n' + pretty_no_decl
-
+        return self._prettify_xml(root)
 
     def _collect_materials(self, node: dict, acc: Set[str]) -> None:
+        """ Collect all material nodes recursively"""
+
         mat = node.get("simulationMaterial", {})
         g4 = mat.get("geant4_name")
         if g4:
@@ -99,7 +117,10 @@ class Geant4Parser(Parser):
         for ch in node.get("children", []):
             self._collect_materials(ch, acc)
 
-    def _unique_name(self, base: str, kind: str, counters: Dict[str, Dict[str, int]]) -> str:
+    @staticmethod
+    def _unique_name(base: str, kind: str, counters: Dict[str, Dict[str, int]]) -> str:
+        """Generate a unique name for a given base string and category (solid, logic, phys)."""
+
         used = counters[kind]
         if base not in used:
             used[base] = 1
@@ -108,15 +129,21 @@ class Geant4Parser(Parser):
         return f"{base}{used[base]}"
 
     def _choose_solid_name(self, node: dict, counters: Dict[str, Dict[str, int]]) -> str:
-        return self._unique_name(f"solid{_pascal(node.get('name','Figure'))}", "solid", counters)
+        """Generate a unique solid name for a node"""
+
+        return self._unique_name(f"solid{_to_pascal_case(node.get('name', 'Figure'))}", "solid", counters)
 
     def _choose_logic_name(self, node: dict, counters: Optional[Dict[str, Dict[str, int]]] = None) -> str:
+        """Generate a unique logic name for a node"""
+
         if counters is None:
-            return f"logic{_pascal(node.get('name','Figure'))}"
-        return self._unique_name(f"logic{_pascal(node.get('name','Figure'))}", "logic", counters)
+            return f"logic{_to_pascal_case(node.get('name', 'Figure'))}"
+        return self._unique_name(f"logic{_to_pascal_case(node.get('name', 'Figure'))}", "logic", counters)
 
     def _choose_phys_name(self, child_node: dict, counters: Dict[str, Dict[str, int]]) -> str:
-        return self._unique_name(f"phys{_pascal(child_node.get('name','Figure'))}", "phys", counters)
+        """Generate a unique physical volume name for a node"""
+
+        return self._unique_name(f"phys{_to_pascal_case(child_node.get('name', 'Figure'))}", "phys", counters)
 
     def _emit_node_postorder(
         self,
@@ -125,6 +152,8 @@ class Geant4Parser(Parser):
         structure_xml: ET.Element,
         name_counters: Dict[str, Dict[str, int]],
     ) -> Tuple[str, str]:
+        """Recursively emit GDML solids and structure definitions for a node and its children"""
+
         geo = node.get("geometryData", {})
         params = geo.get("parameters", {})
         geom_type = geo.get("geometryType")
@@ -134,7 +163,7 @@ class Geant4Parser(Parser):
             children_info.append((ch, ch_logic_name, ch.get("geometryData", {}).get("position", [0, 0, 0])))
 
         solid_name = self._choose_solid_name(node, name_counters)
-        if geom_type ==  ("HollowCylinderGeometry", "CylinderGeometry") :
+        if geom_type == ("HollowCylinderGeometry", "CylinderGeometry") :
             rmin_cm = float(params.get("innerRadius", 0))
             rmax_cm = float(params.get("radius", 0))
             z_cm = float(params.get("depth", 0))
@@ -179,7 +208,7 @@ class Geant4Parser(Parser):
             phys = ET.SubElement(vol, "physvol", {"copynumber": "1", "name": phys_name})
             ET.SubElement(phys, "volumeref", {"ref": child_logic_name})
             x_cm, y_cm, z_cm = map(float, child_pos_cm)
-            if abs(x_cm) > 1e-12 or abs(y_cm) > 1e-12 or abs(z_cm) > 1e-12:
+            if abs(x_cm) > _EPS or abs(y_cm) > _EPS or abs(z_cm) > _EPS:
                 ET.SubElement(phys, "position", {
                     "name": f"{phys_name}_pos",
                     "unit": "mm",
