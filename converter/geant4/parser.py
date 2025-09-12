@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
 
+from converter.geant4.Geant4MarcoGenerator import Geant4MacroGenerator
 
 _MM_PER_CM = 10.0
 _EPS = 1e-9
@@ -40,9 +41,13 @@ class Geant4Parser(Parser):
         else:
             self._gdml_content = self._generate_empty_gdml()
 
+        macro_gen = Geant4MacroGenerator(json_data)
+        self._macro_content = macro_gen.generate()
+
     def get_configs_json(self) -> dict:
         """Return dictionary from gdml content"""
-        return {"geometry.gdml": self._gdml_content}
+        return {"geometry.gdml": self._gdml_content,
+                "run.mac": self._macro_content,}
 
     @staticmethod
     def _prettify_xml(root: ET.Element) -> str:
