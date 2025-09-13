@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Optional, Set
+from typing import Dict, Optional
 
 
 MM_PER_CM = 10.0
