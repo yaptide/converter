@@ -5,28 +5,28 @@
 		"generator": "YaptideEditor.toSerialized"
 	},
 	"project": {
-		"title": "proton_pencil_beam_geant4",
+		"title": "ppbgeant4scoring",
 		"description": "Proton pencil beam with initial kinetic energy 150 MeV and 1% energy spread.\nThe target is a cylindrical water phantom with a radius of 10 cm and a length of 20 cm.\n\nWe score dose from all particles and fluence according to primary particles (protons), secondary protons, and all protons.",
 		"viewManager": {
 			"ViewPanelXY": {
-				"cameraMatrix": [1,0,0,0,0,0.999999999999496,9.999999998910844e-7,0,0,-9.999999998910844e-7,0.999999999999496,0,0,-0.0000999999999891088,99.99999999994995,1],
+				"cameraMatrix": [1,0,0,0,0,0.9999999999994958,9.999999998910846e-7,0,0,-9.999999998910846e-7,0.9999999999994958,0,0,-0.0000999999999891088,99.99999999994995,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": false
 				}
 			},
 			"ViewPanel3D": {
-				"cameraMatrix": [0.05814482888859139,0,0.9983081582725426,0,0.3562814940847079,0.9341482171271004,-0.020751033974893633,0,-0.9325677861937345,0.3568852875060259,0.054315888241437904,0,-32.97153410262506,12.22409719181355,0.7628195419010333,1]
+				"cameraMatrix": [2.220446049250313e-16,0,-1,0,-6.123233995736766e-17,1,-1.232595164407831e-32,0,1,6.123233995736766e-17,2.220446049250313e-16,0,26.778813936469035,8.426440429762985e-16,10.873682966462976,1]
 			},
 			"ViewPanelY": {
-				"cameraMatrix": [2.2204460492502386e-16,-5.5511151231255966e-17,0.9999999999999665,0,0.9999999999994648,0.0000010000000000287205,-1.6653345369376761e-16,0,-9.999999999732094e-7,0.9999999999994648,1.1102230246251175e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
+				"cameraMatrix": [4.4408920985004773e-16,-3.330669073875358e-16,0.9999999999999664,0,0.9999999999994645,0.0000010000000001397426,-3.3306690738753523e-16,0,-0.0000010000000000287203,0.9999999999994645,4.4408920985004694e-16,0,-0.00009999999999998334,99.99999999994999,6.1232339957357454e-21,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": false
 				}
 			},
 			"ViewPanelX": {
-				"cameraMatrix": [-2.2204460492503146e-16,1.0000000000000007,1.421084916408689e-10,0,9.9999999986222e-7,-1.4210854715201973e-10,0.9999999999994978,0,0.9999999999994977,2.2204460492503082e-16,-9.999999999177312e-7,0,99.99999999994895,1.4210854715202004e-14,-0.0000999999999999823,1],
+				"cameraMatrix": [-4.440892098500629e-16,1.0000000000000009,1.4210860266317137e-10,0,9.999999997511978e-7,-1.4210876919662465e-10,0.999999999999498,0,0.9999999999994978,3.3306690738754617e-16,-9.99999999917731e-7,0,99.99999999994895,1.4210854715202004e-14,-0.0000999999999999823,1],
 				"clipPlane": {
 					"planeConstant": 0,
 					"visible": false
@@ -102,30 +102,9 @@
 									}
 								},
 								"colorHex": 0,
-								"children": [],
-								"simulationMaterial": {
-									"icru": 276,
-									"name": "WATER, LIQUID",
-									"sanitized_name": "water_liquid",
-									"density": 1,
-									"geant4_name": "G4_WATER"
-								}
-							}],
-						"simulationMaterial": {
-							"icru": 1000,
-							"name": "VACUUM",
-							"sanitized_name": "vacuum",
-							"density": 0,
-							"geant4_name": "G4_Galactic"
-						}
-					}],
-				"simulationMaterial": {
-					"icru": 0,
-					"name": "BLACK HOLE",
-					"sanitized_name": "black_hole",
-					"density": 0,
-					"geant4_name": "BlackHole"
-				}
+								"children": []
+							}]
+					}]
 			}]
 	},
 	"zoneManager": {
@@ -139,7 +118,7 @@
 		},
 		"zones": [],
 		"worldZone": {
-			"uuid": "12c8d4b0-838b-46b0-81e2-0a4008dea8f4",
+			"uuid": "691f43c0-bb92-4fb3-82c0-2e529c2e49af",
 			"type": "WorldZone",
 			"name": "World Zone",
 			"marginMultiplier": 1.1,
@@ -269,7 +248,9 @@
 				"density": 0,
 				"color": 196613
 			}],
-		"selectedMaterials": {},
+		"selectedMaterials": {
+			"a2f08097-a999-4a4f-8371-e919e2f999a7": 1
+		},
 		"metadata": {
 			"version": "0.12",
 			"type": "Manager",
@@ -280,8 +261,113 @@
 		"name": "Scoring Manager",
 		"type": "ScoringManager",
 		"uuid": "D0F67F59-F311-4F8E-A06F-5A07D618FDE2",
-		"outputs": [],
-		"filters": [],
+		"outputs": [
+			{
+				"name": "CylZ_Mesh",
+				"type": "Output",
+				"uuid": "0057c046-622b-460d-ab0d-019dd3b6bafa",
+				"quantities": [
+					{
+						"name": "eDep",
+						"type": "Quantity",
+						"uuid": "c5e2bf4e-d5ea-416c-bba8-097cc525b1f3",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "Energy",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 1000,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					},
+					{
+						"name": "fluence",
+						"type": "Quantity",
+						"uuid": "e76b0d07-add5-4cfb-a5b0-fdefe6038ae7",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "Fluence",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 1000,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					}],
+				"detectorUuid": "67e59e3d-0d36-4fcc-9a28-29bc044a6d72",
+				"trace": false
+			},
+			{
+				"name": "YZ_Mesh",
+				"type": "Output",
+				"uuid": "75a0b299-6f6e-42d9-80a5-dbe0f1077fc0",
+				"quantities": [
+					{
+						"name": "eDep",
+						"type": "Quantity",
+						"uuid": "81083546-6661-4067-a804-21756a940d27",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "Energy",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 1000,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					},
+					{
+						"name": "fluence",
+						"type": "Quantity",
+						"uuid": "7e44cf79-4ee1-4ea1-9ac0-7095c96ffdd1",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "Fluence",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 1000,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					}],
+				"detectorUuid": "116f105e-c987-4602-9913-8dd0ef2affaa",
+				"trace": false
+			},
+			{
+				"name": "Pr",
+				"type": "Output",
+				"uuid": "224449ff-fe6e-4fc9-822d-d0d7d45126f4",
+				"quantities": [
+					{
+						"name": "fluxdiff",
+						"type": "Quantity",
+						"uuid": "5709cc76-2610-4cb6-b1cf-bd58d2f2c587",
+						"filter": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+						"keyword": "KineticEnergySpectrum",
+						"histogramNBins": 100,
+						"histogramMin": 0,
+						"histogramMax": 200,
+						"histogramUnit": "MeV",
+						"histogramXScale": "none",
+						"histogramXBinScheme": "linear"
+					}],
+				"detectorUuid": "590c80b4-bb94-4c44-8a06-2eb58dcb1f37",
+				"trace": false
+			}],
+		"filters": [
+			{
+				"uuid": "f96f7542-143f-4c2c-b7ca-8a121ea2f631",
+				"name": "protonFilter",
+				"type": "Filter",
+				"data": {
+					"particleTypes": [
+						{
+							"id": 2,
+							"name": "Proton"
+						}],
+					"kineticEnergyLow": 1,
+					"kineticEnergyHigh": 10,
+					"kineticEnergyUnit": "MeV"
+				},
+				"filterType": "particle"
+			}],
 		"metadata": {
 			"version": "0.12",
 			"type": "Manager",
@@ -292,7 +378,7 @@
 		"name": "Beam",
 		"type": "Beam",
 		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
-		"position": [0,0,0],
+		"position": [0,0,1],
 		"direction": [0,0,1],
 		"energy": 150,
 		"energySpread": 1.5,
@@ -334,5 +420,5 @@
 		"multipleScattering": "Moliere",
 		"stoppingPowerTable": "ICRU91"
 	},
-	"hash": "ce5f117b649c9d1e35c4070f55d403b66be378fd"
+	"hash": "729e02e7f3681e225b5ee7baacb0f50e758b5a7f"
 }
