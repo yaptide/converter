@@ -1,5 +1,6 @@
 from converter.common import Parser
 import converter.geant4.utils as utils
+from converter.geant4.Geant4MacroGenerator import Geant4MacroGenerator
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
@@ -14,6 +15,7 @@ class Geant4Parser(Parser):
         super().__init__()
         self.info["simulator"] = "geant4"
         self._gdml_content: str = ""
+        self._macro_content: str = ""
 
     def parse_configs(self, json_data: dict) -> None:
         """Parse the provided JSON configuration and generate GDML content."""
@@ -24,9 +26,17 @@ class Geant4Parser(Parser):
         else:
             self._gdml_content = self._generate_empty_gdml()
 
+        self._initialize_macro(json_data)
+
+    def _initialize_macro(self, json_data: dict) -> None:
+        """Initialize macro content from JSON data."""
+        macro_gen = Geant4MacroGenerator(json_data)
+        self._macro_content = macro_gen.generate()
+
     def get_configs_json(self) -> dict:
         """Return dictionary from gdml content"""
-        return {"geometry.gdml": self._gdml_content}
+        return {"geometry.gdml": self._gdml_content,
+                "run.mac": self._macro_content}
 
     @staticmethod
     def _prettify_xml(root: ET.Element) -> str:
