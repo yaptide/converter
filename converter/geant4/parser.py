@@ -26,7 +26,6 @@ class Geant4Parser(Parser):
         else:
             self._gdml_content = self._generate_empty_gdml()
 
-
     def get_configs_json(self) -> dict:
         """Return dictionary from gdml content"""
         return {"geometry.gdml": self._gdml_content}
@@ -65,7 +64,7 @@ class Geant4Parser(Parser):
         self._emit_node_postorder(world, solids_xml, structure_xml, name_counters)
 
         setup_xml = ET.SubElement(gdml_root, "setup", {"name": "Default", "version": "1.0"})
-        world_logic_name = self._choose_logic_name(world)
+        world_logic_name = utils.choose_logic_name(world)
         ET.SubElement(setup_xml, "world", {"ref": world_logic_name})
 
         return self._prettify_xml(gdml_root)
@@ -80,7 +79,11 @@ class Geant4Parser(Parser):
         ET.SubElement(root, "materials")
         solids = ET.SubElement(root, "solids")
         ET.SubElement(solids, "box", {
-            "name": "solidWorld", "x": utils.to_mm_str(100), "y": utils.to_mm_str(100), "z": utils.to_mm_str(100), "lunit": "mm"
+            "name": "solidWorld",
+            "x": utils.to_mm_str(100),
+            "y": utils.to_mm_str(100),
+            "z": utils.to_mm_str(100),
+            "lunit": "mm"
         })
         structure = ET.SubElement(root, "structure")
         vol = ET.SubElement(structure, "volume", {"name": "logicWorld"})
@@ -100,20 +103,6 @@ class Geant4Parser(Parser):
         for ch in node.get("children", []):
             self._collect_materials(ch, acc)
 
-    def _choose_solid_name(self, node: dict, counters: Dict[str, Dict[str, int]]) -> str:
-        """Generate a unique solid name for a node"""
-        return utils.unique_name(f"solid{utils.to_pascal_case(node.get('name', 'Figure'))}", "solid", counters)
-
-    def _choose_logic_name(self, node: dict, counters: Optional[Dict[str, Dict[str, int]]] = None) -> str:
-        """Generate a unique logic name for a node"""
-        if counters is None:
-            return f"logic{utils.to_pascal_case(node.get('name', 'Figure'))}"
-        return utils.unique_name(f"logic{utils.to_pascal_case(node.get('name', 'Figure'))}", "logic", counters)
-
-    def _choose_phys_name(self, child_node: dict, counters: Dict[str, Dict[str, int]]) -> str:
-        """Generate a unique physical volume name for a node"""
-        return utils.unique_name(f"phys{utils.to_pascal_case(child_node.get('name', 'Figure'))}", "phys", counters)
-
     def _emit_node_postorder(
         self,
         node: dict,
@@ -130,7 +119,7 @@ class Geant4Parser(Parser):
             ch_logic_name, _ = self._emit_node_postorder(ch, solids_xml, structure_xml, name_counters)
             children_info.append((ch, ch_logic_name, ch.get("geometryData", {}).get("position", [0, 0, 0])))
 
-        solid_name = self._choose_solid_name(node, name_counters)
+        solid_name = utils.choose_solid_name(node, name_counters)
         if geom_type in ("HollowCylinderGeometry", "CylinderGeometry") :
             rmin_cm = float(params.get("innerRadius", 0))
             rmax_cm = float(params.get("radius", 0))
@@ -165,18 +154,18 @@ class Geant4Parser(Parser):
                 "lunit": "mm"
             })
 
-        logic_name = self._choose_logic_name(node, name_counters)
+        logic_name = utils.choose_logic_name(node, name_counters)
         vol = ET.SubElement(structure_xml, "volume", {"name": logic_name})
         material_name = node.get("simulationMaterial", {}).get("geant4_name", "G4_Galactic")
         ET.SubElement(vol, "materialref", {"ref": material_name})
         ET.SubElement(vol, "solidref", {"ref": solid_name})
 
         for (child_node, child_logic_name, child_pos_cm) in children_info:
-            phys_name = self._choose_phys_name(child_node, name_counters)
+            phys_name = utils.choose_phys_name(child_node, name_counters)
             phys = ET.SubElement(vol, "physvol", {"copynumber": "1", "name": phys_name})
             ET.SubElement(phys, "volumeref", {"ref": child_logic_name})
             x_cm, y_cm, z_cm = map(float, child_pos_cm)
-            if abs(x_cm) > utils._EPS or abs(y_cm) > utils._EPS or abs(z_cm) > utils._EPS:
+            if abs(x_cm) > utils.EPS or abs(y_cm) > utils.EPS or abs(z_cm) > utils.EPS:
                 ET.SubElement(phys, "position", {
                     "name": f"{phys_name}_pos",
                     "unit": "mm",
