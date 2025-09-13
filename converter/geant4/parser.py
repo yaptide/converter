@@ -6,8 +6,6 @@ from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
 
 
-
-
 class Geant4Parser(Parser):
     """Parser that converts JSON to GDML format for geant4 simulations"""
 
