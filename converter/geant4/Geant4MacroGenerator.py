@@ -1,7 +1,8 @@
 import converter.geant4.utils as utils
 from typing import Dict, Any, List
 
-#TODO geantino names needs better mapping or handling
+# skipcq: PYL-W0511
+# TODO geantino names needs better mapping or handling
 GEANT4_PARTICLE_MAP = {
     1: "neutron",
     2: "proton",
@@ -52,6 +53,7 @@ class Geant4MacroGenerator:
         energy = beam.get("energy", 1)
         sigma = beam.get("energySpread", 0)
         energy_high = beam.get("energyHighCutoff", 1000)
+        energy_min = beam.get("energyLowCutoff", 0)
 
         self.lines.extend([
             "/run/initialize\n",
@@ -67,6 +69,7 @@ class Geant4MacroGenerator:
             f"/gps/ene/mono {energy} MeV",
             f"/gps/ene/sigma {sigma} MeV",
             f"/gps/ene/max {energy_high} MeV\n"
+            f"/gps/ene/min {energy_min} MeV\n"
         ])
 
     # -------------------- Scoring --------------------
@@ -116,7 +119,7 @@ class Geant4MacroGenerator:
 
     def _append_mesh(self, detector: Dict[str, Any], geom_type: str,
                      params: Dict[str, Any], pos_det: List[float]) -> None:
-        """Append a mesh (cylinder or box) for a detector."""
+        """Append a mesh (cylinder or box) for a detector, if it's not a cylinder box will be added"""
         name = utils.get_detector_name(detector)
         if geom_type.lower() in ["cyl", "cylinder"]:
             self.lines.append(f"/score/create/cylinderMesh {name}")
@@ -143,7 +146,7 @@ class Geant4MacroGenerator:
                       params: Dict[str, Any], pos_det: List[float]) -> None:
         """Append a probe scoring for KineticEnergySpectrum quantities."""
         name = utils.get_detector_name(detector)
-        size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"]\
+        size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"] \
             else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
         self.lines.append(f"/score/create/probe {name} {size} cm")
         self.lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
@@ -169,11 +172,11 @@ class Geant4MacroGenerator:
 
         filter_uuid = quantity.get("filter")
         if filter_uuid and filter_uuid in filters:
-            filt = filters[filter_uuid]
-            particle_types = filt.get("data", {}).get("particleTypes", [])
+            filter = filters[filter_uuid]
+            particle_types = filter.get("data", {}).get("particleTypes", [])
             if particle_types:
-                pt_names = " ".join([GEANT4_PARTICLE_MAP.get(pt["id"], pt["name"]) for pt in particle_types])
-                self.lines.append(f"/score/filter/particle {filt['name']} {pt_names}")
+                particle_names = " ".join([GEANT4_PARTICLE_MAP.get(pt["id"], pt["name"]) for pt in particle_types])
+                self.lines.append(f"/score/filter/particle {filter['name']} {particle_names}")
 
     # -------------------- The histogram for KineticEnergySpectrum --------------------
     def _append_histograms(self) -> None:
