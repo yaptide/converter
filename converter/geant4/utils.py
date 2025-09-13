@@ -25,7 +25,7 @@ def unique_name(base: str, kind: str, counters: Dict[str, Dict[str, int]]) -> st
 
 
 def to_pascal_case(s: str) -> str:
-    """Convert a string with underscores to PascalCase from snake like case"""
+    """Convert a string from snake_case to PascalCase"""
     return "".join(part.capitalize() for part in s.split("_"))
 
 
