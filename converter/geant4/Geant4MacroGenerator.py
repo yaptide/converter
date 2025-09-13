@@ -172,11 +172,11 @@ class Geant4MacroGenerator:
 
         filter_uuid = quantity.get("filter")
         if filter_uuid and filter_uuid in filters:
-            filter = filters[filter_uuid]
-            particle_types = filter.get("data", {}).get("particleTypes", [])
+            filter_particles = filters[filter_uuid]
+            particle_types = filter_particles.get("data", {}).get("particleTypes", [])
             if particle_types:
                 particle_names = " ".join([GEANT4_PARTICLE_MAP.get(pt["id"], pt["name"]) for pt in particle_types])
-                self.lines.append(f"/score/filter/particle {filter['name']} {particle_names}")
+                self.lines.append(f"/score/filter/particle {filter_particles['name']} {particle_names}")
 
     # -------------------- The histogram for KineticEnergySpectrum --------------------
     def _append_histograms(self) -> None:
