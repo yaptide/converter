@@ -1,5 +1,7 @@
+import converter.geant4.utils as utils
 from typing import Dict, Any, List
 
+#TODO geantino names needs better mapping or handling
 GEANT4_PARTICLE_MAP = {
     1: "neutron",
     2: "proton",
@@ -47,7 +49,7 @@ class Geant4MacroGenerator:
         particle = beam.get("particle", {}).get("name", "proton")
         pos = beam.get("position", [0, 0, 0])
         direction = beam.get("direction", [0, 0, 1])
-        energy = beam.get("energy", 150)
+        energy = beam.get("energy", 1)
         sigma = beam.get("energySpread", 0)
         energy_high = beam.get("energyHighCutoff", 1000)
 
@@ -94,7 +96,7 @@ class Geant4MacroGenerator:
     def _append_detector_scoring(self, detector: Dict[str, Any], quantities: List[Dict[str, Any]],
                                  filters: Dict[str, Any]) -> None:
         """Append scoring for a single detector including mesh/probe and quantities."""
-        name = detector.get("name", "UnknownDetector")
+        name = utils.get_detector_name(detector)
         geom = detector.get("geometryData", {})
         geom_type = geom.get("geometryType", "Box")
         params = geom.get("parameters", {})
@@ -108,7 +110,6 @@ class Geant4MacroGenerator:
             self._append_mesh(detector, geom_type, params, pos_det)
 
         for quantity in quantities:
-            # <-- tutaj przekazujemy name
             self._append_quantity(quantity, filters, name)
 
         self.lines.append("/score/close\n")
@@ -116,7 +117,7 @@ class Geant4MacroGenerator:
     def _append_mesh(self, detector: Dict[str, Any], geom_type: str,
                      params: Dict[str, Any], pos_det: List[float]) -> None:
         """Append a mesh (cylinder or box) for a detector."""
-        name = detector.get("name", "UnknownDetector")
+        name = utils.get_detector_name(detector)
         if geom_type.lower() in ["cyl", "cylinder"]:
             self.lines.append(f"/score/create/cylinderMesh {name}")
             self.lines.append(f"/score/mesh/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
@@ -141,7 +142,7 @@ class Geant4MacroGenerator:
     def _append_probe(self, detector: Dict[str, Any], geom_type: str,
                       params: Dict[str, Any], pos_det: List[float]) -> None:
         """Append a probe scoring for KineticEnergySpectrum quantities."""
-        name = detector.get("name", "UnknownDetector")
+        name = utils.get_detector_name(detector)
         size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"]\
             else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
         self.lines.append(f"/score/create/probe {name} {size} cm")
@@ -161,7 +162,9 @@ class Geant4MacroGenerator:
                 "bins": quantity.get("histogramNBins", 1),
                 "min": quantity.get("histogramMin", 0),
                 "max": quantity.get("histogramMax", 1),
-                "unit": quantity.get("histogramUnit", "MeV")
+                "unit": quantity.get("histogramUnit", "MeV"),
+                "XScale": quantity.get("histogramXScale", "none"),
+                "XBinScheme": quantity.get("histogramXBinScheme", "linear"),
             })
 
         filter_uuid = quantity.get("filter")
@@ -172,15 +175,15 @@ class Geant4MacroGenerator:
                 pt_names = " ".join([GEANT4_PARTICLE_MAP.get(pt["id"], pt["name"]) for pt in particle_types])
                 self.lines.append(f"/score/filter/particle {filt['name']} {pt_names}")
 
-    # -------------------- Histograms for probes --------------------
+    # -------------------- The histogram for KineticEnergySpectrum --------------------
     def _append_histograms(self) -> None:
-        """Append a histogram for a probe"""
+        """Append a histogram for KineticEnergySpectrum probe"""
         for hist in self.probe_histograms:
             qname = hist["quantity"]
             det_name = hist["detector"]
             arbitrary_name = f"{qname}_differential_{self.probe_counter}"
-            self.lines.append(f"/analysis/h1/create {qname} {arbitrary_name} {hist['bins']} "
-                              f"{hist['min']} {hist['max']} {hist['unit']}")
+            self.lines.append(f"/analysis/h1/create {qname}_{self.probe_counter} {arbitrary_name} {hist['bins']} "
+                              f"{hist['min']} {hist['max']} {hist['unit']} {hist['XScale']} {hist['XBinScheme']}")
             self.lines.append(f"/score/fill1D {self.probe_counter} {det_name} {qname}")
             self.probe_counter += 1
 
@@ -212,7 +215,7 @@ class Geant4MacroGenerator:
             detector = detectors.get(detector_uuid)
             if not detector:
                 continue
-            name = detector.get("name", "UnknownDetector")
+            name = utils.get_detector_name(detector)
             for quantity in output.get("quantities", []):
                 qname = quantity.get("name", quantity.get("keyword", "UnknownQuantity"))
                 filename = f"{name}_{qname}.txt"

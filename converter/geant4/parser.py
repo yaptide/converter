@@ -1,6 +1,6 @@
 from converter.common import Parser
 import converter.geant4.utils as utils
-from converter.geant4.Geant4MarcoGenerator import Geant4MacroGenerator
+from converter.geant4.Geant4MacroGenerator import Geant4MacroGenerator
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
