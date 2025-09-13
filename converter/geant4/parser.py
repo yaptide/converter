@@ -1,4 +1,5 @@
 from converter.common import Parser
+import converter.geant4.utils as utils
 from converter.geant4.Geant4MarcoGenerator import Geant4MacroGenerator
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
@@ -6,25 +7,8 @@ from defusedxml.minidom import parseString
 from typing import Dict, Tuple, Optional, Set
 
 
-_MM_PER_CM = 10.0
-_EPS = 1e-9
-
-
-def _to_mm_str(val_cm: float) -> str:
-    """Convert a value in cmo mm and return it as a string"""
-    mm = val_cm * _MM_PER_CM
-    if abs(mm - int(mm)) < _EPS:
-        return str(int(mm))
-    return f"{mm:g}"
-
-
-def _to_pascal_case(s: str) -> str:
-    """Convert a string with underscores to PascalCase from snake like case"""
-    return "".join(part.capitalize() for part in s.split("_"))
-
-
 class Geant4Parser(Parser):
-    """Parser that converts JSON to GDML format for geant4 simulations ( for now )"""
+    """Parser that converts JSON to GDML format for geant4 simulations"""
 
     def __init__(self) -> None:
         """Init the parser with empty GDML content."""
@@ -88,7 +72,7 @@ class Geant4Parser(Parser):
         self._emit_node_postorder(world, solids_xml, structure_xml, name_counters)
 
         setup_xml = ET.SubElement(gdml_root, "setup", {"name": "Default", "version": "1.0"})
-        world_logic_name = self._choose_logic_name(world)
+        world_logic_name = utils.choose_logic_name(world)
         ET.SubElement(setup_xml, "world", {"ref": world_logic_name})
 
         return self._prettify_xml(gdml_root)
@@ -103,7 +87,11 @@ class Geant4Parser(Parser):
         ET.SubElement(root, "materials")
         solids = ET.SubElement(root, "solids")
         ET.SubElement(solids, "box", {
-            "name": "solidWorld", "x": _to_mm_str(100), "y": _to_mm_str(100), "z": _to_mm_str(100), "lunit": "mm"
+            "name": "solidWorld",
+            "x": utils.to_mm_str(100),
+            "y": utils.to_mm_str(100),
+            "z": utils.to_mm_str(100),
+            "lunit": "mm"
         })
         structure = ET.SubElement(root, "structure")
         vol = ET.SubElement(structure, "volume", {"name": "logicWorld"})
@@ -123,30 +111,6 @@ class Geant4Parser(Parser):
         for ch in node.get("children", []):
             self._collect_materials(ch, acc)
 
-    @staticmethod
-    def _unique_name(base: str, kind: str, counters: Dict[str, Dict[str, int]]) -> str:
-        """Generate a unique name for a given base string and category (solid, logic, phys)."""
-        used = counters[kind]
-        if base not in used:
-            used[base] = 1
-            return base
-        used[base] += 1
-        return f"{base}{used[base]}"
-
-    def _choose_solid_name(self, node: dict, counters: Dict[str, Dict[str, int]]) -> str:
-        """Generate a unique solid name for a node"""
-        return self._unique_name(f"solid{_to_pascal_case(node.get('name', 'Figure'))}", "solid", counters)
-
-    def _choose_logic_name(self, node: dict, counters: Optional[Dict[str, Dict[str, int]]] = None) -> str:
-        """Generate a unique logic name for a node"""
-        if counters is None:
-            return f"logic{_to_pascal_case(node.get('name', 'Figure'))}"
-        return self._unique_name(f"logic{_to_pascal_case(node.get('name', 'Figure'))}", "logic", counters)
-
-    def _choose_phys_name(self, child_node: dict, counters: Dict[str, Dict[str, int]]) -> str:
-        """Generate a unique physical volume name for a node"""
-        return self._unique_name(f"phys{_to_pascal_case(child_node.get('name', 'Figure'))}", "phys", counters)
-
     def _emit_node_postorder(
         self,
         node: dict,
@@ -163,16 +127,16 @@ class Geant4Parser(Parser):
             ch_logic_name, _ = self._emit_node_postorder(ch, solids_xml, structure_xml, name_counters)
             children_info.append((ch, ch_logic_name, ch.get("geometryData", {}).get("position", [0, 0, 0])))
 
-        solid_name = self._choose_solid_name(node, name_counters)
-        if geom_type == ("HollowCylinderGeometry", "CylinderGeometry") :
+        solid_name = utils.choose_solid_name(node, name_counters)
+        if geom_type in ("HollowCylinderGeometry", "CylinderGeometry") :
             rmin_cm = float(params.get("innerRadius", 0))
             rmax_cm = float(params.get("radius", 0))
             z_cm = float(params.get("depth", 0))
             ET.SubElement(solids_xml, "tube", {
                 "name": solid_name,
-                "rmin": _to_mm_str(rmin_cm),
-                "rmax": _to_mm_str(rmax_cm),
-                "z": _to_mm_str(z_cm),
+                "rmin": utils.to_mm_str(rmin_cm),
+                "rmax": utils.to_mm_str(rmax_cm),
+                "z": utils.to_mm_str(z_cm),
                 "startphi": "0", "deltaphi": "360",
                 "aunit": "deg", "lunit": "mm"
             })
@@ -181,7 +145,7 @@ class Geant4Parser(Parser):
             ET.SubElement(solids_xml, "sphere", {
                 "name": solid_name,
                 "rmin": "0",
-                "rmax": _to_mm_str(r_cm),
+                "rmax": utils.to_mm_str(r_cm),
                 "startphi": "0",
                 "deltaphi": "360",
                 "starttheta": "0",
@@ -192,30 +156,30 @@ class Geant4Parser(Parser):
         elif geom_type == "BoxGeometry":
             ET.SubElement(solids_xml, "box", {
                 "name": solid_name,
-                "x": _to_mm_str(float(params.get("width", 0))),
-                "y": _to_mm_str(float(params.get("height", 0))),
-                "z": _to_mm_str(float(params.get("depth", 0))),
+                "x": utils.to_mm_str(float(params.get("width", 0))),
+                "y": utils.to_mm_str(float(params.get("height", 0))),
+                "z": utils.to_mm_str(float(params.get("depth", 0))),
                 "lunit": "mm"
             })
 
-        logic_name = self._choose_logic_name(node, name_counters)
+        logic_name = utils.choose_logic_name(node, name_counters)
         vol = ET.SubElement(structure_xml, "volume", {"name": logic_name})
         material_name = node.get("simulationMaterial", {}).get("geant4_name", "G4_Galactic")
         ET.SubElement(vol, "materialref", {"ref": material_name})
         ET.SubElement(vol, "solidref", {"ref": solid_name})
 
         for (child_node, child_logic_name, child_pos_cm) in children_info:
-            phys_name = self._choose_phys_name(child_node, name_counters)
+            phys_name = utils.choose_phys_name(child_node, name_counters)
             phys = ET.SubElement(vol, "physvol", {"copynumber": "1", "name": phys_name})
             ET.SubElement(phys, "volumeref", {"ref": child_logic_name})
             x_cm, y_cm, z_cm = map(float, child_pos_cm)
-            if abs(x_cm) > _EPS or abs(y_cm) > _EPS or abs(z_cm) > _EPS:
+            if abs(x_cm) > utils.EPS or abs(y_cm) > utils.EPS or abs(z_cm) > utils.EPS:
                 ET.SubElement(phys, "position", {
                     "name": f"{phys_name}_pos",
                     "unit": "mm",
-                    "x": _to_mm_str(x_cm),
-                    "y": _to_mm_str(y_cm),
-                    "z": _to_mm_str(z_cm),
+                    "x": utils.to_mm_str(x_cm),
+                    "y": utils.to_mm_str(y_cm),
+                    "z": utils.to_mm_str(z_cm),
                 })
 
         return logic_name, solid_name

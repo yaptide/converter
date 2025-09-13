@@ -20,7 +20,7 @@ def get_parser_from_str(parser_type: str) -> Parser:
         return Geant4Parser()
 
     print(f"Invalid parser type \"{parser_type}\".")
-    raise ValueError("Parser type must be either 'shieldhit', 'topas' or 'fluka'.")
+    raise ValueError("Parser type must be either 'shieldhit', 'topas', 'fluka' or 'geant4'.")
 
 
 def run_parser(parser: Parser, input_data: dict, output_dir: Union[Path, None] = None, silent: bool = True) -> dict:
