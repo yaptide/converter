@@ -35,8 +35,12 @@ class Geant4Parser(Parser):
 
     def get_configs_json(self) -> dict:
         """Return dictionary from gdml content"""
-        return {"geometry.gdml": self._gdml_content,
-                "run.mac": self._macro_content}
+        configs_json = super().get_configs_json()
+        configs_json.update({
+            "geometry.gdml": self._gdml_content,
+            "run.mac": self._macro_content,
+        })
+        return configs_json
 
     @staticmethod
     def _prettify_xml(root: ET.Element) -> str:
