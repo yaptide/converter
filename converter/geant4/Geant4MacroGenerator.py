@@ -123,7 +123,7 @@ class Geant4MacroGenerator:
         name = utils.get_detector_name(detector)
         if geom_type.lower() in ["cyl", "cylinder"]:
             self.lines.append(f"/score/create/cylinderMesh {name}")
-            self.lines.append(f"/score/mesh/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
+            self.lines.append(f"/score/mesh/translate/xyz {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
             radius = params.get("radius", 1)
             depth = params.get("depth", 1)
             n_radial = params.get("radialSegments", 1)
@@ -132,7 +132,7 @@ class Geant4MacroGenerator:
             self.lines.append(f"/score/mesh/nBin {n_radial} {n_z} 1")
         else:
             self.lines.append(f"/score/create/boxMesh {name}")
-            self.lines.append(f"/score/mesh/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
+            self.lines.append(f"/score/mesh/translate/xyz {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
             width = params.get("width", 1)
             height = params.get("height", 1)
             depth = params.get("depth", 1)
