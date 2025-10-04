@@ -128,7 +128,7 @@ class Geant4MacroGenerator:
             depth = params.get("depth", 1)
             n_radial = params.get("radialSegments", 1)
             n_z = params.get("zSegments", 1)
-            self.lines.append(f"/score/mesh/cylinderSize {radius} {depth} cm")
+            self.lines.append(f"/score/mesh/cylinderSize {radius} {depth / 2} cm")
             self.lines.append(f"/score/mesh/nBin {n_radial} {n_z} 1")
         else:
             self.lines.append(f"/score/create/boxMesh {name}")
@@ -139,7 +139,7 @@ class Geant4MacroGenerator:
             n_x = params.get("xSegments", 1)
             n_y = params.get("ySegments", 1)
             n_z = params.get("zSegments", 1)
-            self.lines.append(f"/score/mesh/boxSize {width} {height} {depth} cm")
+            self.lines.append(f"/score/mesh/boxSize {width / 2} {height / 2} {depth / 2} cm")
             self.lines.append(f"/score/mesh/nBin {n_x} {n_y} {n_z}")
 
     def _append_probe(self, detector: Dict[str, Any], geom_type: str,
@@ -148,7 +148,7 @@ class Geant4MacroGenerator:
         name = utils.get_detector_name(detector)
         size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"] \
             else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
-        self.lines.append(f"/score/create/probe {name} {size} cm")
+        self.lines.append(f"/score/create/probe {name} {size / 2} cm")
         self.lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
 
     def _append_quantity(self, quantity: Dict[str, Any], filters: Dict[str, Any], detector_name: str) -> None:
