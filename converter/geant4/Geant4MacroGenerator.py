@@ -47,7 +47,7 @@ class Geant4MacroGenerator:
     def _append_initialization(self) -> None:
         """Append particle source and run initialization."""
         beam = self.data.get("beam", {})
-        particle = beam.get("particle", {}).get("name", "proton")
+        particle = beam.get("particle", {}).get("id", "2")
         pos = beam.get("position", [0, 0, 0])
         direction = beam.get("direction", [0, 0, 1])
         energy = beam.get("energy", 1)
@@ -61,7 +61,7 @@ class Geant4MacroGenerator:
             "####### Particle Source definition #######",
             "##########################################\n",
             "/gps/verbose 0",
-            f"/gps/particle {particle.lower()}",
+            f"/gps/particle {GEANT4_PARTICLE_MAP.get(particle)}",
             f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm",
             "/gps/pos/type Beam",
             f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
