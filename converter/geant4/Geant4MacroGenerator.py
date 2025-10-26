@@ -83,7 +83,7 @@ class Geant4MacroGenerator:
         if shape_type == "Flat circular":
             self.lines.append("/gps/pos/type Plane")
             self.lines.append("/gps/pos/shape Circle")
-            if y > 0: # y defines radius, see SHIELD-HIT12A implementation
+            if y > 0:  # y defines radius, see SHIELD-HIT12A implementation
                 self.lines.append(f"/gps/pos/radius {y} cm")
         elif shape_type == "Flat square":
             self.lines.append("/gps/pos/type Plane")
@@ -92,7 +92,7 @@ class Geant4MacroGenerator:
                 self.lines.append(f"/gps/pos/halfx {x} cm")
             if y > 0:
                 self.lines.append(f"/gps/pos/halfy {y} cm")
-        else: # default to type == "Gaussian"
+        else:  # default to type == "Gaussian"
             self.lines.append("/gps/pos/type Beam")
             if x > 0:
                 self.lines.append(f"/gps/pos/sigma_x {x} cm")
