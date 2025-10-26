@@ -62,8 +62,10 @@ class Geant4MacroGenerator:
             "##########################################\n",
             "/gps/verbose 0",
             f"/gps/particle {GEANT4_PARTICLE_MAP.get(particle)}",
-            f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm",
-            "/gps/pos/type Beam",
+            f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm"
+        ])
+        self._append_beam_shape(beam)
+        self.lines.extend([
             f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
             "/gps/ene/type Gauss",
             f"/gps/ene/mono {energy} MeV",
@@ -71,6 +73,31 @@ class Geant4MacroGenerator:
             f"/gps/ene/max {energy_high} MeV\n"
             f"/gps/ene/min {energy_min} MeV\n"
         ])
+
+    def _append_beam_shape(self, beam: Dict[str, Any]) -> None:
+        """Set particle source shape and set its dimensions"""
+        shape_data = beam.get("sigma", {})
+        shape_type = shape_data.get("type", None)
+        x = shape_data.get("x", 0)
+        y = shape_data.get("y", 0)
+        if shape_type == "Flat circular":
+            self.lines.append("/gps/pos/type Plane")
+            self.lines.append("/gps/pos/shape Circle")
+            if y > 0: # y defines radius, see SHIELD-HIT12A implementation
+                self.lines.append(f"/gps/pos/radius {y} cm")
+        elif shape_type == "Flat square":
+            self.lines.append("/gps/pos/type Plane")
+            self.lines.append("/gps/pos/shape Rectangle")
+            if x > 0:
+                self.lines.append(f"/gps/pos/halfx {x} cm")
+            if y > 0:
+                self.lines.append(f"/gps/pos/halfy {y} cm")
+        else: # default to type == "Gaussian"
+            self.lines.append("/gps/pos/type Beam")
+            if x > 0:
+                self.lines.append(f"/gps/pos/sigma_x {x} cm")
+            if y > 0:
+                self.lines.append(f"/gps/pos/sigma_y {y} cm")
 
     # -------------------- Scoring --------------------
     def _append_scoring(self) -> None:
