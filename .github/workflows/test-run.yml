@@ -105,7 +105,7 @@ jobs:
     needs: make-package
     steps:
       - name: Fetch package as artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: packages
 
