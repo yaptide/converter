@@ -132,8 +132,8 @@ def convert_energy(beam_json: dict) -> float:
 
     if particle['name'] == 'HEAVYION':
         return energy if energy_unit == 'MeV/nucl' else energy / beam_json['particle'].get('a', 1)
-    else:
-        return energy if energy_unit == 'MeV' else energy * beam_json['particle'].get('a', 1)
+
+    return energy if energy_unit == 'MeV' else energy * beam_json['particle'].get('a', 1)
 
 
 def parse_particle_name(particle_json: dict):
