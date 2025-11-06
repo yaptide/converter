@@ -152,13 +152,17 @@ class ShieldhitParser(Parser):
         self.beam_config.particle_name = json["beam"]["particle"].get("name")
         self.beam_config.heavy_ion_a = json["beam"]["particle"]["a"]
         self.beam_config.heavy_ion_z = json["beam"]["particle"]["z"]
-        self.beam_config.energy = json["beam"]["energy"]
-        self.beam_config.energy_spread = json["beam"]["energySpread"]
-        # we use get here to avoid KeyError if the cutoffs are not defined
-        # in that case None will be inserted into the beam config
-        # which is well handled by the converter
-        self.beam_config.energy_low_cutoff = json["beam"].get("energyLowCutoff")
-        self.beam_config.energy_high_cutoff = json["beam"].get("energyHighCutoff")
+
+        energy_unit = json["beam"].get("energyUnit", "MeV")
+        energy_scale_factor = json["beam"]["particle"]["a"] if energy_unit == "MeV" else 1
+        self.beam_config.energy = json["beam"]["energy"] / energy_scale_factor
+        self.beam_config.energy_spread = json["beam"]["energySpread"] / energy_scale_factor
+        # cutoffs are None by default and such cases are well handled inside the `beam` module
+        if "energyLowCutoff" in json["beam"]:
+            self.beam_config.energy_low_cutoff = json["beam"]["energyLowCutoff"] / energy_scale_factor
+        if "energyHighCutoff" in json["beam"]:
+            self.beam_config.energy_high_cutoff = json["beam"]["energyHighCutoff"] / energy_scale_factor
+
         self.beam_config.n_stat = json["beam"].get("numberOfParticles", self.beam_config.n_stat)
         self.beam_config.beam_pos = tuple(json["beam"]["position"])
         self.beam_config.beam_dir = tuple(json["beam"]["direction"])

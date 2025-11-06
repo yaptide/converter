@@ -123,7 +123,7 @@ class BeamConfig:
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     heavy_ion_template = "HIPROJ       	{a} {z}           ! A and Z of the heavy ion"
-    energy_cutoff_template = "TCUT0       {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
+    energy_cutoff_template = "TCUT0       {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV/nucl]"
     sad_template = "BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
     beam_source_filename: Optional[str] = None
@@ -133,7 +133,7 @@ class BeamConfig:
 RNDSEED      	89736501     ! Random seed
 JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
 {optional_heavy_ion_line}
-TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
+TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread [MeV/nucl]
 {optional_energy_cut_off_line}
 NSTAT       {n_stat:d}    0       ! NSTAT, Step of saving
 STRAGG          {straggling}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov

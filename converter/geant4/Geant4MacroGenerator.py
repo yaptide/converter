@@ -50,10 +50,14 @@ class Geant4MacroGenerator:
         particle = beam.get("particle", {}).get("id", "2")
         pos = beam.get("position", [0, 0, 0])
         direction = beam.get("direction", [0, 0, 1])
-        energy = beam.get("energy", 1)
-        sigma = beam.get("energySpread", 0)
-        energy_high = beam.get("energyHighCutoff", 1000)
-        energy_min = beam.get("energyLowCutoff", 0)
+
+        energy_unit = beam.get("energyUnit", "MeV")
+        particle_mass_number = beam.get("particle", {}).get("a", 1)
+        energy_scale_factor = particle_mass_number if energy_unit == "MeV/nucl" else 1
+        energy = beam.get("energy", 1) * energy_scale_factor
+        sigma = beam.get("energySpread", 0) * energy_scale_factor
+        energy_high = beam.get("energyHighCutoff", 1000) * energy_scale_factor
+        energy_min = beam.get("energyLowCutoff", 0) * energy_scale_factor
 
         self.lines.extend([
             "/run/initialize\n",
