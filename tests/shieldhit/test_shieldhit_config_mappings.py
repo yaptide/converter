@@ -8,7 +8,7 @@ _Beam_template = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 ! no heavy ion
-TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
+TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread [MeV/nucl]
 ! no energy cutoffs
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
@@ -111,7 +111,7 @@ def test_energy_cutoff() -> None:
     beam = BeamConfig()
     beam.energy_low_cutoff = 0.0
     beam.energy_high_cutoff = 10.0
-    assert "TCUT0       0.0 10.0  ! energy cutoffs [MeV]" in str(beam)
+    assert "TCUT0       0.0 10.0  ! energy cutoffs [MeV/nucl]" in str(beam)
 
     beam.energy_low_cutoff = None
     assert "TCUT0" not in str(beam)
