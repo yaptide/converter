@@ -228,6 +228,7 @@ class ShieldhitParser(Parser):
         self.parse_modulator(json)
 
     def _parse_beam_energy(self, json):
+        """Parse beam energy-related fields with correct energy unit"""
         particle_parser_metadata = PARTICLE_DICT[json["beam"]["particle"]["id"]]
         allowed_units = particle_parser_metadata["allowed_units"]
         energy_unit = json["beam"].get("energyUnit", "MeV")

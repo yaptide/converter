@@ -8,7 +8,7 @@ _Beam_template = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 ! no heavy ion
-TMAX0      	{energy} {energy_spread}       ! Mean and spread (1 sigma) of primary particle kinetic energy [{energy_unit}]
+TMAX0      	{energy} {energy_spread}    ! Mean and spread (1 sigma) of primary particle kinetic energy [{energy_unit}]
 ! no energy cutoffs
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
