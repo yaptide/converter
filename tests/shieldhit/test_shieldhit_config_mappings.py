@@ -8,7 +8,7 @@ _Beam_template = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type
 ! no heavy ion
-TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread [MeV/nucl]
+TMAX0      	{energy} {energy_spread}       ! Mean and spread (1 sigma) of primary particle kinetic energy [{energy_unit}]
 ! no energy cutoffs
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
@@ -22,7 +22,7 @@ BEAMSIGMA       -0.1 0.1  ! Beam extension
 DELTAE          0.03   ! relative mean energy loss per transportation step
 """
 
-_Beam_template_default = _Beam_template.format(energy=150., energy_spread=1.5, nstat=10000)
+_Beam_template_default = _Beam_template.format(energy_unit="MeV", energy=150., energy_spread=1.5, nstat=10000)
 
 _Mat_template_default = """MEDIUM 1
 ICRU 276
@@ -111,7 +111,7 @@ def test_energy_cutoff() -> None:
     beam = BeamConfig()
     beam.energy_low_cutoff = 0.0
     beam.energy_high_cutoff = 10.0
-    assert "TCUT0       0.0 10.0  ! energy cutoffs [MeV/nucl]" in str(beam)
+    assert "TCUT0       0.0 10.0  ! energy cutoffs [MeV]" in str(beam)
 
     beam.energy_low_cutoff = None
     assert "TCUT0" not in str(beam)

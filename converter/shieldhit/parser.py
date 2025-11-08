@@ -154,7 +154,15 @@ class ShieldhitParser(Parser):
         self.beam_config.heavy_ion_z = json["beam"]["particle"]["z"]
 
         energy_unit = json["beam"].get("energyUnit", "MeV")
-        energy_scale_factor = json["beam"]["particle"]["a"] if energy_unit == "MeV" else 1
+        energy_scale_factor = 1
+        mass_number = json["beam"]["particle"].get("a", 0)
+        # Rules for energy unit: if particle doesn't have nucleons or has 1 nucleon -> use MeV;
+        # if particle has > 1 nucleon -> use MeV/nucl, convert from MeV if necessary;
+        if energy_unit == "MeV" and mass_number > 1:
+            energy_scale_factor = mass_number
+        elif energy_unit == "MeV/nucl" and mass_number <= 1:
+            energy_unit = "MeV"
+        self.beam_config.energy_unit = energy_unit
         self.beam_config.energy = json["beam"]["energy"] / energy_scale_factor
         self.beam_config.energy_spread = json["beam"]["energySpread"] / energy_scale_factor
         # cutoffs are None by default and such cases are well handled inside the `beam` module
