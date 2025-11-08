@@ -1,6 +1,7 @@
 from pathlib import Path
 from math import log10, ceil, isclose, sin, cos, radians
 
+
 class Parser:
     """Abstract parser, the template for implementing other parsers."""
 
@@ -100,7 +101,6 @@ def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit):
     """
     particle_parser_metadata = particles_dict[particle_id]
     allowed_units = particle_parser_metadata["allowed_units"]
-    energy_unit = energy_unit
 
     # Check if unit is allowed (i.e. MeV/nucl doesn't make sense for kaons, muons, etc.)
     if energy_unit not in allowed_units:

@@ -106,8 +106,8 @@ class Geant4MacroGenerator:
         z = particle.get("z", a)
         input_energy = beam["energy"]
         input_energy_unit = beam.get("energyUnit", "MeV")
-        energy, energy_unit, energy_scale_factor = convert_beam_energy(GEANT4_PARTICLE_MAP, particle_id, a,
-                                                                       input_energy, input_energy_unit)
+        energy, _, energy_scale_factor = convert_beam_energy(GEANT4_PARTICLE_MAP, particle_id, a,
+                                                             input_energy, input_energy_unit)
         sigma = beam.get("energySpread", 0) * energy_scale_factor
         energy_high = beam.get("energyHighCutoff", 1000) * energy_scale_factor
         energy_min = beam.get("energyLowCutoff", 0) * energy_scale_factor
