@@ -39,83 +39,103 @@ class FlukaBeam:
 particle_dict = {
     1: {
         'name': 'NEUTRON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl']
     },
     2: {
         'name': 'PROTON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl']
     },
     3: {
         'name': 'PION-',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     4: {
         'name': 'PION+',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     5: {
         'name': 'PIZERO',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     6: {
         'name': 'ANEUTRON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     7: {
         'name': 'APROTON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl']
     },
     8: {
         'name': 'KAON-',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     9: {
         'name': 'KAON+',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     10: {
         'name': 'KAONZERO',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     11: {
         'name': 'KAONLONG',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     12: {
         'name': 'PHOTON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     15: {
         'name': 'MUON-',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     16: {
         'name': 'MUON+',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     },
     21: {
         'name': 'DEUTERON',
-        'a': 2
+        'a': 2,
+        'allowed_units': ['MeV', 'MeV/nucl']
     },
     22: {
         'name': 'TRITON',
-        'a': 3
+        'a': 3,
+        'allowed_units': ['MeV', 'MeV/nucl']
     },
     23: {
         'name': '3-HELIUM',
-        'a': 3
+        'a': 3,
+        'allowed_units': ['MeV', 'MeV/nucl']
     },
     24: {
         'name': '4-HELIUM',
-        'a': 4
+        'a': 4,
+        'allowed_units': ['MeV', 'MeV/nucl']
     },
     25: {
         'name': 'HEAVYION',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl']
     },
     26: {
         'name': 'ELECTRON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV']
     }
 }
 
@@ -128,20 +148,27 @@ def convert_energy(beam_json: dict) -> float:
     For more details see:
     https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam.
     """
-    particle = particle_dict[beam_json['particle']['id']]
+    particle_parser_metadata = particle_dict[beam_json['particle']['id']]
     energy_unit = beam_json['energyUnit']
     energy = beam_json['energy']
 
-    if particle['name'] == 'HEAVYION':
+    if energy_unit not in particle_parser_metadata['allowed_units']:
+        particle_name = particle_parser_metadata["name"]
+        raise ValueError(f"Unit '{energy_unit}' not allowed for particle '{particle_name}'")
+
+    # HEAVYION is the only type of particle that is expected to have energy in 'MeV/nucl'
+    if particle_parser_metadata['name'] == 'HEAVYION':
         if energy_unit == 'MeV/nucl':
+            # unit is correct, no need to convert
             return energy
-        # energy_unit == 'MeV', we need to convert to 'MeV/nucl'
+        # energy_unit == 'MeV', we need to convert to 'MeV/nucl' by dividing total kinetic energy by A
         return energy / beam_json['particle'].get('a', 1)
 
-    # anything besides HEAVYIONS
+    # regular case of non-HEAVYION particles, which require energy in MeV
     if energy_unit == 'MeV':
+        # unit is correct, no need to convert
         return energy
-    # energy_unit == 'MeV/nucl', we need to convert to 'MeV'
+    # energy_unit == 'MeV/nucl', we need to convert to 'MeV' by multiplying the per-nucleon energy
     return energy * beam_json['particle'].get('a', 1)
 
 

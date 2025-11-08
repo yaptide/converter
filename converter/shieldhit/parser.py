@@ -245,6 +245,7 @@ class ShieldhitParser(Parser):
 
         # Convert to target unit and save the converted unit for display
         if particle_parser_metadata['target_unit'] == 'MeV' and energy_unit == 'MeV/nucl':
+            # converting from MeV to MeV/nucl means we need to divide kinetic energy by mass number A
             energy_scale_factor = 1 / json["beam"]["particle"].get("a", 1)
             energy_unit = particle_parser_metadata['target_unit']
         elif particle_parser_metadata['target_unit'] == 'MeV/nucl' and energy_unit == 'MeV':
