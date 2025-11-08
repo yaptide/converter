@@ -113,6 +113,11 @@ PARTICLE_DICT: dict[int, dict] = {
         'filter': [('Z', '==', 2), ('A', '==', 4)],
         'allowed_units': ['MeV', 'MeV/nucl'],
         'target_unit': 'MeV/nucl'
+    },
+    25: {
+        'name': 'HEAVYION',
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV/nucl'
     }
 }
 
