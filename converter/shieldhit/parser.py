@@ -3,7 +3,7 @@ from typing import Optional
 import re
 
 import converter.solid_figures as solid_figures
-from converter.common import Parser
+from converter.common import Parser, convert_beam_energy
 from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
                                       ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
@@ -234,29 +234,16 @@ class ShieldhitParser(Parser):
 
     def _parse_beam_energy(self, json):
         """Parse beam energy-related fields with correct energy unit"""
-        particle_parser_metadata = PARTICLE_DICT[json["beam"]["particle"]["id"]]
-        allowed_units = particle_parser_metadata["allowed_units"]
-        energy_unit = json["beam"].get("energyUnit", "MeV")
+        particle_id = json["beam"]["particle"]["id"]
+        input_energy = json["beam"]["energy"]
+        input_energy_unit = json["beam"].get("energyUnit", "MeV")
+        a = json["beam"]["particle"].get("a", 1)
 
-        # Check if unit is allowed (i.e. MeV/nucl doesn't make sense for kaons, muons, etc.)
-        if energy_unit not in allowed_units:
-            particle_name = particle_parser_metadata["name"]
-            raise ValueError(f"Unit '{energy_unit}' not allowed for particle '{particle_name}'")
-
-        # Convert to target unit and save the converted unit for display
-        if particle_parser_metadata['target_unit'] == 'MeV' and energy_unit == 'MeV/nucl':
-            # converting from MeV to MeV/nucl means we need to divide kinetic energy by mass number A
-            energy_scale_factor = 1 / json["beam"]["particle"].get("a", 1)
-            energy_unit = particle_parser_metadata['target_unit']
-        elif particle_parser_metadata['target_unit'] == 'MeV/nucl' and energy_unit == 'MeV':
-            energy_scale_factor = json["beam"]["particle"].get("a", 1)
-            energy_unit = particle_parser_metadata['target_unit']
-        else:
-            # everything is correct
-            energy_scale_factor = 1
+        energy, energy_unit, energy_scale_factor = convert_beam_energy(PARTICLE_DICT, particle_id, a, input_energy,
+                                                                       input_energy_unit)
 
         self.beam_config.energy_unit = energy_unit
-        self.beam_config.energy = json["beam"]["energy"] * energy_scale_factor
+        self.beam_config.energy = energy
         self.beam_config.energy_spread = json["beam"]["energySpread"] * energy_scale_factor
 
         # cutoffs are None by default and such cases are well handled inside the `beam` module

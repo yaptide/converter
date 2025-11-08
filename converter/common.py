@@ -1,7 +1,6 @@
 from pathlib import Path
 from math import log10, ceil, isclose, sin, cos, radians
 
-
 class Parser:
     """Abstract parser, the template for implementing other parsers."""
 
@@ -90,6 +89,37 @@ requested length: {n}')
         return 0.
 
     return result
+
+
+def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit):
+    """
+    Validates that energy_unit is listed `particles_dict.available_units`
+    and converts it to `particles_dict.target_unit` if necessary.
+
+    :returns: tuple `(energy, energy unit, scale factor)` after conversion
+    """
+    particle_parser_metadata = particles_dict[particle_id]
+    allowed_units = particle_parser_metadata["allowed_units"]
+    energy_unit = energy_unit
+
+    # Check if unit is allowed (i.e. MeV/nucl doesn't make sense for kaons, muons, etc.)
+    if energy_unit not in allowed_units:
+        particle_name = particle_parser_metadata["name"]
+        raise ValueError(f"Unit '{energy_unit}' not allowed for particle '{particle_name}'")
+
+    # Convert to target unit and save the converted unit for display
+    if particle_parser_metadata['target_unit'] == 'MeV/nucl' and energy_unit == 'MeV':
+        # converting from MeV to MeV/nucl means we need to divide kinetic energy by mass number A
+        energy_scale_factor = 1 / a
+        energy_unit = particle_parser_metadata['target_unit']
+    elif particle_parser_metadata['target_unit'] == 'MeV' and energy_unit == 'MeV/nucl':
+        energy_scale_factor = a
+        energy_unit = particle_parser_metadata['target_unit']
+    else:
+        # everything is correct
+        energy_scale_factor = 1
+
+    return energy * energy_scale_factor, energy_unit, energy_scale_factor
 
 
 def rotate(vector: list[float], angles: list[float], degrees: bool = True) -> list[float]:
