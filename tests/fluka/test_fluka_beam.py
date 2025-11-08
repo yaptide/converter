@@ -40,15 +40,15 @@ def test_parse_heavy_ions_MeV(project_fluka_json):
     beam_json['energy'] = 300
     beam_json['energyUnit'] = 'MeV'
     beam_json['particle']['id'] = 25
-    beam_json['particle']['a'] = 6
-    beam_json['particle']['z'] = 12
+    beam_json['particle']['z'] = 6
+    beam_json['particle']['a'] = 12
 
     fluka_beam = parse_beam(beam_json)
 
-    assert fluka_beam.energy_MeV == 50
+    assert fluka_beam.energy_MeV == 25
     assert fluka_beam.particle_name == 'HEAVYION'
-    assert fluka_beam.heavy_ion_a == 6
-    assert fluka_beam.heavy_ion_z == 12
+    assert fluka_beam.heavy_ion_z == 6
+    assert fluka_beam.heavy_ion_a == 12
 
 
 def test_parse_heavy_ions_MeV_nucl(project_fluka_json):
