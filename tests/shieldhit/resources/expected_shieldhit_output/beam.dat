@@ -3,7 +3,7 @@ RNDSEED      	89736501     ! Random seed
 JPART0       	2            ! Incident particle type (Proton)
 ! no heavy ion
 TMAX0      	150.0 1.5       ! Mean and spread (1 sigma) of primary particle kinetic energy [MeV]
-TCUT0       0.0 1000.0  ! energy cutoffs [MeV]
+TCUT0       0 1000  ! energy cutoffs [MeV]
 NSTAT       10000    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
 MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere

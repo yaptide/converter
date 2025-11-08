@@ -125,15 +125,24 @@ def convert_energy(beam_json: dict) -> float:
     Extract energy from beam JSON and provide it in Fluka convention.
     HEAVYION is a special case which requires that energy to be in MeV/u
     (MeV/nucl is taken as an approximation).
+    For more details see:
+    https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam.
     """
     particle = particle_dict[beam_json['particle']['id']]
     energy_unit = beam_json['energyUnit']
     energy = beam_json['energy']
 
     if particle['name'] == 'HEAVYION':
-        return energy if energy_unit == 'MeV/nucl' else energy / beam_json['particle'].get('a', 1)
+        if energy_unit == 'MeV/nucl':
+            return energy
+        # energy_unit == 'MeV', we need to convert to 'MeV/nucl'
+        return energy / beam_json['particle'].get('a', 1)
 
-    return energy if energy_unit == 'MeV' else energy * beam_json['particle'].get('a', 1)
+    # anything besides HEAVYIONS
+    if energy_unit == 'MeV':
+        return energy
+    # energy_unit == 'MeV/nucl', we need to convert to 'MeV'
+    return energy * beam_json['particle'].get('a', 1)
 
 
 def parse_particle_name(particle_json: dict):

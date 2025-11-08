@@ -130,6 +130,7 @@ class BeamConfig:
     beam_source_filename: Optional[str] = None
     beam_source_file_content: Optional[str] = None
 
+    # skipcq: FLK-E501
     beam_dat_template: str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
