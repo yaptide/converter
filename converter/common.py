@@ -94,7 +94,7 @@ requested length: {n}')
 
 
 def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit) -> (
-    float, Literal["MeV", "MeV/nucl"], float):
+        float, Literal["MeV", "MeV/nucl"], float):
     """
     Validates that energy_unit is listed in `particles_dict.allowed_units`
     and converts it to `particles_dict.target_unit` if necessary.
