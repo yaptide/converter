@@ -1,5 +1,6 @@
 from pathlib import Path
 from math import log10, ceil, isclose, sin, cos, radians
+from typing import Literal
 
 
 class Parser:
@@ -92,9 +93,10 @@ requested length: {n}')
     return result
 
 
-def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit):
+def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit) -> (
+float, Literal["MeV", "MeV/nucl"], float):
     """
-    Validates that energy_unit is listed `particles_dict.available_units`
+    Validates that energy_unit is listed in `particles_dict.allowed_units`
     and converts it to `particles_dict.target_unit` if necessary.
 
     :returns: tuple `(energy, energy unit, scale factor)` after conversion
@@ -108,15 +110,15 @@ def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit):
         raise ValueError(f"Unit '{energy_unit}' not allowed for particle '{particle_name}'")
 
     # Convert to target unit and save the converted unit for display
-    if particle_parser_metadata['target_unit'] == 'MeV/nucl' and energy_unit == 'MeV':
+    if energy_unit == 'MeV' and particle_parser_metadata['target_unit'] == 'MeV/nucl':
         # converting from MeV to MeV/nucl means we need to divide kinetic energy by mass number A
         energy_scale_factor = 1 / a
         energy_unit = particle_parser_metadata['target_unit']
-    elif particle_parser_metadata['target_unit'] == 'MeV' and energy_unit == 'MeV/nucl':
+    elif energy_unit == 'MeV/nucl' and particle_parser_metadata['target_unit'] == 'MeV':
         energy_scale_factor = a
         energy_unit = particle_parser_metadata['target_unit']
     else:
-        # everything is correct
+        # MeV->MeV or MeV/nucl->MeV/nucl, hence no conversion needed, we don't need to scale
         energy_scale_factor = 1
 
     return energy * energy_scale_factor, energy_unit, energy_scale_factor

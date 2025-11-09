@@ -2,7 +2,6 @@ from math import cos, atan, pi
 from dataclasses import dataclass
 from enum import Enum
 from converter.common import convert_beam_energy
-from converter.shieldhit.parser import PARTICLE_DICT
 
 
 class BeamShape(Enum):

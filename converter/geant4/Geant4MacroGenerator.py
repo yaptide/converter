@@ -268,7 +268,7 @@ class Geant4MacroGenerator:
             filter_particles = filters[filter_uuid]
             particle_types = filter_particles.get("data", {}).get("particleTypes", [])
             if particle_types:
-                particles_metadata = [GEANT4_PARTICLE_MAP.get(pt["id"], None) for pt in particle_types]
+                particles_metadata = [GEANT4_PARTICLE_MAP.get(pt["id"]) for pt in particle_types]
                 particles_metadata = filter(lambda x: x is not None, particles_metadata)
                 particle_names = " ".join([pm["name"] for pm in particles_metadata])
                 self.lines.append(f"/score/filter/particle {filter_particles['name']} {particle_names}")
