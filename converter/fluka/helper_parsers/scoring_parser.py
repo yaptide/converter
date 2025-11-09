@@ -5,7 +5,7 @@ import base64
 
 from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector, \
     parse_cylinder_detector
-from converter.fluka.helper_parsers.beam_parser import particle_dict
+from converter.fluka.helper_parsers.beam_parser import PARTICLE_DICT
 
 __supported_filter_keywords = ('A', 'Z')
 
@@ -61,10 +61,10 @@ def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
     Returns None if filter cannot be created for Fluka.
     """
     particle = filter_dict['particle']
-    if particle.get('id') not in particle_dict:
+    if particle.get('id') not in PARTICLE_DICT:
         return None
 
-    return ParticleFilter(name=filter_dict['name'], particle=particle_dict[particle['id']]['name'])
+    return ParticleFilter(name=filter_dict['name'], particle=PARTICLE_DICT[particle['id']]['name'])
 
 
 def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:

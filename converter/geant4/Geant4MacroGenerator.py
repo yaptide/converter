@@ -1,20 +1,70 @@
 import converter.geant4.utils as utils
 from typing import Dict, Any, List
+from converter.common import convert_beam_energy
 
 # skipcq: PYL-W0511
 # TODO geantino names needs better mapping or handling
 GEANT4_PARTICLE_MAP = {
-    1: "neutron",
-    2: "proton",
-    3: "geantino",
-    4: "e-",
-    5: "e+",
-    6: "alpha",
-    7: "mu-",
-    8: "mu+",
-    9: "pi-",
-    10: "pi+",
-    11: "geantino",
+    1: {
+        "name": "neutron",
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV"
+    },
+    2: {
+        "name": "proton",
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV"
+    },
+    3: {
+        "name": "geantino",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
+    4: {
+        "name": "e-",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
+    5: {
+        "name": "e+",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
+    6: {
+        "name": "alpha",
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV"
+    },
+    7: {
+        "name": "mu-",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
+    8: {
+        "name": "mu+",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
+    9: {
+        "name": "pi-",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
+    10: {
+        "name": "pi+",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
+    11: {
+        "name": "geantino",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
+    25: {  # equivalent of HEAVYION in other simulators
+        "name": "ion",
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV"
+    }
 }
 
 GEANT4_QUANTITY_MAP = {
@@ -47,13 +97,20 @@ class Geant4MacroGenerator:
     def _append_initialization(self) -> None:
         """Append particle source and run initialization."""
         beam = self.data.get("beam", {})
-        particle = beam.get("particle", {}).get("id", "2")
+        particle = beam.get("particle", {})
+        particle_id = beam.get("particle", {}).get("id", 2)
         pos = beam.get("position", [0, 0, 0])
         direction = beam.get("direction", [0, 0, 1])
-        energy = beam.get("energy", 1)
-        sigma = beam.get("energySpread", 0)
-        energy_high = beam.get("energyHighCutoff", 1000)
-        energy_min = beam.get("energyLowCutoff", 0)
+
+        a = particle.get("a", 1)
+        z = particle.get("z", a)
+        input_energy = beam["energy"]
+        input_energy_unit = beam.get("energyUnit", "MeV")
+        energy, _, energy_scale_factor = convert_beam_energy(GEANT4_PARTICLE_MAP, particle_id, a,
+                                                             input_energy, input_energy_unit)
+        sigma = beam.get("energySpread", 0) * energy_scale_factor
+        energy_high = beam.get("energyHighCutoff", 1000) * energy_scale_factor
+        energy_min = beam.get("energyLowCutoff", 0) * energy_scale_factor
 
         self.lines.extend([
             "/run/initialize\n",
@@ -61,9 +118,18 @@ class Geant4MacroGenerator:
             "####### Particle Source definition #######",
             "##########################################\n",
             "/gps/verbose 0",
-            f"/gps/particle {GEANT4_PARTICLE_MAP.get(particle)}",
             f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm"
         ])
+        if particle_id == 25:  # heavy ions
+            self.lines.extend([
+                "/gps/particle ion",
+                f"/gps/ion {z} {a} 0 0"
+            ])
+        else:
+            if particle_id not in GEANT4_PARTICLE_MAP or "name" not in GEANT4_PARTICLE_MAP[particle_id]:
+                raise ValueError(f"Invalid particle id={particle_id}")
+            name = GEANT4_PARTICLE_MAP[particle_id]["name"]
+            self.lines.append(f"/gps/particle {name}")
         self._append_beam_shape(beam)
         self.lines.extend([
             f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
@@ -202,7 +268,9 @@ class Geant4MacroGenerator:
             filter_particles = filters[filter_uuid]
             particle_types = filter_particles.get("data", {}).get("particleTypes", [])
             if particle_types:
-                particle_names = " ".join([GEANT4_PARTICLE_MAP.get(pt["id"], pt["name"]) for pt in particle_types])
+                particles_metadata = [GEANT4_PARTICLE_MAP.get(pt["id"]) for pt in particle_types]
+                particles_metadata = filter(lambda x: x is not None, particles_metadata)
+                particle_names = " ".join([pm["name"] for pm in particles_metadata])
                 self.lines.append(f"/score/filter/particle {filter_particles['name']} {particle_names}")
 
     # -------------------- The histogram for KineticEnergySpectrum --------------------

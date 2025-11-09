@@ -1,6 +1,7 @@
 from math import cos, atan, pi
 from dataclasses import dataclass
 from enum import Enum
+from converter.common import convert_beam_energy
 
 
 class BeamShape(Enum):
@@ -36,86 +37,126 @@ class FlukaBeam:
     heavy_ion_z: int = 1
 
 
-particle_dict = {
+PARTICLE_DICT = {
     1: {
         'name': 'NEUTRON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     2: {
         'name': 'PROTON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     3: {
         'name': 'PION-',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     4: {
         'name': 'PION+',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     5: {
         'name': 'PIZERO',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     6: {
         'name': 'ANEUTRON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     7: {
         'name': 'APROTON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     8: {
         'name': 'KAON-',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     9: {
         'name': 'KAON+',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     10: {
         'name': 'KAONZERO',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     11: {
         'name': 'KAONLONG',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     12: {
         'name': 'PHOTON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     15: {
         'name': 'MUON-',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     16: {
         'name': 'MUON+',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     21: {
         'name': 'DEUTERON',
-        'a': 2
+        'a': 2,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     22: {
         'name': 'TRITON',
-        'a': 3
+        'a': 3,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     23: {
         'name': '3-HELIUM',
-        'a': 3
+        'a': 3,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     24: {
         'name': '4-HELIUM',
-        'a': 4
+        'a': 4,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
-    25: {
+    25: {  # HEAVYION is the only type of particle that is expected to have energy in 'MeV/nucl'
         'name': 'HEAVYION',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV/nucl'
     },
     26: {
         'name': 'ELECTRON',
-        'a': 1
+        'a': 1,
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     }
 }
 
@@ -123,28 +164,26 @@ particle_dict = {
 def convert_energy(beam_json: dict) -> float:
     """
     Extract energy from beam JSON and provide it in Fluka convention.
-
-    For particles other than HEAVYIONS (i.e. protons, alpha particles, neutrons, electrons) MeV unit is used.
-    For HEAVYIONS (i.e. nuclei heavier than helium, defined by A and Z numbers) MeV/u is used.
-    Note than MeV/u (atomic mass unit) is not the same as MeV/nucl (number of nucleons).
+    HEAVYION is a special case which requires that energy to be in MeV/u
+    (MeV/nucl is taken as an approximation).
     For more details see:
     https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam.
     """
-    energy_MeV_nucl = beam_json['energy']
-    particle = particle_dict[beam_json['particle']['id']]
-    energy_Fluka_standard = energy_MeV_nucl * particle['a']
-    if particle['name'] == 'HEAVYION':
-        # Assuming that MeV/nucl is a good approximation of MeV/u
-        energy_Fluka_standard = energy_MeV_nucl
+    particle_id = beam_json['particle']['id']
+    input_energy_unit = beam_json['energyUnit']
+    input_energy = beam_json['energy']
+    a = beam_json['particle'].get('a', 1)
 
-    return energy_Fluka_standard
+    energy, _, _ = convert_beam_energy(PARTICLE_DICT, particle_id, a, input_energy, input_energy_unit)
+
+    return energy
 
 
 def parse_particle_name(particle_json: dict):
     """Parse particle ID to FLUKA particle name."""
     particle_id = particle_json['id']
-    if particle_id in particle_dict:
-        particle = particle_dict[particle_id]
+    if particle_id in PARTICLE_DICT:
+        particle = PARTICLE_DICT[particle_id]
         return particle['name']
     raise ValueError('Particle ID not supported by FLUKA')
 

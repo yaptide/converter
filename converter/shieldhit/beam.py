@@ -103,10 +103,11 @@ class BeamConfig:
     particle_name: Optional[str] = None
     heavy_ion_a: int = 1
     heavy_ion_z: int = 1
-    energy: float = 150.  # [MeV]
-    energy_spread: float = 1.5  # [MeV]
-    energy_low_cutoff: Optional[float] = None  # [MeV]
-    energy_high_cutoff: Optional[float] = None  # [MeV]
+    energy_unit: str = 'MeV'
+    energy: float = 150.
+    energy_spread: float = 1.5
+    energy_low_cutoff: Optional[float] = None
+    energy_high_cutoff: Optional[float] = None
     beam_ext_x: float = -0.1  # [cm]
     beam_ext_y: float = 0.1  # [cm]
     sad_x: Optional[float] = None  # [cm]
@@ -123,7 +124,7 @@ class BeamConfig:
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
     heavy_ion_template = "HIPROJ       	{a} {z}           ! A and Z of the heavy ion"
-    energy_cutoff_template = "TCUT0       {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [MeV]"
+    energy_cutoff_template = "TCUT0       {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [{energy_unit}]"
     sad_template = "BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
     beam_source_filename: Optional[str] = None
@@ -133,7 +134,7 @@ class BeamConfig:
 RNDSEED      	89736501     ! Random seed
 JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
 {optional_heavy_ion_line}
-TMAX0      	{energy} {energy_spread}       ! Incident energy and energy spread; both in (MeV/nucl)
+TMAX0      	{energy} {energy_spread}    ! Mean and spread (1 sigma) of primary particle kinetic energy [{energy_unit}]
 {optional_energy_cut_off_line}
 NSTAT       {n_stat:d}    0       ! NSTAT, Step of saving
 STRAGG          {straggling}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
@@ -184,6 +185,7 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
         cutoff_line = "! no energy cutoffs"
         if self.energy_low_cutoff is not None and self.energy_high_cutoff is not None:
             cutoff_line = BeamConfig.energy_cutoff_template.format(
+                energy_unit=self.energy_unit,
                 energy_low_cutoff=self.energy_low_cutoff,
                 energy_high_cutoff=self.energy_high_cutoff
             )
@@ -204,6 +206,7 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
             particle=self.particle,
             particle_optional_comment=particle_optional_comment,
             optional_heavy_ion_line=heavy_ion_line,
+            energy_unit=self.energy_unit,
             energy=float(self.energy),
             energy_spread=float(self.energy_spread),
             optional_energy_cut_off_line=cutoff_line,

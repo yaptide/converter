@@ -3,36 +3,46 @@ from typing import Optional
 import re
 
 import converter.solid_figures as solid_figures
-from converter.common import Parser
+from converter.common import Parser, convert_beam_energy
 from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
                                       ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
 from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
 from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
 
-_particle_dict: dict[int, dict] = {
+PARTICLE_DICT: dict[int, dict] = {
     1: {
         'name': 'NEUTRON',
         'filter': [
             ('Z', '==', 0),
             ('A', '==', 1),
-        ]
+        ],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     2: {
         'name': 'PROTON',
-        'filter': [('Z', '==', 1), ('A', '==', 1)]
+        'filter': [('Z', '==', 1), ('A', '==', 1)],
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     3: {
         'name': 'PION-',
-        'filter': [('ID', '==', 3)]
+        'filter': [('ID', '==', 3)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     4: {
         'name': 'PION+',
-        'filter': [('ID', '==', 4)]
+        'filter': [('ID', '==', 4)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     5: {
         'name': 'PIZERO',
-        'filter': [('ID', '==', 5)]
+        'filter': [('ID', '==', 5)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     # 6: {
     #     'name': 'ANEUTRON',
@@ -40,47 +50,74 @@ _particle_dict: dict[int, dict] = {
     # },
     7: {
         'name': 'APROTON',
-        'filter': [('Z', '==', -1), ('A', '==', 3)]
+        'filter': [('Z', '==', -1), ('A', '==', 3)],
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV'
     },
     8: {
         'name': 'KAON-',
-        'filter': [('ID', '==', 8)]
+        'filter': [('ID', '==', 8)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     9: {
         'name': 'KAON+',
-        'filter': [('ID', '==', 9)]
+        'filter': [('ID', '==', 9)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     10: {
         'name': 'KAONZERO',
-        'filter': [('ID', '==', 10)]
+        'filter': [('ID', '==', 10)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     11: {
         'name': 'KAONLONG',
-        'filter': [('ID', '==', 11)]
+        'filter': [('ID', '==', 11)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     15: {
         'name': 'MUON-',
-        'filter': [('ID', '==', 15)]
+        'filter': [('ID', '==', 15)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     16: {
         'name': 'MUON+',
-        'filter': [('ID', '==', 16)]
+        'filter': [('ID', '==', 16)],
+        'allowed_units': ['MeV'],
+        'target_unit': 'MeV'
     },
     21: {
         'name': 'DEUTERON',
-        'filter': [('Z', '==', 1), ('A', '==', 2)]
+        'filter': [('Z', '==', 1), ('A', '==', 2)],
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV/nucl'
     },
     22: {
         'name': 'TRITON',
-        'filter': [('Z', '==', 1), ('A', '==', 3)]
+        'filter': [('Z', '==', 1), ('A', '==', 3)],
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV/nucl'
     },
     23: {
         'name': '3-HELIUM',
-        'filter': [('Z', '==', 2), ('A', '==', 3)]
+        'filter': [('Z', '==', 2), ('A', '==', 3)],
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV/nucl'
     },
     24: {
         'name': '4-HELIUM',
-        'filter': [('Z', '==', 2), ('A', '==', 4)]
+        'filter': [('Z', '==', 2), ('A', '==', 4)],
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV/nucl'
+    },
+    25: {
+        'name': 'HEAVYION',
+        'allowed_units': ['MeV', 'MeV/nucl'],
+        'target_unit': 'MeV/nucl'
     }
 }
 
@@ -94,7 +131,7 @@ def parse_scoring_filter(scoring_filter: dict) -> ScoringFilter:
         # If the filter is a particle filter, we want to map it to format used by SHIELD-HIT12A
         return ScoringFilter(uuid=scoring_filter["uuid"],
                              name=scoring_filter["name"],
-                             rules=_particle_dict[scoring_filter["particle"]["id"]]['filter'])
+                             rules=PARTICLE_DICT[scoring_filter["particle"]["id"]]['filter'])
 
     return ScoringFilter(uuid=scoring_filter["uuid"],
                          name=scoring_filter["name"],
@@ -152,13 +189,9 @@ class ShieldhitParser(Parser):
         self.beam_config.particle_name = json["beam"]["particle"].get("name")
         self.beam_config.heavy_ion_a = json["beam"]["particle"]["a"]
         self.beam_config.heavy_ion_z = json["beam"]["particle"]["z"]
-        self.beam_config.energy = json["beam"]["energy"]
-        self.beam_config.energy_spread = json["beam"]["energySpread"]
-        # we use get here to avoid KeyError if the cutoffs are not defined
-        # in that case None will be inserted into the beam config
-        # which is well handled by the converter
-        self.beam_config.energy_low_cutoff = json["beam"].get("energyLowCutoff")
-        self.beam_config.energy_high_cutoff = json["beam"].get("energyHighCutoff")
+
+        self._parse_beam_energy(json)
+
         self.beam_config.n_stat = json["beam"].get("numberOfParticles", self.beam_config.n_stat)
         self.beam_config.beam_pos = tuple(json["beam"]["position"])
         self.beam_config.beam_dir = tuple(json["beam"]["direction"])
@@ -198,6 +231,26 @@ class ShieldhitParser(Parser):
 
         self.parse_physics(json)
         self.parse_modulator(json)
+
+    def _parse_beam_energy(self, json):
+        """Parse beam energy-related fields with correct energy unit"""
+        particle_id = json["beam"]["particle"]["id"]
+        input_energy = json["beam"]["energy"]
+        input_energy_unit = json["beam"].get("energyUnit", "MeV")
+        a = json["beam"]["particle"].get("a", 1)
+
+        energy, energy_unit, energy_scale_factor = convert_beam_energy(PARTICLE_DICT, particle_id, a, input_energy,
+                                                                       input_energy_unit)
+
+        self.beam_config.energy_unit = energy_unit
+        self.beam_config.energy = energy
+        self.beam_config.energy_spread = json["beam"]["energySpread"] * energy_scale_factor
+
+        # cutoffs are None by default and such cases are well handled inside the `beam` module
+        if "energyLowCutoff" in json["beam"]:
+            self.beam_config.energy_low_cutoff = json["beam"]["energyLowCutoff"] * energy_scale_factor
+        if "energyHighCutoff" in json["beam"]:
+            self.beam_config.energy_high_cutoff = json["beam"]["energyHighCutoff"] * energy_scale_factor
 
     def _parse_detect(self, json: dict) -> None:
         """Parses data from the input json into the detect_config property"""

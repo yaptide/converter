@@ -478,6 +478,7 @@
 		"uuid": "0F0F0F0F-0F0F-0F0F-0F0F-0F0F0F0FFFFF",
 		"position": [0,0,-1.5],
 		"direction": [0,0,1],
+		"energyUnit": "MeV",
 		"energy": 70,
 		"energySpread": 0.7,
 		"energyLowCutoff": 0,
