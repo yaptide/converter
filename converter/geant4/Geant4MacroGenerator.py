@@ -126,7 +126,10 @@ class Geant4MacroGenerator:
                 f"/gps/ion {z} {a} 0 0"
             ])
         else:
-            self.lines.append(f"/gps/particle {GEANT4_PARTICLE_MAP.get(particle)}")
+            if particle_id not in GEANT4_PARTICLE_MAP or "name" not in GEANT4_PARTICLE_MAP[particle_id]:
+                raise ValueError("Invalid particle id")
+            name = GEANT4_PARTICLE_MAP[particle_id]["name"]
+            self.lines.append(f"/gps/particle {name}")
         self._append_beam_shape(beam)
         self.lines.extend([
             f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
