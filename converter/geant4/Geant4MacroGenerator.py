@@ -127,7 +127,7 @@ class Geant4MacroGenerator:
             ])
         else:
             if particle_id not in GEANT4_PARTICLE_MAP or "name" not in GEANT4_PARTICLE_MAP[particle_id]:
-                raise ValueError("Invalid particle id")
+                raise ValueError(f"Invalid particle id={particle_id}")
             name = GEANT4_PARTICLE_MAP[particle_id]["name"]
             self.lines.append(f"/gps/particle {name}")
         self._append_beam_shape(beam)

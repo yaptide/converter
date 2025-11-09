@@ -101,6 +101,9 @@ def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit) -> 
 
     :returns: tuple `(energy, energy unit, scale factor)` after conversion
     """
+    if particle_id not in particles_dict:
+        raise ValueError(f"Unsupported particle_id: {particle_id}")
+
     particle_parser_metadata = particles_dict[particle_id]
     allowed_units = particle_parser_metadata["allowed_units"]
 

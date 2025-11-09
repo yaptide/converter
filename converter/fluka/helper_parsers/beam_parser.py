@@ -71,7 +71,7 @@ PARTICLE_DICT = {
     6: {
         'name': 'ANEUTRON',
         'a': 1,
-        'allowed_units': ['MeV'],
+        'allowed_units': ['MeV', 'MeV/nucl'],
         'target_unit': 'MeV'
     },
     7: {
