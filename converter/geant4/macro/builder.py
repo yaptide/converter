@@ -15,7 +15,7 @@ class Geant4MacroBuilder:
         self.probe_histograms: List[Dict[str, Any]] = []
 
     def generate(self) -> str:
-
+        """Generate a complete GEANT4 macro file."""
         BeamParser(self.data, self.lines).parse()
 
         scoring = ScoringParser(self.data, self.lines)

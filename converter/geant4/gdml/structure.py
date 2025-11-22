@@ -1,8 +1,11 @@
+# skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from converter.geant4 import utils
 from .solids import SolidEmitter
 
 class StructureEmitter:
+    """Generates the <structure> section of a GDML file."""
+
 
     def __init__(self, solids_xml, structure_xml, counters):
         self.solids_xml = solids_xml
@@ -10,10 +13,11 @@ class StructureEmitter:
         self.counters = counters
 
     def emit_postorder(self, node):
+        """Recursively emit GDML solids and structure definitions for a node and its children"""
         children = []
         for ch in node.get("children", []):
             logic_name, _ = self.emit_postorder(ch)
-            pos = ch.get("geometryData", {}).get("position", [0,0,0])
+            pos = ch.get("geometryData", {}).get("position", [0, 0, 0])
             children.append((ch, logic_name, pos))
 
         solid_name = utils.choose_solid_name(node, self.counters)
@@ -31,8 +35,8 @@ class StructureEmitter:
             phys = ET.SubElement(vol, "physvol", {"copynumber": "1", "name": phys_name})
             ET.SubElement(phys, "volumeref", {"ref": child_logic})
 
-            x,y,z = pos
-            if abs(x)>utils.EPS or abs(y)>utils.EPS or abs(z)>utils.EPS:
+            x, y, z = pos
+            if abs(x) > utils.EPS or abs(y) > utils.EPS or abs(z) > utils.EPS:
                 ET.SubElement(phys, "position", {
                     "name": f"{phys_name}_pos",
                     "unit": "mm",

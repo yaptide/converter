@@ -1,5 +1,6 @@
 
 from typing import Optional, Set, Dict, Tuple
+# skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
 import converter.geant4.utils as utils
@@ -20,6 +21,7 @@ class Geant4GDMLBuilder:
         return self._generate_empty()
 
     def _generate_gdml(self, world: dict) -> str:
+        """Generate GDML from gemetry node"""
         gdml_root = ET.Element("gdml", {
             "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
             "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
@@ -47,6 +49,7 @@ class Geant4GDMLBuilder:
         return self._prettify_xml(gdml_root)
 
     def _generate_empty(self) -> str:
+        """Generate empty GDML from gemetry node"""
         root = ET.Element("gdml", {
             "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
             "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
@@ -75,6 +78,7 @@ class Geant4GDMLBuilder:
 
     @staticmethod
     def _prettify_xml(root: ET.Element) -> str:
+        """Return a pretty-printed XML string for a given ElementTree root."""
         xml_bytes = ET.tostring(root, "utf-8")
         pretty = parseString(xml_bytes).toprettyxml(indent="  ")
         no_decl = "\n".join(pretty.split("\n")[1:])

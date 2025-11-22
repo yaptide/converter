@@ -5,11 +5,13 @@ from converter.geant4.constants import GEANT4_PARTICLE_MAP
 class BeamParser:
     """Generate beam initialization section."""
 
+
     def __init__(self, data: Dict[str, Any], lines: List[str]) -> None:
         self.data = data
         self.lines = lines
 
     def parse(self) -> None:
+        """Parse the beam configuration and append GEANT4 /gps commands."""
         beam = self.data.get("beam", {})
         particle = beam.get("particle", {})
         particle_id = particle.get("id", 2)
@@ -58,6 +60,7 @@ class BeamParser:
         ])
 
     def _append_beam_shape(self, beam: Dict[str, Any]) -> None:
+        """Append commands describing the beam's spatial distribution."""
         shape_data = beam.get("sigma", {})
         shape_type = shape_data.get("type", None)
         x = shape_data.get("x", 0)

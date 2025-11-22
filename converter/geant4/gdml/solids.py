@@ -1,15 +1,18 @@
+# skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from converter.geant4 import utils
 
 class SolidEmitter:
+    """Generates the <solids> section of a GDML file."""
 
     @staticmethod
     def emit(node, solids_xml, solid_name):
+        """Emit a GDML <solid> element for a given geometry node."""
         geo = node.get("geometryData", {})
         geom_type = geo.get("geometryType")
         params = geo.get("parameters", {})
 
-        if geom_type in ("HollowCylinderGeometry","CylinderGeometry"):
+        if geom_type in ("HollowCylinderGeometry", "CylinderGeometry"):
             ET.SubElement(solids_xml, "tube", {
                 "name": solid_name,
                 "rmin": utils.to_mm_str(float(params.get("innerRadius", 0))),

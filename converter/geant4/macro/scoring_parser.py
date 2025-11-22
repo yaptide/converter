@@ -5,6 +5,7 @@ from converter.geant4.constants import GEANT4_PARTICLE_MAP, GEANT4_QUANTITY_MAP
 class ScoringParser:
     """Generate detector scoring blocks and collect probe histograms."""
 
+
     def __init__(self, data: Dict[str, Any], lines: List[str]) -> None:
         self.data = data
         self.lines = lines
@@ -12,6 +13,7 @@ class ScoringParser:
         self.probe_counter = 0
 
     def parse(self) -> None:
+        """Generate Scoring commands based on configuration."""
         self.lines.extend([
             "##########################################",
             "################ Scoring #################",
@@ -35,6 +37,7 @@ class ScoringParser:
 
     def _append_detector_scoring(self, detector: Dict[str, Any], quantities: List[Dict[str, Any]],
                                  filters: Dict[str, Any]) -> None:
+        """Append all scoring quantities and filters for a given detector."""
         name = utils.get_detector_name(detector)
         geom = detector.get("geometryData", {})
         geom_type = geom.get("geometryType", "Box")
@@ -55,6 +58,7 @@ class ScoringParser:
 
     def _append_mesh(self, detector: Dict[str, Any], geom_type: str,
                      params: Dict[str, Any], pos_det: List[float]) -> None:
+        """Append a mesh-type scoring detector definition to the macro."""
         name = utils.get_detector_name(detector)
         if geom_type.lower() in ["cyl", "cylinder"]:
             self.lines.append(f"/score/create/cylinderMesh {name}")
@@ -79,6 +83,7 @@ class ScoringParser:
 
     def _append_probe(self, detector: Dict[str, Any], geom_type: str,
                       params: Dict[str, Any], pos_det: List[float]) -> None:
+        """Append a probe-type detector scoring definition to the macro."""
         name = utils.get_detector_name(detector)
         size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"] \
             else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
@@ -86,6 +91,7 @@ class ScoringParser:
         self.lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
 
     def _append_quantity(self, quantity: Dict[str, Any], filters: Dict[str, Any], detector_name: str) -> None:
+        """Append a scoring quantity definition to the macro."""
         keyword = quantity.get("keyword", "")
         qname = quantity.get("name", keyword)
         mapped_keyword = GEANT4_QUANTITY_MAP.get(keyword, keyword.lower())

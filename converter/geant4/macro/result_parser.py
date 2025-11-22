@@ -4,11 +4,13 @@ from converter.geant4 import utils
 class ResultParser:
     """Generate results section (dump to file)."""
 
+
     def __init__(self, data: Dict[str, Any], lines: List[str]):
         self.data = data
         self.lines = lines
 
     def parse(self):
+        """Generate commands for writing scoring results to output files."""
         detectors = {d["uuid"]: d for d in self.data.get("detectorManager", {}).get("detectors", [])}
         outputs = self.data.get("scoringManager", {}).get("outputs", [])
 
