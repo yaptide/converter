@@ -2,9 +2,9 @@ from converter.common import Parser
 from converter.geant4.macro.builder import Geant4MacroBuilder
 from converter.geant4.gdml.builder import Geant4GDMLBuilder
 
+
 class Geant4Parser(Parser):
     """Parser that converts JSON simulation configurations into GDML geometry and GEANT4 macro scripts."""
-
 
     def __init__(self):
         super().__init__()

@@ -2,9 +2,9 @@ from typing import Dict, Any, List
 from converter.common import convert_beam_energy
 from converter.geant4.constants import GEANT4_PARTICLE_MAP
 
+
 class BeamParser:
     """Generate beam initialization section."""
-
 
     def __init__(self, data: Dict[str, Any], lines: List[str]) -> None:
         self.data = data

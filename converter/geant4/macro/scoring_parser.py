@@ -2,9 +2,9 @@ from typing import Dict, Any, List
 import converter.geant4.utils as utils
 from converter.geant4.constants import GEANT4_PARTICLE_MAP, GEANT4_QUANTITY_MAP
 
+
 class ScoringParser:
     """Generate detector scoring blocks and collect probe histograms."""
-
 
     def __init__(self, data: Dict[str, Any], lines: List[str]) -> None:
         self.data = data

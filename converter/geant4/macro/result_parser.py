@@ -1,9 +1,9 @@
 from typing import Dict, Any, List
 from converter.geant4 import utils
 
+
 class ResultParser:
     """Generate results section (dump to file)."""
-
 
     def __init__(self, data: Dict[str, Any], lines: List[str]):
         self.data = data

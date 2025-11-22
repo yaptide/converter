@@ -2,6 +2,7 @@
 import xml.etree.ElementTree as ET
 from converter.geant4 import utils
 
+
 class SolidEmitter:
     """Generates the <solids> section of a GDML file."""
 

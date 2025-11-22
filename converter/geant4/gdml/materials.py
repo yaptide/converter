@@ -1,9 +1,9 @@
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 
+
 class MaterialCollector:
     """Recursively collects all unique GEANT4 material names from geometry nodes."""
-
 
     @staticmethod
     def collect(node, acc):
@@ -17,7 +17,6 @@ class MaterialCollector:
 
 class MaterialEmitter:
     """Generates the <materials> section of a GDML file."""
-
 
     @staticmethod
     def emit(materials_xml, used):

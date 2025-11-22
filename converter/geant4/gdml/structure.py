@@ -3,9 +3,9 @@ import xml.etree.ElementTree as ET
 from converter.geant4 import utils
 from .solids import SolidEmitter
 
+
 class StructureEmitter:
     """Generates the <structure> section of a GDML file."""
-
 
     def __init__(self, solids_xml, structure_xml, counters):
         self.solids_xml = solids_xml

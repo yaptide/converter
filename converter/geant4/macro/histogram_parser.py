@@ -1,8 +1,8 @@
 from typing import List, Dict, Any
 
+
 class HistogramParser:
     """Generate histogram section for probes."""
-
 
     def __init__(self, probe_histograms: List[Dict[str, Any]], lines: List[str]) -> None:
         self.probe_histograms = probe_histograms
