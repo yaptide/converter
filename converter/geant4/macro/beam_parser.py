@@ -32,7 +32,8 @@ class BeamParser:
 
         self.lines.extend(energy_lines)
 
-    def _particle_commands(self, particle_id: int, a: int, z: int, pos: List[float]) -> List[str]:
+    @staticmethod
+    def _particle_commands(particle_id: int, a: int, z: int, pos: List[float]) -> List[str]:
         """Return GEANT4 header + particle commands."""
         header = [
             "/run/initialize\n",
@@ -57,7 +58,8 @@ class BeamParser:
 
         return header + particle_cmd
 
-    def _compute_energy(self, beam: Dict[str, Any], particle_id: int, a: int, direction: List[float]) -> List[str]:
+    @staticmethod
+    def _compute_energy(beam: Dict[str, Any], particle_id: int, a: int, direction: List[float]) -> List[str]:
         """Compute energy values *and* return ready-to-append /gps output lines."""
         input_energy = beam.get("energy", 0)
         unit = beam.get("energyUnit", "MeV")
