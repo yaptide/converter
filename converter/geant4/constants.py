@@ -67,3 +67,7 @@ GEANT4_QUANTITY_MAP = {
     "Fluence": "cellFlux",
     "KineticEnergySpectrum": "cellFlux",
 }
+
+GEANT4_KINETIC_ENERGY_SPECTRUM = "KineticEnergySpectrum"
+
+HEAVY_ION_PARTICLE_ID = 25

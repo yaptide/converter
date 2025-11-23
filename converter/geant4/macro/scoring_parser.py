@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 import converter.geant4.utils as utils
-from converter.geant4.constants import GEANT4_PARTICLE_MAP, GEANT4_QUANTITY_MAP
+from converter.geant4.constants import GEANT4_PARTICLE_MAP, GEANT4_QUANTITY_MAP, GEANT4_KINETIC_ENERGY_SPECTRUM
 
 
 class ScoringParser:
@@ -44,7 +44,7 @@ class ScoringParser:
         params = geom.get("parameters", {})
         pos_det = geom.get("position", [0, 0, 0])
 
-        is_probe = any(q.get("keyword") == "KineticEnergySpectrum" for q in quantities)
+        is_probe = any(q.get("keyword") == GEANT4_KINETIC_ENERGY_SPECTRUM for q in quantities)
 
         if is_probe:
             self._append_probe(detector, geom_type, params, pos_det)
@@ -97,7 +97,7 @@ class ScoringParser:
         mapped_keyword = GEANT4_QUANTITY_MAP.get(keyword, keyword.lower())
         self.lines.append(f"/score/quantity/{mapped_keyword} {qname}")
 
-        if keyword == "KineticEnergySpectrum":
+        if keyword == GEANT4_KINETIC_ENERGY_SPECTRUM:
             self.probe_histograms.append({
                 "quantity": qname,
                 "detector": detector_name,

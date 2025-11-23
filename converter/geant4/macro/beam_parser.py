@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 from converter.common import convert_beam_energy
-from converter.geant4.constants import GEANT4_PARTICLE_MAP
+from converter.geant4.constants import GEANT4_PARTICLE_MAP, HEAVY_ION_PARTICLE_ID
 
 
 class BeamParser:
@@ -38,7 +38,7 @@ class BeamParser:
             f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm"
         ])
 
-        if particle_id == 25:  # heavy ions
+        if particle_id == HEAVY_ION_PARTICLE_ID:  # heavy ions
             self.lines.extend([
                 "/gps/particle ion",
                 f"/gps/ion {z} {a} 0 0"

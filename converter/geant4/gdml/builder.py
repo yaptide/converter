@@ -21,7 +21,7 @@ class Geant4GDMLBuilder:
         return self._generate_empty()
 
     def _generate_gdml(self, world: dict) -> str:
-        """Generate GDML from gemetry node"""
+        """Generate GDML from geometry node"""
         gdml_root = ET.Element("gdml", {
             "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
             "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
@@ -49,7 +49,7 @@ class Geant4GDMLBuilder:
         return self._prettify_xml(gdml_root)
 
     def _generate_empty(self) -> str:
-        """Generate empty GDML from gemetry node"""
+        """Generate empty GDML from geometry node"""
         root = ET.Element("gdml", {
             "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
             "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
