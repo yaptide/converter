@@ -1,5 +1,5 @@
 
-from typing import Optional, Set, Dict, Tuple
+from typing import Optional, Set
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
