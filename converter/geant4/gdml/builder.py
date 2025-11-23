@@ -41,7 +41,7 @@ class Geant4GDMLBuilder:
         name_counters = {"solid": {}, "logic": {}, "phys": {}}
 
         emitter = StructureEmitter(solids_xml, structure_xml, name_counters)
-        emitter.emit_postorder(world)
+        emitter.emit(world)
 
         setup_xml = ET.SubElement(gdml_root, "setup", {"name": "Default", "version": "1.0"})
         ET.SubElement(setup_xml, "world", {"ref": utils.choose_logic_name(world)})

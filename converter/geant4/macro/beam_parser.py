@@ -14,50 +14,70 @@ class BeamParser:
         """Parse the beam configuration and append GEANT4 /gps commands."""
         beam = self.data.get("beam", {})
         particle = beam.get("particle", {})
+
         particle_id = particle.get("id", 2)
         pos = beam.get("position", [0, 0, 0])
         direction = beam.get("direction", [0, 0, 1])
 
         a = particle.get("a", 1)
         z = particle.get("z", a)
-        input_energy = beam.get("energy", 0)
-        input_energy_unit = beam.get("energyUnit", "MeV")
-        energy, _, energy_scale_factor = convert_beam_energy(
-            GEANT4_PARTICLE_MAP, particle_id, a, input_energy, input_energy_unit
-        )
-        sigma = beam.get("energySpread", 0) * energy_scale_factor
-        energy_high = beam.get("energyHighCutoff", 1000) * energy_scale_factor
-        energy_min = beam.get("energyLowCutoff", 0) * energy_scale_factor
 
-        self.lines.extend([
+        energy_lines = self._compute_energy(beam, particle_id, a, direction)
+
+        self.lines.extend(
+            self._particle_commands(particle_id, a, z, pos)
+        )
+
+        self._append_beam_shape(beam)
+
+        self.lines.extend(energy_lines)
+
+    def _particle_commands(self, particle_id: int, a: int, z: int, pos: List[float]) -> List[str]:
+        """Return GEANT4 header + particle commands."""
+        header = [
             "/run/initialize\n",
             "##########################################",
             "####### Particle Source definition #######",
             "##########################################\n",
             "/gps/verbose 0",
             f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm"
-        ])
+        ]
 
-        if particle_id == HEAVY_ION_PARTICLE_ID:  # heavy ions
-            self.lines.extend([
+        if particle_id == HEAVY_ION_PARTICLE_ID:
+            particle_cmd = [
                 "/gps/particle ion",
-                f"/gps/ion {z} {a} 0 0"
-            ])
+                f"/gps/ion {z} {a} 0 0",
+            ]
         else:
             if particle_id not in GEANT4_PARTICLE_MAP or "name" not in GEANT4_PARTICLE_MAP[particle_id]:
                 raise ValueError(f"Invalid particle id={particle_id}")
-            name = GEANT4_PARTICLE_MAP[particle_id]["name"]
-            self.lines.append(f"/gps/particle {name}")
 
-        self._append_beam_shape(beam)
-        self.lines.extend([
+            name = GEANT4_PARTICLE_MAP[particle_id]["name"]
+            particle_cmd = [f"/gps/particle {name}"]
+
+        return header + particle_cmd
+
+    def _compute_energy(self, beam: Dict[str, Any], particle_id: int, a: int, direction: List[float]) -> List[str]:
+        """Compute energy values *and* return ready-to-append /gps output lines."""
+        input_energy = beam.get("energy", 0)
+        unit = beam.get("energyUnit", "MeV")
+
+        energy, _, scale = convert_beam_energy(
+            GEANT4_PARTICLE_MAP, particle_id, a, input_energy, unit
+        )
+
+        sigma = beam.get("energySpread", 0) * scale
+        high = beam.get("energyHighCutoff", 1000) * scale
+        low = beam.get("energyLowCutoff", 0) * scale
+
+        return [
             f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
             "/gps/ene/type Gauss",
             f"/gps/ene/mono {energy} MeV",
             f"/gps/ene/sigma {sigma} MeV",
-            f"/gps/ene/max {energy_high} MeV\n"
-            f"/gps/ene/min {energy_min} MeV\n"
-        ])
+            f"/gps/ene/max {high} MeV",
+            f"/gps/ene/min {low} MeV",
+        ]
 
     def _append_beam_shape(self, beam: Dict[str, Any]) -> None:
         """Append commands describing the beam's spatial distribution."""

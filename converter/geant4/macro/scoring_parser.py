@@ -15,7 +15,7 @@ class ScoringParser:
     def parse(self) -> None:
         """Generate Scoring commands based on configuration."""
         self.lines.extend([
-            "##########################################",
+            "\n##########################################",
             "################ Scoring #################",
             "##########################################\n"
         ])

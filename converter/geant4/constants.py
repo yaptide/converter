@@ -1,3 +1,5 @@
+HEAVY_ION_PARTICLE_ID = 25
+
 GEANT4_PARTICLE_MAP = {
     1: {
         "name": "neutron",
@@ -54,7 +56,7 @@ GEANT4_PARTICLE_MAP = {
         "allowed_units": ["MeV"],
         "target_unit": "MeV"
     },
-    25: {  # equivalent of HEAVYION in other simulators
+    HEAVY_ION_PARTICLE_ID: {  # equivalent of HEAVYION in other simulators
         "name": "ion",
         "allowed_units": ["MeV", "MeV/nucl"],
         "target_unit": "MeV"
@@ -69,5 +71,3 @@ GEANT4_QUANTITY_MAP = {
 }
 
 GEANT4_KINETIC_ENERGY_SPECTRUM = "KineticEnergySpectrum"
-
-HEAVY_ION_PARTICLE_ID = 25

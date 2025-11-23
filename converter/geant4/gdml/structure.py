@@ -12,11 +12,11 @@ class StructureEmitter:
         self.structure_xml = structure_xml
         self.counters = counters
 
-    def emit_postorder(self, node):
+    def emit(self, node):
         """Recursively emit GDML solids and structure definitions for a node and its children"""
         children = []
         for ch in node.get("children", []):
-            logic_name, _ = self.emit_postorder(ch)
+            logic_name, _ = self.emit(ch)
             pos = ch.get("geometryData", {}).get("position", [0, 0, 0])
             children.append((ch, logic_name, pos))
 
