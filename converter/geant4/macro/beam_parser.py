@@ -22,7 +22,8 @@ class BeamParser:
         a = particle.get("a", 1)
         z = particle.get("z", a)
 
-        energy_lines = self._compute_energy(beam, particle_id, a, direction)
+        direction_lines = self._compute_direction(direction)
+        energy_lines = self._compute_energy(beam, particle_id, a)
 
         self.lines.extend(
             self._particle_commands(particle_id, a, z, pos)
@@ -30,6 +31,7 @@ class BeamParser:
 
         self._append_beam_shape(beam)
 
+        self.lines.extend(direction_lines)
         self.lines.extend(energy_lines)
 
     @staticmethod
@@ -59,7 +61,7 @@ class BeamParser:
         return header + particle_cmd
 
     @staticmethod
-    def _compute_energy(beam: Dict[str, Any], particle_id: int, a: int, direction: List[float]) -> List[str]:
+    def _compute_energy(beam: Dict[str, Any], particle_id: int, a: int) -> List[str]:
         """Compute energy values *and* return ready-to-append /gps output lines."""
         input_energy = beam.get("energy", 0)
         unit = beam.get("energyUnit", "MeV")
@@ -73,12 +75,18 @@ class BeamParser:
         low = beam.get("energyLowCutoff", 0) * scale
 
         return [
-            f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
             "/gps/ene/type Gauss",
             f"/gps/ene/mono {energy} MeV",
             f"/gps/ene/sigma {sigma} MeV",
             f"/gps/ene/max {high} MeV",
             f"/gps/ene/min {low} MeV",
+        ]
+
+    @staticmethod
+    def _compute_direction(direction: List[float]) -> List[str]:
+        """Return /gps/direction command."""
+        return [
+            f"/gps/direction {direction[0]} {direction[1]} {direction[2]}"
         ]
 
     def _append_beam_shape(self, beam: Dict[str, Any]) -> None:
