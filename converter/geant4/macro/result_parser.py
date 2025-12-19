@@ -1,6 +1,7 @@
 from typing import Dict, List
 import converter.geant4.utils as utils
 
+
 def generate_result_lines(data: Dict) -> List[str]:
     """Generate commands for writing scoring results to output files."""
     lines: List[str] = []

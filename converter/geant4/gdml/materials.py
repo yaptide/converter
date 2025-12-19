@@ -4,7 +4,6 @@ import xml.etree.ElementTree as ET
 
 def collect(node: dict, acc: set[str]) -> None:
     """Collect material names appearing in geometry nodes."""
-
     mat = node.get("simulationMaterial", {}).get("geant4_name")
 
     if mat:
@@ -25,4 +24,3 @@ def emit(materials_xml: ET.Element, used: set[str]) -> None:
         ET.SubElement(mat, "MEE", {"unit": "eV", "value": "823"})
         ET.SubElement(mat, "D", {"unit": "g/cm3", "value": "1e+8"})
         ET.SubElement(mat, "fraction", {"n": "1", "ref": "G4_Pb"})
-

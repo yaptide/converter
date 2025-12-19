@@ -2,6 +2,7 @@ from typing import Dict, Any, List
 import converter.geant4.utils as utils
 from converter.geant4.constants import GEANT4_PARTICLE_MAP, GEANT4_QUANTITY_MAP, GEANT4_KINETIC_ENERGY_SPECTRUM
 
+
 def generate_scoring_lines(data: Dict[str, Any]) -> (List[str], List[Dict[str, Any]]):
     """Generate Scoring commands based on configuration."""
     lines: List[str] = [

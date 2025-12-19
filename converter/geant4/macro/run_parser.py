@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+
 def generate_run_lines(data: Dict) -> List[str]:
     """Generate run section."""
     lines: List[str] = []

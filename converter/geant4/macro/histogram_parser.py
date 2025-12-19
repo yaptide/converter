@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
 
+
 def generate_histogram_lines(probe_histograms: List[Dict[str, Any]]) -> List[str]:
     """Append histogram output commands for all probe quantities."""
     lines: List[str] = []

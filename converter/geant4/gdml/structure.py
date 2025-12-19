@@ -50,4 +50,3 @@ def emit_structure(
             })
 
     return logic_name, solid_name
-

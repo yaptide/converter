@@ -42,4 +42,3 @@ def emit(node: dict, solids_xml: ET.Element, solid_name: str) -> None:
             "z": utils.to_mm_str(float(params.get("depth", 0))),
             "lunit": "mm",
         })
-

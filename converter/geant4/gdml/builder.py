@@ -91,4 +91,3 @@ def _prettify_xml(root: ET.Element) -> str:
     pretty = parseString(xml_bytes).toprettyxml(indent="  ")
     no_decl = "\n".join(pretty.split("\n")[1:])
     return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + no_decl
-

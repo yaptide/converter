@@ -2,6 +2,7 @@ from typing import Dict, Any, List
 from converter.geant4.constants import GEANT4_PARTICLE_MAP, HEAVY_ION_PARTICLE_ID
 from converter.common import convert_beam_energy
 
+
 def generate_beam_lines(data: Dict[str, Any]) -> List[str]:
     """Parse the beam configuration and append GEANT4 /gps commands."""
     lines: List[str] = []
@@ -50,7 +51,6 @@ def _particle_commands(particle_id: int, a: int, z: int, pos: List[float]) -> Li
 
 def _compute_energy(beam: Dict[str, Any], particle_id: int, a: int) -> List[str]:
     """Compute energy values *and* return ready-to-append /gps output lines."""
-
     input_energy = beam.get("energy", 0)
     unit = beam.get("energyUnit", "MeV")
 

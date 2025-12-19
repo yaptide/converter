@@ -5,9 +5,9 @@ from .histogram_parser import generate_histogram_lines
 from .run_parser import generate_run_lines
 from .result_parser import generate_result_lines
 
+
 def generate_macro_entry_point(data: Dict) -> str:
     """Central builder for Geant4 macro, combining all parsers."""
-
     lines = []
 
     # Beam
