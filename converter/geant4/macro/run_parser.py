@@ -1,19 +1,14 @@
-from typing import Dict, Any, List
+from typing import Dict, List
 
-
-class RunParser:
+def generate_run_lines(data: Dict) -> List[str]:
     """Generate run section."""
+    lines: List[str] = []
+    beam = data.get("beam", {})
+    lines.extend([
+        "\n##########################################",
+        "################## Run ###################",
+        "##########################################\n",
+        f"/run/beamOn {beam.get('numberOfParticles', 10000)}\n"
+    ])
 
-    def __init__(self, data: Dict[str, Any], lines: List[str]):
-        self.data = data
-        self.lines = lines
-
-    def parse(self):
-        """Generate /run and /event commands based on configuration."""
-        beam = self.data.get("beam", {})
-        self.lines.extend([
-            "\n##########################################",
-            "################## Run ###################",
-            "##########################################\n",
-            f"/run/beamOn {beam.get('numberOfParticles', 10000)}\n"
-        ])
+    return lines

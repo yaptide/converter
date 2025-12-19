@@ -1,32 +1,27 @@
-from typing import Dict, Any, List
-from converter.geant4 import utils
+from typing import Dict, List
+import converter.geant4.utils as utils
 
+def generate_result_lines(data: Dict) -> List[str]:
+    """Generate commands for writing scoring results to output files."""
+    lines: List[str] = []
+    detectors = {d["uuid"]: d for d in data.get("detectorManager", {}).get("detectors", [])}
+    outputs = data.get("scoringManager", {}).get("outputs", [])
 
-class ResultParser:
-    """Generate results section (dump to file)."""
+    lines.extend([
+        "##########################################",
+        "############ Collect results #############",
+        "##########################################\n"
+    ])
 
-    def __init__(self, data: Dict[str, Any], lines: List[str]):
-        self.data = data
-        self.lines = lines
+    for output in outputs:
+        detector_uuid = output.get("detectorUuid")
+        detector = detectors.get(detector_uuid)
+        if not detector:
+            continue
+        name = utils.get_detector_name(detector)
+        for quantity in output.get("quantities", []):
+            qname = quantity.get("name", quantity.get("keyword", "UnknownQuantity"))
+            filename = f"{name}_{qname}.txt"
+            lines.append(f"/score/dumpQuantityToFile {name} {qname} {filename}")
 
-    def parse(self):
-        """Generate commands for writing scoring results to output files."""
-        detectors = {d["uuid"]: d for d in self.data.get("detectorManager", {}).get("detectors", [])}
-        outputs = self.data.get("scoringManager", {}).get("outputs", [])
-
-        self.lines.extend([
-            "##########################################",
-            "############ Collect results #############",
-            "##########################################\n"
-        ])
-
-        for output in outputs:
-            detector_uuid = output.get("detectorUuid")
-            detector = detectors.get(detector_uuid)
-            if not detector:
-                continue
-            name = utils.get_detector_name(detector)
-            for quantity in output.get("quantities", []):
-                qname = quantity.get("name", quantity.get("keyword", "UnknownQuantity"))
-                filename = f"{name}_{qname}.txt"
-                self.lines.append(f"/score/dumpQuantityToFile {name} {qname} {filename}")
+    return lines

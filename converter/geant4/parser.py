@@ -1,6 +1,6 @@
 from converter.common import Parser
-from converter.geant4.macro.builder import Geant4MacroBuilder
-from converter.geant4.gdml.builder import Geant4GDMLBuilder
+from converter.geant4.macro.builder import generate_macro_entry_point
+from converter.geant4.gdml.builder import generate_gdml_entry_point
 
 
 class Geant4Parser(Parser):
@@ -18,8 +18,8 @@ class Geant4Parser(Parser):
         if "figureManager" in json_data and json_data["figureManager"]["figures"]:
             world = json_data["figureManager"]["figures"][0]
 
-        self._gdml_content = Geant4GDMLBuilder(world).generate()
-        self._macro_content = Geant4MacroBuilder(json_data).generate()
+        self._gdml_content = generate_gdml_entry_point(world)
+        self._macro_content = generate_macro_entry_point(json_data)
 
     def get_configs_json(self) -> dict:
         """Return the full configuration JSON including generated GDML and macro data."""
