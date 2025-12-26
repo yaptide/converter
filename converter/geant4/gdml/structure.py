@@ -1,7 +1,7 @@
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from converter.geant4 import utils
-from .solids import emit as emit_solid
+from .solids import create_solid_element
 
 
 def emit_structure(
@@ -21,7 +21,9 @@ def emit_structure(
         children.append((ch, logic_name, pos))
 
     solid_name = utils.choose_solid_name(node, counters)
-    emit_solid(node, solids_xml, solid_name)
+    solid_element = create_solid_element(node, solid_name)
+    if solid_element is not None:
+        solids_xml.append(solid_element)
 
     logic_name = utils.choose_logic_name(node, counters)
     vol = ET.SubElement(structure_xml, "volume", {"name": logic_name})

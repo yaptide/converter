@@ -1,9 +1,9 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 import converter.geant4.utils as utils
 from converter.geant4.constants import GEANT4_PARTICLE_MAP, GEANT4_QUANTITY_MAP, GEANT4_KINETIC_ENERGY_SPECTRUM
 
 
-def generate_scoring_lines(data: Dict[str, Any]) -> (List[str], List[Dict[str, Any]]):
+def generate_scoring_lines(data: Dict[str, Any]) -> Tuple[List[str], List[Dict[str, Any]]]:
     """Generate Scoring commands based on configuration."""
     lines: List[str] = [
         "\n##########################################",
@@ -29,7 +29,13 @@ def generate_scoring_lines(data: Dict[str, Any]) -> (List[str], List[Dict[str, A
     return lines, probe_histograms
 
 
-def _append_detector_scoring_lines(detector, quantities, filters, lines, probe_histograms):
+def _append_detector_scoring_lines(
+    detector: Dict[str, Any],
+    quantities: List[Dict[str, Any]],
+    filters: Dict[str, Any],
+    lines: List[str],
+    probe_histograms: List[Dict[str, Any]],
+) -> None:
     """Append all scoring quantities and filters for a given detector."""
     name = utils.get_detector_name(detector)
     geom = detector.get("geometryData", {})
@@ -49,7 +55,8 @@ def _append_detector_scoring_lines(detector, quantities, filters, lines, probe_h
     lines.append("/score/close\n")
 
 
-def _append_mesh_lines(detector, geom_type, params, pos_det, lines):
+def _append_mesh_lines(detector: Dict[str, Any], geom_type: str, params: Dict[str, Any],
+                       pos_det: List[float], lines: List[str]) -> None:
     """Append a mesh-type scoring detector definition to the macro."""
     name = utils.get_detector_name(detector)
     if geom_type.lower() in ["cyl", "cylinder"]:

@@ -1,22 +1,22 @@
-from typing import Optional, Set
+from typing import Optional
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
 
 from converter.geant4 import utils
-from .materials import collect, emit
+from .materials import collect, create_material_elements
 from .structure import emit_structure
 
 
 def generate_gdml_entry_point(world_json: Optional[dict]) -> str:
-    """Public entry: generate GDML string for provided world or an empty world."""
+    """Generate GDML string for provided world or an empty world."""
     if world_json:
         return _generate_gdml(world_json)
     return _generate_empty()
 
 
 def _generate_gdml(world: dict) -> str:
-    """Generate GDML from geometry node"""
+    """Generate GDML from geometry node."""
     gdml_root = ET.Element("gdml", {
         "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
         "xsi:noNamespaceSchemaLocation":
@@ -25,11 +25,11 @@ def _generate_gdml(world: dict) -> str:
 
     ET.SubElement(gdml_root, "define")
 
-    used_materials: Set[str] = set()
-    collect(world, used_materials)
+    used_materials = collect(world)
 
     materials_xml = ET.SubElement(gdml_root, "materials")
-    emit(materials_xml, used_materials)
+    for mat in create_material_elements(used_materials):
+        materials_xml.append(mat)
 
     solids_xml = ET.SubElement(gdml_root, "solids")
     structure_xml = ET.SubElement(gdml_root, "structure")
@@ -55,7 +55,7 @@ def _generate_gdml(world: dict) -> str:
 
 
 def _generate_empty() -> str:
-    """Generate empty GDML from geometry node"""
+    """"Generate empty GDML with a default world geometry."""
     root = ET.Element("gdml", {
         "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
         "xsi:noNamespaceSchemaLocation":
