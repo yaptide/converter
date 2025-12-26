@@ -1,9 +1,10 @@
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from converter.geant4 import utils
+from typing import Optional
 
 
-def create_solid_element(node: dict, solid_name: str) -> ET.Element | None:
+def create_solid_element(node: dict, solid_name: str) -> Optional[ET.Element]:
     """Create and return a GDML <solid> element for a given geometry node."""
     geo = node.get("geometryData", {})
     geom_type = geo.get("geometryType")
@@ -21,7 +22,7 @@ def create_solid_element(node: dict, solid_name: str) -> ET.Element | None:
             "lunit": "mm",
         })
 
-    elif geom_type == "SphereGeometry":
+    if geom_type == "SphereGeometry":
         return ET.Element("sphere", {
             "name": solid_name,
             "rmin": "0",
@@ -34,7 +35,7 @@ def create_solid_element(node: dict, solid_name: str) -> ET.Element | None:
             "lunit": "mm",
         })
 
-    elif geom_type == "BoxGeometry":
+    if geom_type == "BoxGeometry":
         return ET.Element("box", {
             "name": solid_name,
             "x": utils.to_mm_str(float(params.get("width", 0))),

@@ -55,7 +55,7 @@ def _generate_gdml(world: dict) -> str:
 
 
 def _generate_empty() -> str:
-    """"Generate empty GDML with a default world geometry."""
+    """Generate empty GDML with a default world geometry."""
     root = ET.Element("gdml", {
         "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
         "xsi:noNamespaceSchemaLocation":

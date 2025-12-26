@@ -1,8 +1,8 @@
 from typing import Dict, Any, List
 from converter.geant4.constants import GEANT4_PARTICLE_MAP, HEAVY_ION_PARTICLE_ID
 from converter.common import convert_beam_energy
-from converter.geant4.macro.defaults.beam_defaults import DEFAULT_PARTICLE_ID, DEFAULT_PARTICLE_A, DEFAULT_BEAM_POSITION, DEFAULT_BEAM_DIRECTION
-
+from converter.geant4.macro.defaults.beam_defaults import (DEFAULT_PARTICLE_ID, DEFAULT_PARTICLE_A,
+                                                           DEFAULT_BEAM_POSITION, DEFAULT_BEAM_DIRECTION)
 
 
 def generate_beam_lines(data: Dict[str, Any]) -> List[str]:
