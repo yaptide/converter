@@ -81,7 +81,13 @@ def _append_mesh_lines(detector: Dict[str, Any], geom_type: str, params: Dict[st
         lines.append(f"/score/mesh/nBin {n_x} {n_y} {n_z}")
 
 
-def _append_probe_lines(detector, geom_type, params, pos_det, lines):
+def _append_probe_lines(
+    detector: Dict[str, Any],
+    geom_type: str,
+    params: Dict[str, Any],
+    pos_det: List[float],
+    lines: List[str],
+) -> None:
     """Append a probe-type detector scoring definition to the macro."""
     name = utils.get_detector_name(detector)
     size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"] \
@@ -90,7 +96,13 @@ def _append_probe_lines(detector, geom_type, params, pos_det, lines):
     lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
 
 
-def _append_quantity_lines(quantity, filters, detector_name, lines, probe_histograms):
+def _append_quantity_lines(
+    quantity: Dict[str, Any],
+    filters: Dict[str, Dict[str, Any]],
+    detector_name: str,
+    lines: List[str],
+    probe_histograms: List[Dict[str, Any]],
+) -> None:
     """Append a scoring quantity definition to the macro."""
     keyword = quantity.get("keyword", "")
     qname = quantity.get("name", keyword)

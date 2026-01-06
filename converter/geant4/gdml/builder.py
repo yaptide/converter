@@ -4,8 +4,8 @@ import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
 
 from converter.geant4 import utils
-from .materials import collect, create_material_elements
-from .structure import emit_structure
+from .materials import get_materials, create_material_elements
+from .structure import build_structure
 
 
 def generate_gdml_entry_point(world_json: Optional[dict]) -> str:
@@ -25,7 +25,7 @@ def _generate_gdml(world: dict) -> str:
 
     ET.SubElement(gdml_root, "define")
 
-    used_materials = collect(world)
+    used_materials = get_materials(world)
 
     materials_xml = ET.SubElement(gdml_root, "materials")
     for mat in create_material_elements(used_materials):
@@ -36,12 +36,13 @@ def _generate_gdml(world: dict) -> str:
 
     counters = {"solid": {}, "logic": {}, "phys": {}}
 
-    emit_structure(
-        node=world,
-        solids_xml=solids_xml,
-        structure_xml=structure_xml,
-        counters=counters,
-    )
+    solids, volumes, _, _ = build_structure(world, counters)
+
+    for s in solids:
+        solids_xml.append(s)
+
+    for v in volumes:
+        structure_xml.append(v)
 
     setup = ET.SubElement(gdml_root, "setup", {
         "name": "Default",
@@ -90,4 +91,4 @@ def _prettify_xml(root: ET.Element) -> str:
     xml_bytes = ET.tostring(root, "utf-8")
     pretty = parseString(xml_bytes).toprettyxml(indent="  ")
     no_decl = "\n".join(pretty.split("\n")[1:])
-    return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + no_decl
+    return '<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n' + no_decl

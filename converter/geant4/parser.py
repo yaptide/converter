@@ -6,7 +6,7 @@ from converter.geant4.gdml.builder import generate_gdml_entry_point
 class Geant4Parser(Parser):
     """Parser that converts JSON simulation configurations into GDML geometry and GEANT4 macro scripts."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.info["simulator"] = "geant4"
         self._gdml_content = ""

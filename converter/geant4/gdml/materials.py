@@ -2,7 +2,7 @@
 import xml.etree.ElementTree as ET
 
 
-def collect(node: dict) -> set[str]:
+def get_materials(node: dict) -> set[str]:
     """
     Recursively traverse a geometry node tree and return a set of all
     Geant4 material names ("geant4_name") used in the subtree rooted at `node`.
@@ -14,7 +14,7 @@ def collect(node: dict) -> set[str]:
         materials.add(mat)
 
     for ch in node.get("children", []):
-        materials.update(collect(ch))
+        materials.update(get_materials(ch))
 
     return materials
 

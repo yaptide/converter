@@ -4,29 +4,31 @@ from converter.geant4 import utils
 from .solids import create_solid_element
 
 
-def emit_structure(
+def build_structure(
     node: dict,
-    solids_xml: ET.Element,
-    structure_xml: ET.Element,
     counters: dict,
-) -> tuple[str, str]:
-    """Recursively emit GDML solids and structure definitions for a node and its children"""
-    children = []
+) -> tuple[list[ET.Element], list[ET.Element], str, str]:
+    """Build GDML solids and structure elements for a node and its children."""
+    solids: list[ET.Element] = []
+    volumes: list[ET.Element] = []
+
+    child_infos = []
 
     for ch in node.get("children", []):
-        logic_name, _ = emit_structure(
-            ch, solids_xml, structure_xml, counters
-        )
+        ch_solids, ch_volumes, ch_logic, _ = build_structure(ch, counters)
+        solids.extend(ch_solids)
+        volumes.extend(ch_volumes)
+
         pos = ch.get("geometryData", {}).get("position", [0, 0, 0])
-        children.append((ch, logic_name, pos))
+        child_infos.append((ch, ch_logic, pos))
 
     solid_name = utils.choose_solid_name(node, counters)
     solid_element = create_solid_element(node, solid_name)
     if solid_element is not None:
-        solids_xml.append(solid_element)
+        solids.append(solid_element)
 
     logic_name = utils.choose_logic_name(node, counters)
-    vol = ET.SubElement(structure_xml, "volume", {"name": logic_name})
+    vol = ET.Element("volume", {"name": logic_name})
 
     material = node.get("simulationMaterial", {}).get(
         "geant4_name", "G4_Galactic"
@@ -34,7 +36,7 @@ def emit_structure(
     ET.SubElement(vol, "materialref", {"ref": material})
     ET.SubElement(vol, "solidref", {"ref": solid_name})
 
-    for child, child_logic, (x, y, z) in children:
+    for child, child_logic, (x, y, z) in child_infos:
         phys_name = utils.choose_phys_name(child, counters)
         phys = ET.SubElement(vol, "physvol", {
             "copynumber": "1",
@@ -51,4 +53,6 @@ def emit_structure(
                 "z": utils.to_mm_str(z),
             })
 
-    return logic_name, solid_name
+    volumes.append(vol)
+
+    return solids, volumes, logic_name, solid_name
