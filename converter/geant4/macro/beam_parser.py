@@ -6,7 +6,7 @@ from converter.geant4.macro.defaults.beam_defaults import (DEFAULT_PARTICLE_ID, 
 
 
 def generate_beam_lines(data: Dict[str, Any]) -> List[str]:
-    """Parse the beam configuration and append GEANT4 /gps commands."""
+    """Parse the beam configuration and return GEANT4 /gps commands as a list of strings."""
     lines: List[str] = []
     beam = data.get("beam", {})
     particle = beam.get("particle", {})

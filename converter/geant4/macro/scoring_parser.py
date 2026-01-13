@@ -1,14 +1,16 @@
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List
 import converter.geant4.utils as utils
 from converter.geant4.constants import GEANT4_PARTICLE_MAP, GEANT4_QUANTITY_MAP, GEANT4_KINETIC_ENERGY_SPECTRUM
 
 
-def generate_scoring_lines(data: Dict[str, Any]) -> Tuple[List[str], List[Dict[str, Any]]]:
+def generate_scoring_lines(
+    data: Dict[str, Any]
+) -> tuple[List[str], List[Dict[str, Any]]]:
     """Generate Scoring commands based on configuration."""
     lines: List[str] = [
         "\n##########################################",
         "################ Scoring #################",
-        "##########################################\n"
+        "##########################################\n",
     ]
     probe_histograms: List[Dict[str, Any]] = []
 
@@ -24,19 +26,22 @@ def generate_scoring_lines(data: Dict[str, Any]) -> Tuple[List[str], List[Dict[s
     for detector_uuid, quantities in detector_quantities.items():
         detector = detectors.get(detector_uuid)
         if detector:
-            _append_detector_scoring_lines(detector, quantities, filters, lines, probe_histograms)
+            det_lines, det_probes = build_detector_scoring_lines(detector, quantities, filters)
+            lines.extend(det_lines)
+            probe_histograms.extend(det_probes)
 
     return lines, probe_histograms
 
 
-def _append_detector_scoring_lines(
+def build_detector_scoring_lines(
     detector: Dict[str, Any],
     quantities: List[Dict[str, Any]],
-    filters: Dict[str, Any],
-    lines: List[str],
-    probe_histograms: List[Dict[str, Any]],
-) -> None:
-    """Append all scoring quantities and filters for a given detector."""
+    filters: Dict[str, Dict[str, Any]],
+) -> tuple[List[str], List[Dict[str, Any]]]:
+    """Build all scoring lines for a single detector."""
+    lines: List[str] = []
+    probe_histograms: List[Dict[str, Any]] = []
+
     name = utils.get_detector_name(detector)
     geom = detector.get("geometryData", {})
     geom_type = geom.get("geometryType", "Box")
@@ -45,65 +50,86 @@ def _append_detector_scoring_lines(
 
     is_probe = any(q.get("keyword") == GEANT4_KINETIC_ENERGY_SPECTRUM for q in quantities)
     if is_probe:
-        _append_probe_lines(detector, geom_type, params, pos_det, lines)
+        lines.extend(build_probe_lines(detector, geom_type, params, pos_det))
     else:
-        _append_mesh_lines(detector, geom_type, params, pos_det, lines)
+        lines.extend(build_mesh_lines(detector, geom_type, params, pos_det))
 
     for quantity in quantities:
-        _append_quantity_lines(quantity, filters, name, lines, probe_histograms)
+        q_lines, q_probes = build_quantity_lines(quantity, filters, name)
+        lines.extend(q_lines)
+        probe_histograms.extend(q_probes)
 
     lines.append("/score/close\n")
 
+    return lines, probe_histograms
 
-def _append_mesh_lines(detector: Dict[str, Any], geom_type: str, params: Dict[str, Any],
-                       pos_det: List[float], lines: List[str]) -> None:
-    """Append a mesh-type scoring detector definition to the macro."""
+
+def build_mesh_lines(
+    detector: Dict[str, Any],
+    geom_type: str,
+    params: Dict[str, Any],
+    pos_det: List[float],
+) -> List[str]:
+    """Build mesh-type scoring detector definition."""
+    lines: List[str] = []
     name = utils.get_detector_name(detector)
+
     if geom_type.lower() in ["cyl", "cylinder"]:
-        lines.append(f"/score/create/cylinderMesh {name}")
-        lines.append(f"/score/mesh/translate/xyz {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
         radius = params.get("radius", 1)
         depth = params.get("depth", 1)
         n_radial = params.get("radialSegments", 1)
         n_z = params.get("zSegments", 1)
-        lines.append(f"/score/mesh/cylinderSize {radius} {depth / 2} cm")
-        lines.append(f"/score/mesh/nBin {n_radial} {n_z} 1")
+
+        lines.extend([
+            f"/score/create/cylinderMesh {name}",
+            f"/score/mesh/translate/xyz {pos_det[0]} {pos_det[1]} {pos_det[2]} cm",
+            f"/score/mesh/cylinderSize {radius} {depth / 2} cm",
+            f"/score/mesh/nBin {n_radial} {n_z} 1",
+        ])
     else:
-        lines.append(f"/score/create/boxMesh {name}")
-        lines.append(f"/score/mesh/translate/xyz {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
         width = params.get("width", 1)
         height = params.get("height", 1)
         depth = params.get("depth", 1)
         n_x = params.get("xSegments", 1)
         n_y = params.get("ySegments", 1)
         n_z = params.get("zSegments", 1)
-        lines.append(f"/score/mesh/boxSize {width / 2} {height / 2} {depth / 2} cm")
-        lines.append(f"/score/mesh/nBin {n_x} {n_y} {n_z}")
+
+        lines.extend([
+            f"/score/create/boxMesh {name}",
+            f"/score/mesh/translate/xyz {pos_det[0]} {pos_det[1]} {pos_det[2]} cm",
+            f"/score/mesh/boxSize {width / 2} {height / 2} {depth / 2} cm",
+            f"/score/mesh/nBin {n_x} {n_y} {n_z}",
+        ])
+
+    return lines
 
 
-def _append_probe_lines(
+def build_probe_lines(
     detector: Dict[str, Any],
     geom_type: str,
     params: Dict[str, Any],
     pos_det: List[float],
-    lines: List[str],
-) -> None:
-    """Append a probe-type detector scoring definition to the macro."""
+) -> List[str]:
+    """Build probe-type detector scoring definition."""
     name = utils.get_detector_name(detector)
     size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"] \
         else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
-    lines.append(f"/score/create/probe {name} {size / 2} cm")
-    lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
+
+    return [
+        f"/score/create/probe {name} {size / 2} cm",
+        f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm",
+    ]
 
 
-def _append_quantity_lines(
+def build_quantity_lines(
     quantity: Dict[str, Any],
     filters: Dict[str, Dict[str, Any]],
     detector_name: str,
-    lines: List[str],
-    probe_histograms: List[Dict[str, Any]],
-) -> None:
-    """Append a scoring quantity definition to the macro."""
+) -> tuple[List[str], List[Dict[str, Any]]]:
+    """Build scoring quantity definition lines."""
+    lines: List[str] = []
+    probe_histograms: List[Dict[str, Any]] = []
+
     keyword = quantity.get("keyword", "")
     qname = quantity.get("name", keyword)
     mapped_keyword = GEANT4_QUANTITY_MAP.get(keyword, keyword.lower())
@@ -128,5 +154,7 @@ def _append_quantity_lines(
         if particle_types:
             particles_metadata = [GEANT4_PARTICLE_MAP.get(pt["id"]) for pt in particle_types]
             particles_metadata = filter(lambda x: x is not None, particles_metadata)
-            particle_names = " ".join([pm["name"] for pm in particles_metadata])
+            particle_names = " ".join(pm["name"] for pm in particles_metadata)
             lines.append(f"/score/filter/particle {filter_particles['name']} {particle_names}")
+
+    return lines, probe_histograms

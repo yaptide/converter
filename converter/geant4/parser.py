@@ -4,7 +4,7 @@ from converter.geant4.gdml.builder import generate_gdml_entry_point
 
 
 class Geant4Parser(Parser):
-    """Parser that converts JSON simulation configurations into GDML geometry and GEANT4 macro scripts."""
+    """Parser that converts JSON simulation configurations into GDML geometry and Geant4 macro scripts."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -23,9 +23,9 @@ class Geant4Parser(Parser):
 
     def get_configs_json(self) -> dict:
         """Return the full configuration JSON including generated GDML and macro data."""
-        cfg = super().get_configs_json()
-        cfg.update({
+        config_json = super().get_configs_json()
+        config_json.update({
             "geometry.gdml": self._gdml_content,
             "run.mac": self._macro_content,
         })
-        return cfg
+        return config_json
