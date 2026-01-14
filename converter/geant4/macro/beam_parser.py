@@ -53,7 +53,10 @@ def _particle_commands(particle_id: int, a: int, z: int, pos: List[float]) -> Li
 
 def _compute_energy(beam: Dict[str, Any], particle_id: int, a: int) -> List[str]:
     """Compute energy values *and* return ready-to-append /gps output lines."""
-    input_energy = beam.get("energy", 0)
+    try:
+        input_energy = beam["energy"]
+    except KeyError as exc:
+        raise KeyError("Missing required 'energy' field in beam configuration") from exc
     unit = beam.get("energyUnit", "MeV")
 
     energy, _, scale = convert_beam_energy(
