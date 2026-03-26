@@ -1,13 +1,17 @@
 repos:
-  # - repo: https://github.com/pre-commit/pre-commit-hooks
-  #   rev: v4.5.0
-  #   hooks:
-  # - id: end-of-file-fixer
-  # - id: trailing-whitespace
-  # - id: check-case-conflict
-  # - id: check-docstring-first
-  # - id: double-quote-string-fixer
-  # - id: detect-private-key
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: ^tests/
+      - id: trailing-whitespace
+        exclude: ^tests/
+      - id: check-case-conflict
+        exclude: ^tests/
+      # - id: check-docstring-first
+      # - id: double-quote-string-fixer
+      - id: detect-private-key
+        exclude: ^tests/
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.7
