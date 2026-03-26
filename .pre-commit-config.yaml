@@ -4,12 +4,7 @@ exclude: |
       tests/topas/test_topas_converter\.py|
       tests/fluka/expected_fluka_output/fl_sim\.py|
       tests/shieldhit/test_shieldhit_config_mappings\.py|
-      .*\.dat$|
-      .*\.cfg$|
-      .*\.json$|
-      .*\.md$|
-      .*\.yaml$|
-      .*\.yml$
+      .*\.dat$
   )
 
 repos:
