@@ -1,9 +1,9 @@
 exclude: |
   (?x)^(
       tests/shieldhit/resources/|
-      tests/topas/test_topas_converter\.py|
-      tests/fluka/expected_fluka_output/fl_sim\.py|
-      tests/shieldhit/test_shieldhit_config_mappings\.py|
+      tests/topas/test_topas_converter\.py$|
+      tests/fluka/expected_fluka_output/fl_sim\.py$|
+      tests/shieldhit/test_shieldhit_config_mappings\.py$|
       .*\.dat$
   )
 
