@@ -5,10 +5,12 @@ from converter.fluka.helper_parsers.detector_parser import parse_mesh_detector
 
 @pytest.fixture(scope="module")
 def detectors_json(project_fluka_json):
+    """Return detector manager JSON from the Fluka project fixture."""
     return project_fluka_json["detectorManager"]
 
 
 def test_parse_scoring(detectors_json):
+    """Test parsing a mesh detector from JSON and verify its properties."""
     detector_dict = next(
         (
             detector

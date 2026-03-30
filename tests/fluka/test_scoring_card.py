@@ -6,41 +6,49 @@ from converter.fluka.helper_parsers.scoring_parser import parse_scorings
 
 @pytest.fixture(scope="module")
 def scorings_json(project_fluka_json) -> dict:
+    """Return scoring manager JSON from the Fluka project fixture."""
     return project_fluka_json["scoringManager"]
 
 
 @pytest.fixture(scope="module")
 def detectors_json(project_fluka_json) -> dict:
+    """Return detector manager JSON from the Fluka project fixture."""
     return project_fluka_json["detectorManager"]
 
 
 @pytest.fixture(scope="module")
 def scorings_json_2(project2_fluka_json: dict) -> dict:
+    """Return scoring manager JSON from the second Fluka project fixture."""
     return project2_fluka_json["scoringManager"]
 
 
 @pytest.fixture(scope="module")
 def detectors_json_2(project2_fluka_json: dict) -> dict:
+    """Return detector manager JSON from the second Fluka project fixture."""
     return project2_fluka_json["detectorManager"]
 
 
 @pytest.fixture(scope="module")
 def scorings_json_3(project3_fluka_json: dict) -> dict:
+    """Return scoring manager JSON from the third Fluka project fixture."""
     return project3_fluka_json["scoringManager"]
 
 
 @pytest.fixture(scope="module")
 def detectors_json_3(project3_fluka_json: dict) -> dict:
+    """Return detector manager JSON from the third Fluka project fixture."""
     return project3_fluka_json["detectorManager"]
 
 
 @pytest.fixture(scope="module")
 def scorings_json_4(project4_fluka_json: dict) -> dict:
+    """Return scoring manager JSON from the fourth Fluka project fixture."""
     return project4_fluka_json["scoringManager"]
 
 
 @pytest.fixture(scope="module")
 def detectors_json_4(project4_fluka_json: dict) -> dict:
+    """Return detector manager JSON from the fourth Fluka project fixture."""
     return project4_fluka_json["detectorManager"]
 
 
@@ -135,6 +143,7 @@ AUXSCORE      USRBIN -900400.0                12.0      12.0       1.0
 
 
 def test_scoring_card(detectors_json: dict, scorings_json: dict, expected_scores: str) -> None:
+    """Test that a single scoring produces the expected card output."""
     scorings = parse_scorings(detectors_json, scorings_json)
     scorings_card = ScoringsCard(scorings)
 
@@ -142,6 +151,7 @@ def test_scoring_card(detectors_json: dict, scorings_json: dict, expected_scores
 
 
 def test_scoring_card_multiple_scorings(detectors_json_2: dict, scorings_json_2: dict, expected_scores_2: str) -> None:
+    """Test that multiple scorings produce the expected combined card output."""
     scorings = parse_scorings(detectors_json_2, scorings_json_2)
     scorings_card = ScoringsCard(scorings)
 
@@ -151,6 +161,7 @@ def test_scoring_card_multiple_scorings(detectors_json_2: dict, scorings_json_2:
 def test_scoring_cylinder_detector(
     detectors_json_3: dict, scorings_json_3: dict, expected_scores_cylinder: str
 ) -> None:
+    """Test scoring card output for a cylindrical detector geometry."""
     scorings = parse_scorings(detectors_json_3, scorings_json_3)
     scorings_card = ScoringsCard(scorings)
 
@@ -160,6 +171,7 @@ def test_scoring_cylinder_detector(
 def test_scoring_dose_and_fluence_with_two_detectors(
     detectors_json_4: dict, scorings_json_4: dict, expected_scores_4: str
 ) -> None:
+    """Test scoring card output for dose and fluence with two detectors."""
     scorings = parse_scorings(detectors_json_4, scorings_json_4)
     scorings_card = ScoringsCard(scorings)
 
