@@ -1,10 +1,8 @@
 exclude: |
   (?x)^(
-      tests/shieldhit/resources/|
-      tests/topas/test_topas_converter\.py$|
-      tests/fluka/expected_fluka_output/fl_sim\.py$|
-      tests/shieldhit/test_shieldhit_config_mappings\.py$|
-      .*\.dat$
+      tests/shieldhit/resources/expected_shieldhit_output/.*\.dat$|
+      tests/shieldhit/resources/expected_shieldhit_output_with_sobp_dat/.*\.dat$|
+      tests/shieldhit/test_shieldhit_config_mappings\.py$
   )
 
 repos:
