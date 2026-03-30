@@ -10,16 +10,16 @@ from converter.geant4.parser import Geant4Parser
 def get_parser_from_str(parser_type: str) -> Parser:
     """Get a converter object based on the provided type."""
     # This is temporary, suggestions on how to do this better appreciated.
-    if parser_type.lower() == 'shieldhit':
+    if parser_type.lower() == "shieldhit":
         return ShieldhitParser()
-    if parser_type.lower() == 'topas':
+    if parser_type.lower() == "topas":
         return TopasParser()
-    if parser_type.lower() == 'fluka':
+    if parser_type.lower() == "fluka":
         return FlukaParser()
-    if parser_type.lower() == 'geant4':
+    if parser_type.lower() == "geant4":
         return Geant4Parser()
 
-    print(f"Invalid parser type \"{parser_type}\".")
+    print(f'Invalid parser type "{parser_type}".')
     raise ValueError("Parser type must be either 'shieldhit', 'topas', 'fluka' or 'geant4'.")
 
 
@@ -32,14 +32,14 @@ def run_parser(parser: Parser, input_data: dict, output_dir: Union[Path, None] =
 
     if not silent:
         for key, value in parser.get_configs_json().items():
-            print(f'File {key}:')
+            print(f"File {key}:")
             print(value)
 
     if output_dir:
         if not output_dir.exists():
             output_dir.mkdir(parents=True)
         elif not output_dir.is_dir():
-            print(f'Output path {output_dir} is not a directory.')
+            print(f"Output path {output_dir} is not a directory.")
             raise NotADirectoryError(output_dir)
         parser.save_configs(output_dir)
 

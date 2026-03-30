@@ -4,121 +4,79 @@ import re
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser, convert_beam_energy
-from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
-                                      ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
-from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
-from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
-from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
+from converter.shieldhit.beam import (
+    BeamConfig,
+    BeamModulator,
+    BeamSourceType,
+    ModulatorInterpretationMode,
+    ModulatorSimulationMethod,
+    MultipleScatteringMode,
+    StragglingModel,
+)
+from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings
+from converter.shieldhit.geo import DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile
+from converter.shieldhit.detectors import ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone
 
 PARTICLE_DICT: dict[int, dict] = {
     1: {
-        'name': 'NEUTRON',
-        'filter': [
-            ('Z', '==', 0),
-            ('A', '==', 1),
+        "name": "NEUTRON",
+        "filter": [
+            ("Z", "==", 0),
+            ("A", "==", 1),
         ],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV",
     },
     2: {
-        'name': 'PROTON',
-        'filter': [('Z', '==', 1), ('A', '==', 1)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV'
+        "name": "PROTON",
+        "filter": [("Z", "==", 1), ("A", "==", 1)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV",
     },
-    3: {
-        'name': 'PION-',
-        'filter': [('ID', '==', 3)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    4: {
-        'name': 'PION+',
-        'filter': [('ID', '==', 4)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    5: {
-        'name': 'PIZERO',
-        'filter': [('ID', '==', 5)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
+    3: {"name": "PION-", "filter": [("ID", "==", 3)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    4: {"name": "PION+", "filter": [("ID", "==", 4)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    5: {"name": "PIZERO", "filter": [("ID", "==", 5)], "allowed_units": ["MeV"], "target_unit": "MeV"},
     # 6: {
     #     'name': 'ANEUTRON',
     #     'a': 1
     # },
     7: {
-        'name': 'APROTON',
-        'filter': [('Z', '==', -1), ('A', '==', 3)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV'
+        "name": "APROTON",
+        "filter": [("Z", "==", -1), ("A", "==", 3)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV",
     },
-    8: {
-        'name': 'KAON-',
-        'filter': [('ID', '==', 8)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    9: {
-        'name': 'KAON+',
-        'filter': [('ID', '==', 9)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    10: {
-        'name': 'KAONZERO',
-        'filter': [('ID', '==', 10)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    11: {
-        'name': 'KAONLONG',
-        'filter': [('ID', '==', 11)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    15: {
-        'name': 'MUON-',
-        'filter': [('ID', '==', 15)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    16: {
-        'name': 'MUON+',
-        'filter': [('ID', '==', 16)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
+    8: {"name": "KAON-", "filter": [("ID", "==", 8)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    9: {"name": "KAON+", "filter": [("ID", "==", 9)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    10: {"name": "KAONZERO", "filter": [("ID", "==", 10)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    11: {"name": "KAONLONG", "filter": [("ID", "==", 11)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    15: {"name": "MUON-", "filter": [("ID", "==", 15)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    16: {"name": "MUON+", "filter": [("ID", "==", 16)], "allowed_units": ["MeV"], "target_unit": "MeV"},
     21: {
-        'name': 'DEUTERON',
-        'filter': [('Z', '==', 1), ('A', '==', 2)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
+        "name": "DEUTERON",
+        "filter": [("Z", "==", 1), ("A", "==", 2)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV/nucl",
     },
     22: {
-        'name': 'TRITON',
-        'filter': [('Z', '==', 1), ('A', '==', 3)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
+        "name": "TRITON",
+        "filter": [("Z", "==", 1), ("A", "==", 3)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV/nucl",
     },
     23: {
-        'name': '3-HELIUM',
-        'filter': [('Z', '==', 2), ('A', '==', 3)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
+        "name": "3-HELIUM",
+        "filter": [("Z", "==", 2), ("A", "==", 3)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV/nucl",
     },
     24: {
-        'name': '4-HELIUM',
-        'filter': [('Z', '==', 2), ('A', '==', 4)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
+        "name": "4-HELIUM",
+        "filter": [("Z", "==", 2), ("A", "==", 4)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV/nucl",
     },
-    25: {
-        'name': 'HEAVYION',
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
-    }
+    25: {"name": "HEAVYION", "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV/nucl"},
 }
 
 
@@ -129,14 +87,19 @@ def parse_scoring_filter(scoring_filter: dict) -> ScoringFilter:
     """
     if scoring_filter.get("particle"):
         # If the filter is a particle filter, we want to map it to format used by SHIELD-HIT12A
-        return ScoringFilter(uuid=scoring_filter["uuid"],
-                             name=scoring_filter["name"],
-                             rules=PARTICLE_DICT[scoring_filter["particle"]["id"]]['filter'])
+        return ScoringFilter(
+            uuid=scoring_filter["uuid"],
+            name=scoring_filter["name"],
+            rules=PARTICLE_DICT[scoring_filter["particle"]["id"]]["filter"],
+        )
 
-    return ScoringFilter(uuid=scoring_filter["uuid"],
-                         name=scoring_filter["name"],
-                         rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
-                                for rule_dict in scoring_filter["rules"]])
+    return ScoringFilter(
+        uuid=scoring_filter["uuid"],
+        name=scoring_filter["name"],
+        rules=[
+            (rule_dict["keyword"], rule_dict["operator"], rule_dict["value"]) for rule_dict in scoring_filter["rules"]
+        ],
+    )
 
 
 class ShieldhitParser(Parser):
@@ -144,7 +107,7 @@ class ShieldhitParser(Parser):
 
     def __init__(self) -> None:
         super().__init__()
-        self.info['simulator'] = 'shieldhit'
+        self.info["simulator"] = "shieldhit"
         self.beam_config = BeamConfig()
         self.detect_config = DetectConfig()
         self.geo_mat_config = GeoMatConfig()
@@ -159,29 +122,33 @@ class ShieldhitParser(Parser):
         """Parses data from the input json into the beam_config property"""
         if json["specialComponentsManager"].get("modulator") is not None:
             modulator = json["specialComponentsManager"].get("modulator")
-            parameters = modulator['geometryData'].get('parameters')
-            sourceFile = modulator.get('sourceFile')
+            parameters = modulator["geometryData"].get("parameters")
+            sourceFile = modulator.get("sourceFile")
             zone_id = self._get_zone_index_by_uuid(parameters["zoneUuid"])
             if sourceFile is not None and zone_id is not None:
-                if sourceFile.get('name') is None or sourceFile.get('value') is None:
+                if sourceFile.get("name") is None or sourceFile.get("value") is None:
                     raise ValueError("Modulator source file name or content is not defined")
                 self.beam_config.modulator = BeamModulator(
-                    filename=sourceFile.get('name'),
-                    file_content=sourceFile.get('value'),
+                    filename=sourceFile.get("name"),
+                    file_content=sourceFile.get("value"),
                     zone_id=zone_id,
-                    simulation=ModulatorSimulationMethod.from_str(modulator.get('simulationMethod', 'modulus')),
-                    mode=ModulatorInterpretationMode.from_str(modulator.get('interpretationMode', 'material')))
+                    simulation=ModulatorSimulationMethod.from_str(modulator.get("simulationMethod", "modulus")),
+                    mode=ModulatorInterpretationMode.from_str(modulator.get("interpretationMode", "material")),
+                )
 
     def parse_physics(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
         if json.get("physic") is not None:
             self.beam_config.delta_e = json["physic"].get("energyLoss", self.beam_config.delta_e)
-            self.beam_config.nuclear_reactions = json["physic"].get("enableNuclearReactions",
-                                                                    self.beam_config.nuclear_reactions)
-            self.beam_config.straggling = StragglingModel.from_str(json["physic"].get(
-                "energyModelStraggling", self.beam_config.straggling.value))
-            self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(json["physic"].get(
-                "multipleScattering", self.beam_config.multiple_scattering.value))
+            self.beam_config.nuclear_reactions = json["physic"].get(
+                "enableNuclearReactions", self.beam_config.nuclear_reactions
+            )
+            self.beam_config.straggling = StragglingModel.from_str(
+                json["physic"].get("energyModelStraggling", self.beam_config.straggling.value)
+            )
+            self.beam_config.multiple_scattering = MultipleScatteringMode.from_str(
+                json["physic"].get("multipleScattering", self.beam_config.multiple_scattering.value)
+            )
 
     def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
@@ -239,8 +206,9 @@ class ShieldhitParser(Parser):
         input_energy_unit = json["beam"].get("energyUnit", "MeV")
         a = json["beam"]["particle"].get("a", 1)
 
-        energy, energy_unit, energy_scale_factor = convert_beam_energy(PARTICLE_DICT, particle_id, a, input_energy,
-                                                                       input_energy_unit)
+        energy, energy_unit, energy_scale_factor = convert_beam_energy(
+            PARTICLE_DICT, particle_id, a, input_energy, input_energy_unit
+        )
 
         self.beam_config.energy_unit = energy_unit
         self.beam_config.energy = energy
@@ -262,9 +230,9 @@ class ShieldhitParser(Parser):
         """Parses detectors from the input json."""
         detectors = []
         for detector_dict in json["detectorManager"].get("detectors"):
-            geometry_type = detector_dict['geometryData'].get('geometryType')
-            position = detector_dict['geometryData'].get('position')
-            parameters = detector_dict['geometryData'].get('parameters')
+            geometry_type = detector_dict["geometryData"].get("geometryType")
+            position = detector_dict["geometryData"].get("position")
+            parameters = detector_dict["geometryData"].get("parameters")
             if geometry_type == "Cyl":
                 detectors.append(
                     ScoringCylinder(
@@ -276,7 +244,8 @@ class ShieldhitParser(Parser):
                         h_min=position[2] - parameters["depth"] / 2,
                         h_max=position[2] + parameters["depth"] / 2,
                         h_bins=parameters["zSegments"],
-                    ))
+                    )
+                )
 
             elif geometry_type == "Mesh":
                 detectors.append(
@@ -292,7 +261,8 @@ class ShieldhitParser(Parser):
                         z_min=position[2] - parameters["depth"] / 2,
                         z_max=position[2] + parameters["depth"] / 2,
                         z_bins=parameters["zSegments"],
-                    ))
+                    )
+                )
 
             elif geometry_type == "Zone":
                 detectors.append(
@@ -300,13 +270,16 @@ class ShieldhitParser(Parser):
                         uuid=detector_dict["uuid"],
                         name=detector_dict["name"],
                         first_zone_id=self._get_zone_index_by_uuid(parameters["zoneUuid"]),
-                    ))
+                    )
+                )
 
             elif geometry_type == "All":
-                detectors.append(ScoringGlobal(
-                    uuid=detector_dict["uuid"],
-                    name=detector_dict["name"],
-                ))
+                detectors.append(
+                    ScoringGlobal(
+                        uuid=detector_dict["uuid"],
+                        name=detector_dict["name"],
+                    )
+                )
             else:
                 raise ValueError(f"Invalid ScoringGeometry type: {detector_dict['type']}")
 
@@ -318,7 +291,7 @@ class ShieldhitParser(Parser):
             if zone.uuid == zone_uuid:
                 return idx + 1
 
-        raise ValueError(f"No zone with uuid \"{zone_uuid}\".")
+        raise ValueError(f'No zone with uuid "{zone_uuid}".')
 
     @staticmethod
     def _parse_filters(json: dict) -> list[ScoringFilter]:
@@ -334,9 +307,11 @@ class ShieldhitParser(Parser):
                 filename=output_dict["name"] + ".bdo",
                 fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
                 geometry=self._get_detector_by_uuid(output_dict["detectorUuid"])
-                if 'detectorUuid' in output_dict else None,
+                if "detectorUuid" in output_dict
+                else None,
                 quantities=[self._parse_output_quantity(quantity) for quantity in output_dict.get("quantities", [])],
-            ) for output_dict in json["scoringManager"]["outputs"]
+            )
+            for output_dict in json["scoringManager"]["outputs"]
         ]
 
         return outputs
@@ -357,25 +332,25 @@ class ShieldhitParser(Parser):
             # If the quantity has generic name in format [Quantity_XYZ], we want to use more descriptive name
             # New name will be in format [Absolute/Rescaled]_[Quantity_XYZ]_[QuantityKeyword]_[to_Medium/to_Material]
             # Specific elements of the name will be added only if they are present in the settings
-            if re.search(r'^Quantity(_\d*)?$', quantity_dict['name']):
-                prefix = ''
-                suffix = ''
-                if 'primaries' in quantity_dict:
-                    prefix = 'Absolute_'
-                elif 'rescale' in quantity_dict:
-                    prefix = 'Rescaled_'
-                if 'medium' in quantity_dict:
-                    suffix = f'_to_{quantity_dict["medium"]}'
-                elif 'materialUuid' in quantity_dict:
-                    suffix = f'_to_{self._get_material_by_uuid(quantity_dict["materialUuid"]).sanitized_name}'
+            if re.search(r"^Quantity(_\d*)?$", quantity_dict["name"]):
+                prefix = ""
+                suffix = ""
+                if "primaries" in quantity_dict:
+                    prefix = "Absolute_"
+                elif "rescale" in quantity_dict:
+                    prefix = "Rescaled_"
+                if "medium" in quantity_dict:
+                    suffix = f"_to_{quantity_dict['medium']}"
+                elif "materialUuid" in quantity_dict:
+                    suffix = f"_to_{self._get_material_by_uuid(quantity_dict['materialUuid']).sanitized_name}"
                 result = f"{prefix}{quantity_dict['keyword']}_{quantity_dict['name']}{suffix}"
                 return result
 
             # If the quantity has a custom name, we want to remove all non-alphanumeric characters from it
-            return re.sub(r'\W+', '', quantity_dict['name'])
+            return re.sub(r"\W+", "", quantity_dict["name"])
 
         # We want to skip parsing settings if there are no parameters to put in the settings
-        if all(map(lambda el: el not in quantity_dict, ['medium', 'offset', 'primaries', 'materialUuid', 'rescale'])):
+        if all(map(lambda el: el not in quantity_dict, ["medium", "offset", "primaries", "materialUuid", "rescale"])):
             return None
 
         return QuantitySettings(
@@ -384,7 +359,8 @@ class ShieldhitParser(Parser):
             offset=quantity_dict.get("offset", None),
             primaries=quantity_dict.get("primaries", None),
             rescale=quantity_dict.get("rescale", None),
-            material=self._get_material_id(quantity_dict["materialUuid"]) if 'materialUuid' in quantity_dict else None)
+            material=self._get_material_id(quantity_dict["materialUuid"]) if "materialUuid" in quantity_dict else None,
+        )
 
     def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
         """Parse a single output quantity."""
@@ -420,7 +396,8 @@ class ShieldhitParser(Parser):
             diff1_t=diff1_t,
             diff2=diff2,
             diff2_t=diff2_t,
-            settings=self._parse_quantity_settings(quantity_dict))
+            settings=self._parse_quantity_settings(quantity_dict),
+        )
 
     def _get_scoring_filter_by_uuid(self, filter_uuid: str) -> str:
         """Finds scoring filter in the detect_config object by its uuid and returns its simulation name."""
@@ -453,12 +430,13 @@ class ShieldhitParser(Parser):
             for icru in json["physic"]["availableStoppingPowerFiles"]:
                 value = json["physic"]["availableStoppingPowerFiles"][icru]
                 self.geo_mat_config.available_custom_stopping_power_files[int(icru)] = StoppingPowerFile(
-                    int(icru), value.get("name", ''), value.get("content", ''))
+                    int(icru), value.get("name", ""), value.get("content", "")
+                )
 
     def _parse_figures(self, json: dict) -> None:
         """Parse figures from JSON"""
         self.geo_mat_config.figures = [
-            solid_figures.parse_figure(figure_dict) for figure_dict in json["figureManager"].get('figures')
+            solid_figures.parse_figure(figure_dict) for figure_dict in json["figureManager"].get("figures")
         ]
 
     def _add_overridden_material(self, material: Material) -> None:
@@ -477,12 +455,10 @@ class ShieldhitParser(Parser):
         """Find material by uuid and return its id."""
         offset = 0
         for idx, material in enumerate(self.geo_mat_config.materials):
-
             # If the material is a DefaultMaterial then we need the value not its index,
             # the _value2member_map_ returns a map of values and members that allows us to check if
             # a given value is defined within the DefaultMaterial enum.
             if DefaultMaterial.is_default_material(material.icru):
-
                 if material.uuid == material_uuid:
                     return int(material.icru)
 
@@ -497,23 +473,24 @@ class ShieldhitParser(Parser):
 
     def _parse_custom_material(self, json: dict) -> None:
         """Parse custom material from JSON and add it to the list of materials"""
-        if ('customMaterial' not in json or json['customMaterial'] is None
-                or 'materialPropertiesOverrides' not in json):
+        if "customMaterial" not in json or json["customMaterial"] is None or "materialPropertiesOverrides" not in json:
             return
 
-        icru = json['customMaterial']['icru']
+        icru = json["customMaterial"]["icru"]
         available_files = self.geo_mat_config.available_custom_stopping_power_files
         is_stopping_power_file_available = icru in available_files
-        custom_stopping_power = is_stopping_power_file_available and json['materialPropertiesOverrides'].get(
-            'customStoppingPower', False)
+        custom_stopping_power = is_stopping_power_file_available and json["materialPropertiesOverrides"].get(
+            "customStoppingPower", False
+        )
 
-        overridden_material = Material(name=f"Custom {json['customMaterial']['name']}",
-                                       sanitized_name=f"custom_{json['customMaterial']['sanitizedName']}",
-                                       uuid=json['customMaterial']['uuid'],
-                                       icru=json['customMaterial']['icru'],
-                                       density=json['materialPropertiesOverrides'].get(
-                                           'density', json['customMaterial']['density']),
-                                       custom_stopping_power=custom_stopping_power)
+        overridden_material = Material(
+            name=f"Custom {json['customMaterial']['name']}",
+            sanitized_name=f"custom_{json['customMaterial']['sanitizedName']}",
+            uuid=json["customMaterial"]["uuid"],
+            icru=json["customMaterial"]["icru"],
+            density=json["materialPropertiesOverrides"].get("density", json["customMaterial"]["density"]),
+            custom_stopping_power=custom_stopping_power,
+        )
 
         self._add_overridden_material(overridden_material)
 
@@ -530,8 +507,9 @@ class ShieldhitParser(Parser):
                     id=idx + 1,
                     figures_operators=self._parse_csg_operations(zone["unionOperations"]),
                     material=self._get_material_id(zone["materialUuid"]),
-                    material_override=zone.get('materialPropertiesOverrides', None),
-                ))
+                    material_override=zone.get("materialPropertiesOverrides", None),
+                )
+            )
 
         if "worldZone" in json["zoneManager"]:
             self._parse_world_zone(json)
@@ -549,25 +527,26 @@ class ShieldhitParser(Parser):
         for operation in operations:
             self.geo_mat_config.zones.append(
                 Zone(
-                    uuid='',
+                    uuid="",
                     id=len(self.geo_mat_config.zones) + 1,
                     # world zone defined by bounding figure and contained zones
                     figures_operators=[operation],
                     # the material of the world zone is usually defined as vacuum
-                    material=material))
+                    material=material,
+                )
+            )
 
         # Adding Black Hole wrapper outside of the World Zone is redundant
         # if the World Zone already is made of Black Hole
         if material != DefaultMaterial.BLACK_HOLE.value:
-
             # Add the figure that will serve as a black hole wrapper around the world zone
             black_hole_figure = solid_figures.parse_figure(world_zone)
 
             # Change the name to Black Hole Wrapper
-            black_hole_figure.name = 'Black Hole Wrapper'
+            black_hole_figure.name = "Black Hole Wrapper"
 
             # Make the figure slightly bigger. It will form the black hole wrapper around the simulation.
-            black_hole_figure.expand(1.)
+            black_hole_figure.expand(1.0)
 
             # Add the black hole figure to the figures list
             self.geo_mat_config.figures.append(black_hole_figure)
@@ -581,7 +560,9 @@ class ShieldhitParser(Parser):
                     # slightly larger world zone - world zone
                     figures_operators=[{last_figure_idx, -(last_figure_idx - 1)}],
                     # the last material is the black hole
-                    material=DefaultMaterial.BLACK_HOLE))
+                    material=DefaultMaterial.BLACK_HOLE,
+                )
+            )
 
     def _parse_csg_operations(self, operations: list[list[dict]]) -> list[set[int]]:
         """
@@ -631,17 +612,19 @@ class ShieldhitParser(Parser):
             if figure.uuid == figure_uuid:
                 return idx
 
-        raise ValueError(f"No figure with uuid \"{figure_uuid}\".")
+        raise ValueError(f'No figure with uuid "{figure_uuid}".')
 
     def get_configs_json(self) -> dict:
         """Get JSON data for configs"""
         configs_json = super().get_configs_json()
-        configs_json.update({
-            "beam.dat": str(self.beam_config),
-            "mat.dat": self.geo_mat_config.get_mat_string(),
-            "detect.dat": str(self.detect_config),
-            "geo.dat": self.geo_mat_config.get_geo_string()
-        })
+        configs_json.update(
+            {
+                "beam.dat": str(self.beam_config),
+                "mat.dat": self.geo_mat_config.get_mat_string(),
+                "detect.dat": str(self.detect_config),
+                "geo.dat": self.geo_mat_config.get_geo_string(),
+            }
+        )
 
         files = {}
         for icru in self.geo_mat_config.available_custom_stopping_power_files:
@@ -651,7 +634,7 @@ class ShieldhitParser(Parser):
         configs_json.update(files)
 
         if self.beam_config.beam_source_type == BeamSourceType.FILE:
-            filename_of_beam_source_file: str = 'sobp.dat'
+            filename_of_beam_source_file: str = "sobp.dat"
             if not self.beam_config.beam_source_filename:
                 filename_of_beam_source_file = str(self.beam_config.beam_source_filename)
             configs_json[filename_of_beam_source_file] = str(self.beam_config.beam_source_file_content)

@@ -110,7 +110,7 @@ jobs:
           name: packages
 
       - name: Inspect what has been downloaded
-        run: | 
+        run: |
           ls -al
           find .
 
@@ -118,7 +118,7 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-          
+
       - name: Install package
         run: python3 -m pip install dist/*whl
 

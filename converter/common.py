@@ -8,9 +8,9 @@ class Parser:
 
     def __init__(self) -> None:
         self.info = {
-            'version': '',
-            'label': '',
-            'simulator': '',
+            "version": "",
+            "label": "",
+            "simulator": "",
         }
 
     def parse_configs(self, json: dict) -> None:
@@ -23,10 +23,10 @@ class Parser:
         The files are: beam.dat, mat.dat, detect.dat and geo.dat.
         """
         if not Path(target_dir).exists():
-            raise ValueError('Target directory does not exist.')
+            raise ValueError("Target directory does not exist.")
 
         for file_name, content in self.get_configs_json().items():
-            with open(Path(target_dir, file_name), 'w') as conf_f:
+            with open(Path(target_dir, file_name), "w") as conf_f:
                 conf_f.write(content)
 
     def get_configs_json(self) -> dict:
@@ -35,7 +35,7 @@ class Parser:
         the config files name as key and its content as value.
         """
         configs_json = {
-            'info.json': str(self.info),
+            "info.json": str(self.info),
         }
         return configs_json
 
@@ -48,8 +48,8 @@ def format_float(number: float, n: int) -> float:
     """
     result = number
     # If number is zero we just want to get 0.0 (it would mess up the log10 operation below)
-    if isclose(result, 0., rel_tol=1e-9):
-        return 0.
+    if isclose(result, 0.0, rel_tol=1e-9):
+        return 0.0
 
     length = n
 
@@ -70,8 +70,10 @@ def format_float(number: float, n: int) -> float:
 
     # Check if it will be possible to fit the number
     if whole_length > length - 1:
-        raise ValueError(f'Number is to big to be formatted. Minimum length: {whole_length-sign+1},\
-requested length: {n}')
+        raise ValueError(
+            f"Number is to big to be formatted. Minimum length: {whole_length - sign + 1},\
+requested length: {n}"
+        )
 
     # Adjust n for the whole numbers, log returns reasonable outputs for values greater
     # than 1, for other values it returns nonpositive numbers, but we would like 1
@@ -83,18 +85,19 @@ requested length: {n}')
 
     # Check if the round function truncated the number, warn the user if it did.
     if not isclose(result, number):
-        print(f'WARN: number was truncated when converting: {number} -> {result}')
+        print(f"WARN: number was truncated when converting: {number} -> {result}")
 
     # Formatting negative numbers smaller than the desired precision could result in -0.0 or 0.0 randomly.
     # To avoid this we catch -0.0 and return 0.0.
-    if isclose(result, 0., rel_tol=1e-9):
-        return 0.
+    if isclose(result, 0.0, rel_tol=1e-9):
+        return 0.0
 
     return result
 
 
-def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit) -> (
-        float, Literal["MeV", "MeV/nucl"], float):
+def convert_beam_energy(
+    particles_dict, particle_id, a, energy, energy_unit
+) -> (float, Literal["MeV", "MeV/nucl"], float):
     """
     Validates that energy_unit is listed in `particles_dict.allowed_units`
     and converts it to `particles_dict.target_unit` if necessary.
@@ -113,13 +116,13 @@ def convert_beam_energy(particles_dict, particle_id, a, energy, energy_unit) -> 
         raise ValueError(f"Unit '{energy_unit}' not allowed for particle '{particle_name}'")
 
     # Convert to target unit and save the converted unit for display
-    if energy_unit == 'MeV' and particle_parser_metadata['target_unit'] == 'MeV/nucl':
+    if energy_unit == "MeV" and particle_parser_metadata["target_unit"] == "MeV/nucl":
         # converting from MeV to MeV/nucl means we need to divide kinetic energy by mass number A
         energy_scale_factor = 1 / a
-        energy_unit = particle_parser_metadata['target_unit']
-    elif energy_unit == 'MeV/nucl' and particle_parser_metadata['target_unit'] == 'MeV':
+        energy_unit = particle_parser_metadata["target_unit"]
+    elif energy_unit == "MeV/nucl" and particle_parser_metadata["target_unit"] == "MeV":
         energy_scale_factor = a
-        energy_unit = particle_parser_metadata['target_unit']
+        energy_unit = particle_parser_metadata["target_unit"]
     else:
         # MeV->MeV or MeV/nucl->MeV/nucl, hence no conversion needed, we don't need to scale
         energy_scale_factor = 1

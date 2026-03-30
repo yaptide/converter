@@ -29,11 +29,11 @@ class ScoringCylinder(ScoringDetector):
     """Cylinder detector dataclass used in DetectConfig."""
 
     name: str = "CylZ_Mesh"
-    r_min: float = 0.
-    r_max: float = 10.
+    r_min: float = 0.0
+    r_max: float = 10.0
     r_bins: int = 1
-    h_min: float = 0.
-    h_max: float = 20.
+    h_min: float = 0.0
+    h_max: float = 20.0
     h_bins: int = 400
 
     template: str = """Geometry Cyl
@@ -45,8 +45,12 @@ class ScoringCylinder(ScoringDetector):
     def __str__(self) -> str:
         return self.template.format(
             name=self.name,
-            r_min=self.r_min, r_max=self.r_max, r_bins=self.r_bins,
-            h_min=self.h_min, h_max=self.h_max, h_bins=self.h_bins,
+            r_min=self.r_min,
+            r_max=self.r_max,
+            r_bins=self.r_bins,
+            h_min=self.h_min,
+            h_max=self.h_max,
+            h_bins=self.h_bins,
         )
 
 
@@ -58,11 +62,11 @@ class ScoringMesh(ScoringDetector):
     x_min: float = -0.5
     x_max: float = 0.5
     x_bins: int = 1
-    y_min: float = -2.
-    y_max: float = 2.
+    y_min: float = -2.0
+    y_max: float = 2.0
     y_bins: int = 80
-    z_min: float = 0.
-    z_max: float = 20.
+    z_min: float = 0.0
+    z_max: float = 20.0
     z_bins: int = 400
 
     template: str = """Geometry Mesh
@@ -75,9 +79,15 @@ class ScoringMesh(ScoringDetector):
     def __str__(self) -> str:
         return self.template.format(
             name=self.name,
-            x_min=self.x_min, x_max=self.x_max, x_bins=self.x_bins,
-            y_min=self.y_min, y_max=self.y_max, y_bins=self.y_bins,
-            z_min=self.z_min, z_max=self.z_max, z_bins=self.z_bins,
+            x_min=self.x_min,
+            x_max=self.x_max,
+            x_bins=self.x_bins,
+            y_min=self.y_min,
+            y_max=self.y_max,
+            y_bins=self.y_bins,
+            z_min=self.z_min,
+            z_max=self.z_max,
+            z_bins=self.z_bins,
         )
 
 
@@ -88,7 +98,7 @@ class ScoringZone(ScoringDetector):
     name: str
     first_zone_id: int
     last_zone_id: str = ""
-    volume: float = 1.
+    volume: float = 1.0
 
     template: str = """Geometry Zone
     Name {name}
@@ -99,6 +109,7 @@ class ScoringZone(ScoringDetector):
     def __str__(self) -> str:
         return self.template.format(
             name=self.name,
-            first_zone=self.first_zone_id, last_zone=self.last_zone_id,
+            first_zone=self.first_zone_id,
+            last_zone=self.last_zone_id,
             volume=self.volume,
         )
