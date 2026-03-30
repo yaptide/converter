@@ -3,11 +3,15 @@ from typing import Optional, Union
 import hashlib
 import base64
 
-from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector, \
-    parse_cylinder_detector
+from converter.fluka.helper_parsers.detector_parser import (
+    MeshDetector,
+    parse_mesh_detector,
+    CylinderDetector,
+    parse_cylinder_detector,
+)
 from converter.fluka.helper_parsers.beam_parser import PARTICLE_DICT
 
-__supported_filter_keywords = ('A', 'Z')
+__supported_filter_keywords = ("A", "Z")
 
 
 @dataclass
@@ -35,15 +39,15 @@ class Quantity:
     output_unit: Optional[int]
     scoring_filter: Optional[Union[CustomFilter, ParticleFilter]]
     modifiers: list[any]  # unused
-    keyword: str = 'DOSE'
+    keyword: str = "DOSE"
 
     def name_string(self) -> str:
         """Generate unique name for scoring based on its name and output_unit"""
         # Create a consistent hash based on the name and output_unit
-        generated_hash = generate_custom_hash(f'{self.name}_{self.output_unit}', 5)
+        generated_hash = generate_custom_hash(f"{self.name}_{self.output_unit}", 5)
 
         # Generate the string in the desired format
-        return f'{self.name[:4]}_{generated_hash}'
+        return f"{self.name[:4]}_{generated_hash}"
 
 
 @dataclass
@@ -60,11 +64,11 @@ def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
 
     Returns None if filter cannot be created for Fluka.
     """
-    particle = filter_dict['particle']
-    if particle.get('id') not in PARTICLE_DICT:
+    particle = filter_dict["particle"]
+    if particle.get("id") not in PARTICLE_DICT:
         return None
 
-    return ParticleFilter(name=filter_dict['name'], particle=PARTICLE_DICT[particle['id']]['name'])
+    return ParticleFilter(name=filter_dict["name"], particle=PARTICLE_DICT[particle["id"]]["name"])
 
 
 def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:
@@ -72,21 +76,21 @@ def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:
 
     Returns empty list if filter cannot be created for Fluka.
     """
-    if not filter_dict.get('rules'):
+    if not filter_dict.get("rules"):
         return None
 
     a = 0
     z = 0
-    for rule in filter_dict['rules']:
-        if rule['keyword'] not in __supported_filter_keywords:
+    for rule in filter_dict["rules"]:
+        if rule["keyword"] not in __supported_filter_keywords:
             return None
-        if rule['operator'] not in ['equal', '==']:
+        if rule["operator"] not in ["equal", "=="]:
             return None
-        if rule['keyword'] == 'A':
-            a = rule['value']
-        elif rule['keyword'] == 'Z':
-            z = rule['value']
-    return CustomFilter(name=filter_dict['name'], a=a, z=z)
+        if rule["keyword"] == "A":
+            a = rule["value"]
+        elif rule["keyword"] == "Z":
+            z = rule["value"]
+    return CustomFilter(name=filter_dict["name"], a=a, z=z)
 
 
 def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter]]:
@@ -94,7 +98,7 @@ def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter
 
     Returns None if filter cannot be created for Fluka.
     """
-    if filter_dict.get('particle'):
+    if filter_dict.get("particle"):
         return get_particle_filter(filter_dict)
     return get_custom_filter(filter_dict)
 
@@ -102,16 +106,17 @@ def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter
 def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
     """Creates list of Scorings from dictionaries"""
     filters: dict[str, Union[ParticleFilter, CustomFilter]] = {}
-    for filter_dict in scorings_json['filters']:
+    for filter_dict in scorings_json["filters"]:
         # Check if supported filter, ignore otherwise
         scoring_filter = get_filter(filter_dict)
         if scoring_filter is not None:
-            filters[filter_dict['uuid']] = scoring_filter
+            filters[filter_dict["uuid"]] = scoring_filter
 
     scorings: list[Scoring] = []
-    for output in scorings_json['outputs']:
+    for output in scorings_json["outputs"]:
         detector = next(
-            (detector for detector in detectors_json['detectors'] if detector['uuid'] == output['detectorUuid']), None)
+            (detector for detector in detectors_json["detectors"] if detector["uuid"] == output["detectorUuid"]), None
+        )
         if detector is None:
             # Skip for not existing detector
             # This should not happen
@@ -123,20 +128,23 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
             continue
 
         quantities: list[Quantity] = []
-        for quantity in output['quantities']:
+        for quantity in output["quantities"]:
             scoring_filter = None
-            if 'filter' in quantity:
-                scoring_filter = filters.get(quantity['filter'])
+            if "filter" in quantity:
+                scoring_filter = filters.get(quantity["filter"])
                 if scoring_filter is None:
                     # Skip for not existing filter or not supported filter
                     continue
 
             quantities.append(
-                Quantity(name=quantity['name'],
-                         output_unit=None,
-                         keyword=quantity['keyword'],
-                         scoring_filter=scoring_filter,
-                         modifiers=quantity.get('modifiers')))
+                Quantity(
+                    name=quantity["name"],
+                    output_unit=None,
+                    keyword=quantity["keyword"],
+                    scoring_filter=scoring_filter,
+                    modifiers=quantity.get("modifiers"),
+                )
+            )
 
         scorings.append(Scoring(quantities=quantities, detector=parse_detector(detector)))
 
@@ -145,9 +153,9 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
 
 def parse_detector(detector_dict: dict) -> Optional[Union[MeshDetector, CylinderDetector]]:
     """Creates Detector from dictionary"""
-    if detector_dict['geometryData']['geometryType'] == 'Mesh':
+    if detector_dict["geometryData"]["geometryType"] == "Mesh":
         return parse_mesh_detector(detector_dict)
-    if detector_dict['geometryData']['geometryType'] == 'Cyl':
+    if detector_dict["geometryData"]["geometryType"] == "Cyl":
         return parse_cylinder_detector(detector_dict)
 
     return None
@@ -160,9 +168,9 @@ def generate_custom_hash(input_string, length=10):
     # Get the binary digest
     binary_hash = hash_object.digest()
     # Encode it in standard base64
-    base64_hash = base64.b64encode(binary_hash).decode('utf-8')
+    base64_hash = base64.b64encode(binary_hash).decode("utf-8")
     # Replace '+' and '/' with alphanumeric characters (e.g., 'a' and 'b')
-    base64_hash = base64_hash.replace('+', 'a').replace('/', 'b')
+    base64_hash = base64_hash.replace("+", "a").replace("/", "b")
     # Remove padding '=' and truncate to the desired length
-    custom_hash = base64_hash.replace('=', '')[:length]
+    custom_hash = base64_hash.replace("=", "")[:length]
     return custom_hash

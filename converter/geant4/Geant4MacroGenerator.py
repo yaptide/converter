@@ -5,66 +5,22 @@ from converter.common import convert_beam_energy
 # skipcq: PYL-W0511
 # TODO geantino names needs better mapping or handling
 GEANT4_PARTICLE_MAP = {
-    1: {
-        "name": "neutron",
-        "allowed_units": ["MeV", "MeV/nucl"],
-        "target_unit": "MeV"
-    },
-    2: {
-        "name": "proton",
-        "allowed_units": ["MeV", "MeV/nucl"],
-        "target_unit": "MeV"
-    },
-    3: {
-        "name": "geantino",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    4: {
-        "name": "e-",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    5: {
-        "name": "e+",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    6: {
-        "name": "alpha",
-        "allowed_units": ["MeV", "MeV/nucl"],
-        "target_unit": "MeV"
-    },
-    7: {
-        "name": "mu-",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    8: {
-        "name": "mu+",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    9: {
-        "name": "pi-",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    10: {
-        "name": "pi+",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    11: {
-        "name": "geantino",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
+    1: {"name": "neutron", "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    2: {"name": "proton", "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    3: {"name": "geantino", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    4: {"name": "e-", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    5: {"name": "e+", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    6: {"name": "alpha", "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    7: {"name": "mu-", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    8: {"name": "mu+", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    9: {"name": "pi-", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    10: {"name": "pi+", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    11: {"name": "geantino", "allowed_units": ["MeV"], "target_unit": "MeV"},
     25: {  # equivalent of HEAVYION in other simulators
         "name": "ion",
         "allowed_units": ["MeV", "MeV/nucl"],
-        "target_unit": "MeV"
-    }
+        "target_unit": "MeV",
+    },
 }
 
 GEANT4_QUANTITY_MAP = {
@@ -106,39 +62,40 @@ class Geant4MacroGenerator:
         z = particle.get("z", a)
         input_energy = beam["energy"]
         input_energy_unit = beam.get("energyUnit", "MeV")
-        energy, _, energy_scale_factor = convert_beam_energy(GEANT4_PARTICLE_MAP, particle_id, a,
-                                                             input_energy, input_energy_unit)
+        energy, _, energy_scale_factor = convert_beam_energy(
+            GEANT4_PARTICLE_MAP, particle_id, a, input_energy, input_energy_unit
+        )
         sigma = beam.get("energySpread", 0) * energy_scale_factor
         energy_high = beam.get("energyHighCutoff", 1000) * energy_scale_factor
         energy_min = beam.get("energyLowCutoff", 0) * energy_scale_factor
 
-        self.lines.extend([
-            "/run/initialize\n",
-            "##########################################",
-            "####### Particle Source definition #######",
-            "##########################################\n",
-            "/gps/verbose 0",
-            f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm"
-        ])
+        self.lines.extend(
+            [
+                "/run/initialize\n",
+                "##########################################",
+                "####### Particle Source definition #######",
+                "##########################################\n",
+                "/gps/verbose 0",
+                f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm",
+            ]
+        )
         if particle_id == 25:  # heavy ions
-            self.lines.extend([
-                "/gps/particle ion",
-                f"/gps/ion {z} {a} 0 0"
-            ])
+            self.lines.extend(["/gps/particle ion", f"/gps/ion {z} {a} 0 0"])
         else:
             if particle_id not in GEANT4_PARTICLE_MAP or "name" not in GEANT4_PARTICLE_MAP[particle_id]:
                 raise ValueError(f"Invalid particle id={particle_id}")
             name = GEANT4_PARTICLE_MAP[particle_id]["name"]
             self.lines.append(f"/gps/particle {name}")
         self._append_beam_shape(beam)
-        self.lines.extend([
-            f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
-            "/gps/ene/type Gauss",
-            f"/gps/ene/mono {energy} MeV",
-            f"/gps/ene/sigma {sigma} MeV",
-            f"/gps/ene/max {energy_high} MeV\n"
-            f"/gps/ene/min {energy_min} MeV\n"
-        ])
+        self.lines.extend(
+            [
+                f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
+                "/gps/ene/type Gauss",
+                f"/gps/ene/mono {energy} MeV",
+                f"/gps/ene/sigma {sigma} MeV",
+                f"/gps/ene/max {energy_high} MeV\n/gps/ene/min {energy_min} MeV\n",
+            ]
+        )
 
     def _append_beam_shape(self, beam: Dict[str, Any]) -> None:
         """Set particle source shape and set its dimensions"""
@@ -168,11 +125,13 @@ class Geant4MacroGenerator:
     # -------------------- Scoring --------------------
     def _append_scoring(self) -> None:
         """Append all detector scoring blocks."""
-        self.lines.extend([
-            "##########################################",
-            "################ Scoring #################",
-            "##########################################\n"
-        ])
+        self.lines.extend(
+            [
+                "##########################################",
+                "################ Scoring #################",
+                "##########################################\n",
+            ]
+        )
 
         detectors = {d["uuid"]: d for d in self.data.get("detectorManager", {}).get("detectors", [])}
         outputs = self.data.get("scoringManager", {}).get("outputs", [])
@@ -189,8 +148,9 @@ class Geant4MacroGenerator:
                 continue
             self._append_detector_scoring(detector, quantities, filters)
 
-    def _append_detector_scoring(self, detector: Dict[str, Any], quantities: List[Dict[str, Any]],
-                                 filters: Dict[str, Any]) -> None:
+    def _append_detector_scoring(
+        self, detector: Dict[str, Any], quantities: List[Dict[str, Any]], filters: Dict[str, Any]
+    ) -> None:
         """Append scoring for a single detector including mesh/probe and quantities."""
         name = utils.get_detector_name(detector)
         geom = detector.get("geometryData", {})
@@ -210,8 +170,9 @@ class Geant4MacroGenerator:
 
         self.lines.append("/score/close\n")
 
-    def _append_mesh(self, detector: Dict[str, Any], geom_type: str,
-                     params: Dict[str, Any], pos_det: List[float]) -> None:
+    def _append_mesh(
+        self, detector: Dict[str, Any], geom_type: str, params: Dict[str, Any], pos_det: List[float]
+    ) -> None:
         """Append a mesh (cylinder or box) for a detector, if it's not a cylinder box will be added"""
         name = utils.get_detector_name(detector)
         if geom_type.lower() in ["cyl", "cylinder"]:
@@ -235,12 +196,16 @@ class Geant4MacroGenerator:
             self.lines.append(f"/score/mesh/boxSize {width / 2} {height / 2} {depth / 2} cm")
             self.lines.append(f"/score/mesh/nBin {n_x} {n_y} {n_z}")
 
-    def _append_probe(self, detector: Dict[str, Any], geom_type: str,
-                      params: Dict[str, Any], pos_det: List[float]) -> None:
+    def _append_probe(
+        self, detector: Dict[str, Any], geom_type: str, params: Dict[str, Any], pos_det: List[float]
+    ) -> None:
         """Append a probe scoring for KineticEnergySpectrum quantities."""
         name = utils.get_detector_name(detector)
-        size = params.get("radius", 1) if geom_type.lower() in ["cyl", "cylinder"] \
+        size = (
+            params.get("radius", 1)
+            if geom_type.lower() in ["cyl", "cylinder"]
             else max(params.get("width", 1), params.get("height", 1), params.get("depth", 1))
+        )
         self.lines.append(f"/score/create/probe {name} {size / 2} cm")
         self.lines.append(f"/score/probe/locate {pos_det[0]} {pos_det[1]} {pos_det[2]} cm")
 
@@ -252,16 +217,18 @@ class Geant4MacroGenerator:
         self.lines.append(f"/score/quantity/{mapped_keyword} {qname}")
 
         if keyword == "KineticEnergySpectrum":
-            self.probe_histograms.append({
-                "quantity": qname,
-                "detector": detector_name,
-                "bins": quantity.get("histogramNBins", 1),
-                "min": quantity.get("histogramMin", 0),
-                "max": quantity.get("histogramMax", 1),
-                "unit": quantity.get("histogramUnit", "MeV"),
-                "XScale": quantity.get("histogramXScale", "none"),
-                "XBinScheme": quantity.get("histogramXBinScheme", "linear"),
-            })
+            self.probe_histograms.append(
+                {
+                    "quantity": qname,
+                    "detector": detector_name,
+                    "bins": quantity.get("histogramNBins", 1),
+                    "min": quantity.get("histogramMin", 0),
+                    "max": quantity.get("histogramMax", 1),
+                    "unit": quantity.get("histogramUnit", "MeV"),
+                    "XScale": quantity.get("histogramXScale", "none"),
+                    "XBinScheme": quantity.get("histogramXBinScheme", "linear"),
+                }
+            )
 
         filter_uuid = quantity.get("filter")
         if filter_uuid and filter_uuid in filters:
@@ -280,8 +247,10 @@ class Geant4MacroGenerator:
             qname = hist["quantity"]
             det_name = hist["detector"]
             arbitrary_name = f"{qname}_differential_{self.probe_counter}"
-            self.lines.append(f"/analysis/h1/create {qname}_{self.probe_counter} {arbitrary_name} {hist['bins']} "
-                              f"{hist['min']} {hist['max']} {hist['unit']} {hist['XScale']} {hist['XBinScheme']}")
+            self.lines.append(
+                f"/analysis/h1/create {qname}_{self.probe_counter} {arbitrary_name} {hist['bins']} "
+                f"{hist['min']} {hist['max']} {hist['unit']} {hist['XScale']} {hist['XBinScheme']}"
+            )
             self.lines.append(f"/score/fill1D {self.probe_counter} {det_name} {qname}")
             self.probe_counter += 1
 
@@ -289,12 +258,14 @@ class Geant4MacroGenerator:
     def _append_run(self) -> None:
         """Append run section"""
         beam = self.data.get("beam", {})
-        self.lines.extend([
-            "\n##########################################",
-            "################## Run ###################",
-            "##########################################\n",
-            f"/run/beamOn {beam.get('numberOfParticles', 10000)}\n"
-        ])
+        self.lines.extend(
+            [
+                "\n##########################################",
+                "################## Run ###################",
+                "##########################################\n",
+                f"/run/beamOn {beam.get('numberOfParticles', 10000)}\n",
+            ]
+        )
 
     # -------------------- Results --------------------
     def _append_results(self) -> None:
@@ -302,11 +273,13 @@ class Geant4MacroGenerator:
         detectors = {d["uuid"]: d for d in self.data.get("detectorManager", {}).get("detectors", [])}
         outputs = self.data.get("scoringManager", {}).get("outputs", [])
 
-        self.lines.extend([
-            "##########################################",
-            "############ Collect results #############",
-            "##########################################\n"
-        ])
+        self.lines.extend(
+            [
+                "##########################################",
+                "############ Collect results #############",
+                "##########################################\n",
+            ]
+        )
 
         for output in outputs:
             detector_uuid = output.get("detectorUuid")
