@@ -24,7 +24,7 @@ jobs:
           cache: 'poetry'
 
       - name: Install dependencies
-        run: poetry install --no-interaction
+        run: poetry install --with test --no-interaction
 
       - name: Run pre-commit
         run: poetry run pre-commit run --all-files --show-diff-on-failure
