@@ -24,7 +24,7 @@ d:Ge/MyBox/RotZ     = 0. deg
 s:So/Demo/Type = "Beam"
 s:So/Demo/Component = "BeamPosition"
 s:So/Demo/BeamParticle = "proton"
-d:So/Demo/BeamEnergy = {energy} MeV
+d:So/Demo/BeamEnergy = {energy} MeV # [MeV]
 u:So/Demo/BeamEnergySpread = 0.757504
 s:So/Demo/BeamPositionDistribution = "Gaussian"
 s:So/Demo/BeamPositionCutoffShape = "Ellipse"
@@ -37,7 +37,7 @@ d:So/Demo/BeamAngularCutoffX = 90. deg
 d:So/Demo/BeamAngularCutoffY = 90. deg
 d:So/Demo/BeamAngularSpreadX = 0.0032 rad
 d:So/Demo/BeamAngularSpreadY = 0.0032 rad
-i:So/Demo/NumberOfHistoriesInRun = {num_histories}
+i:So/Demo/NumberOfHistoriesInRun = {num_histories} # Number of Particles
 i:Ts/ShowHistoryCountAtInterval = {histories_interval}
 
 s:Ge/BeamPosition/Parent="World"

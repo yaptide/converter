@@ -619,7 +619,7 @@ class ShieldhitParser(Parser):
         configs_json = super().get_configs_json()
         configs_json.update(
             {
-                "beam.dat": str(self.beam_config),
+                "beam.dat": self.beam_config.__str__(human_readable=self.human_readable),
                 "mat.dat": self.geo_mat_config.get_mat_string(),
                 "detect.dat": str(self.detect_config),
                 "geo.dat": self.geo_mat_config.get_geo_string(),

@@ -63,6 +63,7 @@ class BeamCard:
             result += f"* {self.data.shape} shape with max radius={shape_x} cm, min radius={shape_y} cm\n"
         else:
             result += f"* {self.data.shape} shape with x={shape_x} cm, y={shape_y} cm\n"
+        result += "*        Energy    Spread      Rmax      Rmin       Div  Particle\n"
         result += beam_card.__str__() + "\n"
         if self.data.particle_name == "HEAVYION":
             result += f"* heavy ion properties: a={self.data.heavy_ion_a}, z={self.data.heavy_ion_z}\n"
@@ -75,5 +76,6 @@ class BeamCard:
             result += "* beam direction is negative in respect to z axis\n"
         else:
             result += "* beam direction is positive in respect to z axis\n"
+        result += "*        Pos_X     Pos_Y     Pos_Z     Dir_X     Dir_Y\n"
         result += beamposition_card.__str__()
         return result

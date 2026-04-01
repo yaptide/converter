@@ -4,10 +4,12 @@ proton beam simulation
 DEFAULTS                                                              HADROTHE
 * PROTON beam of energy 0.07 GeV
 * flat circular shape with max radius=3.0 cm, min radius=0.0 cm
+*        Energy    Spread      Rmax      Rmin       Div  Particle
 BEAM           -0.07       0.0       0.0       3.0       0.0      -1.0PROTON
 * beam position: (0.0, 0.0, -1.5) cm
 * beam direction cosines in respect to x: 0.0, y: 0.0
 * beam direction is positive in respect to z axis
+*        Pos_X     Pos_Y     Pos_Z     Dir_X     Dir_Y
 BEAMPOS          0.0       0.0      -1.5       0.0       0.0       0.0
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME

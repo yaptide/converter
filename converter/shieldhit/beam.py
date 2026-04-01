@@ -128,7 +128,7 @@ class BeamConfig:
     beam_source_filename: Optional[str] = None
     beam_source_file_content: Optional[str] = None
 
-    beam_dat_template: str = """
+    beam_dat_template_raw: str = """
 RNDSEED      	89736501     ! Random seed
 JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
 {optional_heavy_ion_line}
@@ -144,6 +144,24 @@ BEAMDIR         {theta} {phi} ! Direction of the beam
 BEAMSIGMA       {beam_ext_x} {beam_ext_y}  ! Beam extension
 {optional_sad_parameter_line}
 DELTAE          {delta_e}   ! relative mean energy loss per transportation step
+"""
+
+    beam_dat_template: str = """
+RNDSEED      	89736501     ! Random seed
+JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
+{optional_heavy_ion_line}
+TMAX0      	{energy} {energy_spread}    ! Kinetic Energy (Mean and 1 sigma spread) [{energy_unit}]
+{optional_energy_cut_off_line}
+NSTAT       {n_stat:d}    0       ! Number of particles (NSTAT), Step of saving
+STRAGG          {straggling}            ! Straggling: 0-Off, 1-Gauss, 2-Vavilov
+MSCAT           {multiple_scattering}            ! Multiple Scattering: 0-Off, 1-Gauss, 2-Moliere
+NUCRE           {nuclear_reactions}            ! Nuclear Reactions: 1-ON, 0-OFF
+{optional_beam_modulator_lines}
+BEAMPOS         {pos_x} {pos_y} {pos_z} ! Beam Source Position (X, Y, Z) [cm]
+BEAMDIR         {theta} {phi} ! Beam Direction (Theta, Phi) [deg]
+BEAMSIGMA       {beam_ext_x} {beam_ext_y}  ! Beam Extension (X, Y) [cm]
+{optional_sad_parameter_line}
+DELTAE          {delta_e}   ! Relative mean energy loss per step [a.u.]
 """
 
     @staticmethod
@@ -165,7 +183,7 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
             phi += 360.0
         return theta, phi, r
 
-    def __str__(self) -> str:
+    def __str__(self, human_readable: bool = False) -> str:
         """Return the beam.dat config file as a string."""
         theta, phi, _ = BeamConfig.cartesian2spherical(self.beam_dir)
 
@@ -198,7 +216,8 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
         mod_lines = str(self.modulator) if self.modulator is not None else "! no beam modulator"
 
         # prepare main template
-        result = self.beam_dat_template.format(
+        template = self.beam_dat_template if human_readable else self.beam_dat_template_raw
+        result = template.format(
             particle=self.particle,
             particle_optional_comment=particle_optional_comment,
             optional_heavy_ion_line=heavy_ion_line,
