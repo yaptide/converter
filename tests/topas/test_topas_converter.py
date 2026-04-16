@@ -32,7 +32,7 @@ d:So/Demo/BeamAngularCutoffX = 90. deg
 d:So/Demo/BeamAngularCutoffY = 90. deg
 d:So/Demo/BeamAngularSpreadX = 0.0032 rad
 d:So/Demo/BeamAngularSpreadY = 0.0032 rad
-i:So/Demo/NumberOfHistoriesInRun = 10000 # Number of Particles
+i:So/Demo/NumberOfHistoriesInRun = 10000 # Number of primary particles
 i:Ts/ShowHistoryCountAtInterval = 100
 
 s:Ge/BeamPosition/Parent="World"

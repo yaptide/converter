@@ -28,6 +28,8 @@ class FlukaBeam:
     energy_MeV: float = 150.0
     beam_pos: tuple[float, float, float] = (0, 0, 0)  # [cm]
     beam_dir: tuple[float, float] = (0, 0)  # cosines respective to x and y axes
+    original_dir: tuple[float, float, float] = (0, 0, 1)  # original cartesian direction vector
+    human_readable: bool = True
     z_negative: bool = False
     shape: BeamShape = BeamShape.GAUSSIAN
     shape_x: float = 0
@@ -133,6 +135,7 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     fluka_beam.shape = shape
     fluka_beam.shape_x = shape_x
     fluka_beam.shape_y = shape_y
+    fluka_beam.original_dir = tuple(beam_json["direction"])
     theta, phi = cartesian_to_spherical(beam_json["direction"])
     fluka_beam.beam_dir = (theta, phi)
     if beam_json["direction"][2] < 0:

@@ -21,6 +21,7 @@ class TopasParser(Parser):
         the config files name as key and its content as value.
         """
         configs_json = super().get_configs_json()
+        self.config.human_readable = self.human_readable
         configs_json["topas_config.txt"] = str(self.config)
 
         return configs_json

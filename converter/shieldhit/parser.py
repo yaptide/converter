@@ -617,9 +617,10 @@ class ShieldhitParser(Parser):
     def get_configs_json(self) -> dict:
         """Get JSON data for configs"""
         configs_json = super().get_configs_json()
+        self.beam_config.human_readable = self.human_readable
         configs_json.update(
             {
-                "beam.dat": self.beam_config.__str__(human_readable=self.human_readable),
+                "beam.dat": str(self.beam_config),
                 "mat.dat": self.geo_mat_config.get_mat_string(),
                 "detect.dat": str(self.detect_config),
                 "geo.dat": self.geo_mat_config.get_geo_string(),

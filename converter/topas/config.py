@@ -1,3 +1,4 @@
+from typing import Optional
 from dataclasses import dataclass
 
 
@@ -7,6 +8,7 @@ class Config:
 
     energy: float = 150.0  # [MeV]
     num_histories: int = 100
+    human_readable: bool = True
 
     config_template: str = """s:Ge/MyBox/Type     = "TsBox"
 s:Ge/MyBox/Material = "Air"
@@ -37,7 +39,7 @@ d:So/Demo/BeamAngularCutoffX = 90. deg
 d:So/Demo/BeamAngularCutoffY = 90. deg
 d:So/Demo/BeamAngularSpreadX = 0.0032 rad
 d:So/Demo/BeamAngularSpreadY = 0.0032 rad
-i:So/Demo/NumberOfHistoriesInRun = {num_histories} # Number of Particles
+i:So/Demo/NumberOfHistoriesInRun = {num_histories}{num_histories_comment}
 i:Ts/ShowHistoryCountAtInterval = {histories_interval}
 
 s:Ge/BeamPosition/Parent="World"
@@ -70,12 +72,20 @@ s:Ge/WaterPhantom/Color             = "skyblue"
 sv:Ph/Default/Modules = 1 "g4em-standard_opt0"
 """
 
-    def __str__(self) -> str:
+    def to_string(self, human_readable: Optional[bool] = None) -> str:
         """Return the topas_config.txt config file as a string."""
+        if human_readable is None:
+            human_readable = self.human_readable
+        num_histories_comment = " # Number of primary particles" if human_readable else ""
         result = self.config_template.format(
             energy=float(self.energy),
             num_histories=self.num_histories,
+            num_histories_comment=num_histories_comment,
             histories_interval=max(1, self.num_histories // 100),
         )
 
         return result
+
+    def __str__(self) -> str:
+        """Return the topas_config.txt config file as a string."""
+        return self.to_string()

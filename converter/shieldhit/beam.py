@@ -115,24 +115,25 @@ class BeamConfig:
     beam_dir: tuple[float, float, float] = (0, 0, 1)  # [cm]
     delta_e: float = 0.03  # [a.u.]
     nuclear_reactions: bool = True
+    human_readable: bool = True
 
     modulator: Optional[BeamModulator] = None
 
     straggling: StragglingModel = StragglingModel.VAVILOV
     multiple_scattering: MultipleScatteringMode = MultipleScatteringMode.MOLIERE
 
-    heavy_ion_template = "HIPROJ       	{a} {z}           ! A and Z of the heavy ion"
+    heavy_ion_template = "HIPROJ           {a} {z}           ! A and Z of the heavy ion"
     energy_cutoff_template = "TCUT0       {energy_low_cutoff} {energy_high_cutoff}  ! energy cutoffs [{energy_unit}]"
     sad_template = "BEAMSAD {sad_x} {sad_y}  ! BEAMSAD value [cm]"
     beam_source_type: BeamSourceType = BeamSourceType.SIMPLE
     beam_source_filename: Optional[str] = None
     beam_source_file_content: Optional[str] = None
 
-    beam_dat_template_raw: str = """
-RNDSEED      	89736501     ! Random seed
-JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
+    beam_dat_template: str = """
+RNDSEED         89736501     ! Random seed
+JPART0          {particle}            ! Incident particle type{particle_optional_comment}
 {optional_heavy_ion_line}
-TMAX0      	{energy} {energy_spread}    ! Mean and spread (1 sigma) of primary particle kinetic energy [{energy_unit}]
+TMAX0           {energy} {energy_spread}    ! Mean and spread (1 sigma) of primary particle kinetic energy [{energy_unit}]
 {optional_energy_cut_off_line}
 NSTAT       {n_stat:d}    0       ! NSTAT, Step of saving
 STRAGG          {straggling}            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
@@ -140,28 +141,10 @@ MSCAT           {multiple_scattering}            ! Mult. scatt 0-Off 1-Gauss, 2-
 NUCRE           {nuclear_reactions}            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 {optional_beam_modulator_lines}
 BEAMPOS         {pos_x} {pos_y} {pos_z} ! Position of the beam
-BEAMDIR         {theta} {phi} ! Direction of the beam
+BEAMDIR         {theta} {phi} ! Direction of the beam. Cartesian vector: [{dir_x}, {dir_y}, {dir_z}]
 BEAMSIGMA       {beam_ext_x} {beam_ext_y}  ! Beam extension
 {optional_sad_parameter_line}
 DELTAE          {delta_e}   ! relative mean energy loss per transportation step
-"""
-
-    beam_dat_template: str = """
-RNDSEED      	89736501     ! Random seed
-JPART0       	{particle}            ! Incident particle type{particle_optional_comment}
-{optional_heavy_ion_line}
-TMAX0      	{energy} {energy_spread}    ! Kinetic Energy (Mean and 1 sigma spread) [{energy_unit}]
-{optional_energy_cut_off_line}
-NSTAT       {n_stat:d}    0       ! Number of particles (NSTAT), Step of saving
-STRAGG          {straggling}            ! Straggling: 0-Off, 1-Gauss, 2-Vavilov
-MSCAT           {multiple_scattering}            ! Multiple Scattering: 0-Off, 1-Gauss, 2-Moliere
-NUCRE           {nuclear_reactions}            ! Nuclear Reactions: 1-ON, 0-OFF
-{optional_beam_modulator_lines}
-BEAMPOS         {pos_x} {pos_y} {pos_z} ! Beam Source Position (X, Y, Z) [cm]
-BEAMDIR         {theta} {phi} ! Beam Direction (Theta, Phi) [deg]
-BEAMSIGMA       {beam_ext_x} {beam_ext_y}  ! Beam Extension (X, Y) [cm]
-{optional_sad_parameter_line}
-DELTAE          {delta_e}   ! Relative mean energy loss per step [a.u.]
 """
 
     @staticmethod
@@ -183,8 +166,11 @@ DELTAE          {delta_e}   ! Relative mean energy loss per step [a.u.]
             phi += 360.0
         return theta, phi, r
 
-    def __str__(self, human_readable: bool = False) -> str:
+    def to_string(self, human_readable: Optional[bool] = None) -> str:
         """Return the beam.dat config file as a string."""
+        if human_readable is None:
+            human_readable = self.human_readable
+
         theta, phi, _ = BeamConfig.cartesian2spherical(self.beam_dir)
 
         # if particle name is defined, add the comment to the template
@@ -216,8 +202,7 @@ DELTAE          {delta_e}   ! Relative mean energy loss per step [a.u.]
         mod_lines = str(self.modulator) if self.modulator is not None else "! no beam modulator"
 
         # prepare main template
-        template = self.beam_dat_template if human_readable else self.beam_dat_template_raw
-        result = template.format(
+        result = self.beam_dat_template.format(
             particle=self.particle,
             particle_optional_comment=particle_optional_comment,
             optional_heavy_ion_line=heavy_ion_line,
@@ -235,6 +220,9 @@ DELTAE          {delta_e}   ! Relative mean energy loss per step [a.u.]
             beam_ext_y=self.beam_ext_y,
             theta=theta,
             phi=phi,
+            dir_x=self.beam_dir[0],
+            dir_y=self.beam_dir[1],
+            dir_z=self.beam_dir[2],
             delta_e=self.delta_e,
             nuclear_reactions=1 if self.nuclear_reactions else 0,
             straggling=self.straggling.value,
@@ -243,6 +231,16 @@ DELTAE          {delta_e}   ! Relative mean energy loss per step [a.u.]
 
         # if beam source type is file, add the file name to the template
         if self.beam_source_type == BeamSourceType.FILE:
-            result += "USECBEAM   sobp.dat   ! Use custom beam source file"
+            result += "USECBEAM   sobp.dat   ! Use custom beam source file\n"
+
+        if not human_readable:
+            import re
+            # Strip comments (everything after ! on each line)
+            # but keep the line itself if it has content
+            result = "\n".join([re.split(r"\s*!", line)[0].rstrip() for line in result.split("\n")])
 
         return result
+
+    def __str__(self) -> str:
+        """Return the beam.dat config file as a string."""
+        return self.to_string()
