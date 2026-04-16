@@ -13,9 +13,10 @@ def dir_path(path: str):
     raise NotADirectoryError(path)
 
 
-def convert(output_format: str, json_file: Path, output_dir: Path, silent: bool):
+def convert(output_format: str, json_file: Path, output_dir: Path, silent: bool, human_readable: bool):
     """Run conversion and save output to output dir."""
     json_parser = api.get_parser_from_str(output_format)
+    json_parser.human_readable = human_readable
     try:
         input_data = {}
         if not json_file.exists():
@@ -38,10 +39,21 @@ def main(args=None):
     arg_parser.add_argument("output_dir", nargs="?", default=Path.cwd(), type=Path)
     arg_parser.add_argument("output_format", nargs="?", default="shieldhit", type=str)
     arg_parser.add_argument("-s", "--silent", action="store_true")
+    arg_parser.add_argument("--human-readable", action="store_true", help="Generate human-readable output (default).")
+    arg_parser.add_argument(
+        "--no-human-readable", action="store_false", dest="human_readable", help="Generate non-human-readable output."
+    )
+    arg_parser.set_defaults(human_readable=True)
     parsed_args = arg_parser.parse_args(args)
 
     try:
-        convert(parsed_args.output_format, parsed_args.input_json_file, parsed_args.output_dir, parsed_args.silent)
+        convert(
+            parsed_args.output_format,
+            parsed_args.input_json_file,
+            parsed_args.output_dir,
+            parsed_args.silent,
+            parsed_args.human_readable,
+        )
     except FileNotFoundError as e:
         print(f"File {e} does not exist.")
         sys.exit(1)
