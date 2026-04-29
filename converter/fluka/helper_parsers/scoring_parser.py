@@ -61,10 +61,10 @@ def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
     Returns None if filter cannot be created for Fluka.
     """
     particle = filter_dict['particle']
-    if particle.get('id') not in PARTICLE_DICT:
+    if particle.get('pdg') not in PARTICLE_DICT:
         return None
 
-    return ParticleFilter(name=filter_dict['name'], particle=PARTICLE_DICT[particle['id']]['name'])
+    return ParticleFilter(name=filter_dict['name'], particle=PARTICLE_DICT[particle['pdg']]['name'])    # so we can't use ions?
 
 
 def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:
