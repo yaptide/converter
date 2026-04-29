@@ -15,11 +15,11 @@ GEANT4_PARTICLE_MAP = {
         "allowed_units": ["MeV", "MeV/nucl"],
         "target_unit": "MeV"
     },
-    # 3: {                              what is geantino and why it is twice in the list?
-    #     "name": "geantino",
-    #     "allowed_units": ["MeV"],
-    #     "target_unit": "MeV"
-    # },
+    22: {                              # what is geantino and why it is twice in the list?
+        "name": "geantino",
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV"
+    },
     11: {
         "name": "e-",
         "allowed_units": ["MeV"],
