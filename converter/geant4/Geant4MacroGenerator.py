@@ -104,13 +104,7 @@ class Geant4MacroGenerator:
         
         a = GEANT4_PARTICLE_MAP.get(particle_pdg, {}).get("a", 1)
         z = GEANT4_PARTICLE_MAP.get(particle_pdg, {}).get("z", a)
-        input_energy = beam["energy"]
-        input_energy_unit = beam.get("energyUnit", "MeV")
-        energy, _, energy_scale_factor = convert_beam_energy(GEANT4_PARTICLE_MAP, particle_pdg, a,
-                                                             input_energy, input_energy_unit)
-        sigma = beam.get("energySpread", 0) * energy_scale_factor
-        energy_high = beam.get("energyHighCutoff", 1000) * energy_scale_factor
-        energy_min = beam.get("energyLowCutoff", 0) * energy_scale_factor
+
 
         self.lines.extend([
             "/run/initialize\n",
@@ -123,6 +117,11 @@ class Geant4MacroGenerator:
         if particle_pdg > 1000000000:  # heavy ions
             a = particle_pdg % 100000 // 10
             z = particle_pdg % 100 // 10000
+            particle_parser_metadata = {
+                "name": "ion",
+                "allowed_units": ["MeV", "MeV/nucl"],
+                "target_unit": "MeV"
+                }
             self.lines.extend([
                 "/gps/particle ion",
                 f"/gps/ion {z} {a} 0 0"
@@ -132,6 +131,13 @@ class Geant4MacroGenerator:
                 raise ValueError(f"Invalid particle pdg={particle_pdg}")
             name = GEANT4_PARTICLE_MAP[particle_pdg]["name"]
             self.lines.append(f"/gps/particle {name}")
+            particle_parser_metadata = GEANT4_PARTICLE_MAP[particle_pdg]
+        input_energy = beam["energy"]
+        input_energy_unit = beam.get("energyUnit", "MeV")
+        energy, _, energy_scale_factor = convert_beam_energy(particle_parser_metadata, a, input_energy, input_energy_unit)
+        sigma = beam.get("energySpread", 0) * energy_scale_factor
+        energy_high = beam.get("energyHighCutoff", 1000) * energy_scale_factor
+        energy_min = beam.get("energyLowCutoff", 0) * energy_scale_factor
         self._append_beam_shape(beam)
         self.lines.extend([
             f"/gps/direction {direction[0]} {direction[1]} {direction[2]}",
