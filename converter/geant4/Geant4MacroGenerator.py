@@ -115,8 +115,8 @@ class Geant4MacroGenerator:
             f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm"
         ])
         if particle_pdg > 1000000000:  # heavy ions
-            a = particle_pdg % 100000 // 10
-            z = particle_pdg % 100 // 10000
+            a = particle_pdg % 10000 // 10
+            z = particle_pdg % 10000000 // 10000
             particle_parser_metadata = {
                 "name": "ion",
                 "allowed_units": ["MeV", "MeV/nucl"],

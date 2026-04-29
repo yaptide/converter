@@ -175,17 +175,17 @@ def convert_energy(beam_json: dict) -> float:
     # a = beam_json['particle'].get('a', 1)
     if particle_pdg in PARTICLE_DICT:
         particle_parser_metadata = PARTICLE_DICT[particle_pdg]
-    elif particle_pdg >= 1000000000:  # heavy ion, we expect it to have 'a' and 'z' properties
+    elif particle_pdg >= 1000000000:  
         particle_parser_metadata = {
             'name': 'HEAVYION',
-            'a': particle_pdg % 100000 // 10,  # extract mass number A from pdg code
+            'a': particle_pdg % 10000 // 10,  # extract mass number A from pdg code
             'allowed_units': ['MeV', 'MeV/nucl'],
             'target_unit': 'MeV'
         }
     else:
         raise ValueError(f"Unsupported particle pdg: {particle_pdg}")
 
-    energy, _, _ = convert_beam_energy(particle_parser_metadata, input_energy, input_energy_unit)
+    energy, _, _ = convert_beam_energy(particle_parser_metadata, a, input_energy, input_energy_unit)
 
     return energy
 
