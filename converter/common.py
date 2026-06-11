@@ -93,7 +93,7 @@ requested length: {n}')
     return result
 
 
-def convert_beam_energy(particle_parser_metadata, a, energy, energy_unit) -> (
+def convert_beam_energy(particle_parser_metadata, energy, energy_unit) -> (
         float, Literal["MeV", "MeV/nucl"], float):
     """
     Validates that energy_unit is listed in `particles_dict.allowed_units`
@@ -107,7 +107,7 @@ def convert_beam_energy(particle_parser_metadata, a, energy, energy_unit) -> (
 
     # particle_parser_metadata = particles_dict[particle_id]
     allowed_units = particle_parser_metadata["allowed_units"]
-
+    a=particle_parser_metadata.get('a', 1)
     # Check if unit is allowed (i.e. MeV/nucl doesn't make sense for kaons, muons, etc.)
     if energy_unit not in allowed_units:
         particle_name = particle_parser_metadata["name"]

@@ -185,7 +185,7 @@ def convert_energy(beam_json: dict) -> float:
     else:
         raise ValueError(f"Unsupported particle pdg: {particle_pdg}")
 
-    energy, _, _ = convert_beam_energy(particle_parser_metadata, a, input_energy, input_energy_unit)
+    energy, _, _ = convert_beam_energy(particle_parser_metadata, input_energy, input_energy_unit)
 
     return energy
 
