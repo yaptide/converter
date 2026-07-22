@@ -93,7 +93,8 @@ class Geant4MacroGenerator:
                 "/gps/ene/type Gauss",
                 f"/gps/ene/mono {energy} MeV",
                 f"/gps/ene/sigma {sigma} MeV",
-                f"/gps/ene/max {energy_high} MeV\n/gps/ene/min {energy_min} MeV\n",
+                f"/gps/ene/max {energy_high} MeV",
+                f"/gps/ene/min {energy_min} MeV\n",
             ]
         )
 

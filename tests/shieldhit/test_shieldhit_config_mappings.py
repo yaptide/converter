@@ -5,10 +5,10 @@ from converter.shieldhit.geo import GeoMatConfig
 from converter.shieldhit.parser import BeamConfig, DetectConfig
 
 _Beam_template = """
-RNDSEED      	89736501     ! Random seed
-JPART0       	2            ! Incident particle type
+RNDSEED         89736501     ! Random seed
+JPART0          2            ! Incident particle type
 ! no heavy ion
-TMAX0      	{energy} {energy_spread}    ! Mean and spread (1 sigma) of primary particle kinetic energy [{energy_unit}]
+TMAX0           {energy} {energy_spread}    ! Mean and spread (1 sigma) of primary particle kinetic energy [{energy_unit}]
 ! no energy cutoffs
 NSTAT       {nstat:d}    0       ! NSTAT, Step of saving
 STRAGG          2            ! Straggling: 0-Off 1-Gauss, 2-Vavilov
@@ -16,7 +16,7 @@ MSCAT           2            ! Mult. scatt 0-Off 1-Gauss, 2-Moliere
 NUCRE           1            ! Nucl.Reac. switcher: 1-ON, 0-OFF
 ! no beam modulator
 BEAMPOS         0 0 0 ! Position of the beam
-BEAMDIR         0.0 0.0 ! Direction of the beam
+BEAMDIR         0.0 0.0 ! Direction of the beam. Cartesian vector: [0, 0, 1]
 BEAMSIGMA       -0.1 0.1  ! Beam extension
 ! no BEAMSAD value
 DELTAE          0.03   ! relative mean energy loss per transportation step

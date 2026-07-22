@@ -50,6 +50,7 @@ class FlukaParser(Parser):
         the config files name as key and its content as value.
         """
         configs_json = super().get_configs_json()
+        self.input.beam.human_readable = self.human_readable
         configs_json["fl_sim.inp"] = str(self.input)
 
         return configs_json

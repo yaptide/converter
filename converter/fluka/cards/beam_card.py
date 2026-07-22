@@ -1,3 +1,4 @@
+from typing import Optional
 from dataclasses import dataclass, field
 from converter.common import format_float
 from converter.fluka.cards.card import Card
@@ -10,8 +11,11 @@ class BeamCard:
 
     data: FlukaBeam = field(default_factory=lambda: FlukaBeam())  # skipcq: PYL-W0108
 
-    def __str__(self) -> str:
+    def to_string(self, human_readable: Optional[bool] = None) -> str:
         """Return the card as a string."""
+        if human_readable is None:
+            human_readable = self.data.human_readable
+
         beam_card = Card(codewd="BEAM")
         if self.data.shape == BeamShape.GAUSSIAN:
             shape_what = -1
@@ -58,11 +62,19 @@ class BeamCard:
         beamposition_card.what = [pos_x, pos_y, pos_z, dir_x, dir_y, 0]
         beamposition_card.sdum = z_sdum
 
+        if not human_readable:
+            result = beam_card.__str__() + "\n"
+            if self.data.particle_name == "HEAVYION":
+                result += hi_card.__str__() + "\n"
+            result += beamposition_card.__str__()
+            return result
+
         result = f"* {self.data.particle_name} beam of energy {-momentum_or_energy} GeV\n"
         if self.data.shape == BeamShape.CIRCULAR:
             result += f"* {self.data.shape} shape with max radius={shape_x} cm, min radius={shape_y} cm\n"
         else:
             result += f"* {self.data.shape} shape with x={shape_x} cm, y={shape_y} cm\n"
+        result += "*         Energy    Spread              Rmax      Rmin       Div  Particle\n"
         result += beam_card.__str__() + "\n"
         if self.data.particle_name == "HEAVYION":
             result += f"* heavy ion properties: a={self.data.heavy_ion_a}, z={self.data.heavy_ion_z}\n"
@@ -70,10 +82,16 @@ class BeamCard:
         result += (
             f"* beam position: ({pos_x}, {pos_y}, {pos_z}) cm\n"
             f"* beam direction cosines in respect to x: {dir_x}, y: {dir_y}\n"
+            f"* beam direction vector: {self.data.original_dir}\n"
         )
         if self.data.z_negative:
             result += "* beam direction is negative in respect to z axis\n"
         else:
             result += "* beam direction is positive in respect to z axis\n"
+        result += "*         Pos_X     Pos_Y     Pos_Z     Dir_X     Dir_Y\n"
         result += beamposition_card.__str__()
         return result
+
+    def __str__(self) -> str:
+        """Return the card as a string."""
+        return self.to_string()
