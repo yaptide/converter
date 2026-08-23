@@ -281,7 +281,7 @@ class ShieldhitParser(Parser):
             raise ValueError(f"Unsupported particle pdg: {json['beam']['particle']['pdg']}")
         
 
-        energy, energy_unit, energy_scale_factor = convert_beam_energy(particle_parser_metadata, a, input_energy,
+        energy, energy_unit, energy_scale_factor = convert_beam_energy(particle_parser_metadata, input_energy,
                                                                        input_energy_unit)
 
         self.beam_config.energy_unit = energy_unit
