@@ -233,9 +233,11 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     fluka_beam = FlukaBeam()
     fluka_beam.energy_MeV = convert_energy(beam_json)
     fluka_beam.particle_name = parse_particle_name(beam_json['particle'])
+    pdg=int(beam_json['particle']['pdg'])
     if fluka_beam.particle_name == 'HEAVYION':
-        fluka_beam.heavy_ion_a = beam_json['particle']['a']
-        fluka_beam.heavy_ion_z = beam_json['particle']['z']
+        pdg=int(beam_json['particle']['pdg'])
+        fluka_beam.heavy_ion_a = (pdg // 10) % 1000
+        fluka_beam.heavy_ion_z = (pdg // 10000) % 1000
     fluka_beam.beam_pos = tuple(beam_json['position'])
     shape, shape_x, shape_y = parse_shape_params(beam_json['sigma'])
     fluka_beam.shape = shape

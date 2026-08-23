@@ -269,7 +269,7 @@ class ShieldhitParser(Parser):
         a = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("a", 1)
         pdg = json["beam"]["particle"]["pdg"]
         if pdg >= 1000000000: 
-            a = json["beam"]["particle"]["a"]
+            a = (int(pdg) // 10) % 1000
             particle_parser_metadata = {
                 'name': 'HEAVYION',
                 'allowed_units': ['MeV', 'MeV/nucl'],
