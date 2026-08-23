@@ -20,6 +20,10 @@ yaptide-converter = "converter.main:main"
 
 [tool.poetry]
 # Keep this section for Poetry-specific configurations not covered by PEP 621
+name = "yaptide-converter"
+version = "1.0.0"
+description = "Yet Another Particle Transport IDE - converter"
+authors = ["yaptide team"]
 packages = [{include = "converter"}]
 
 [tool.poetry.group.test]
