@@ -1,6 +1,6 @@
 
 RNDSEED      	89736501     ! Random seed
-JPART0       	2            ! Incident particle type (Proton)
+JPART0       	2            ! Incident particle type (PROTON)
 ! no heavy ion
 TMAX0      	150.0 1.5    ! Mean and spread (1 sigma) of primary particle kinetic energy [MeV]
 TCUT0       0 1000  ! energy cutoffs [MeV]
