@@ -3,7 +3,7 @@ from typing import Optional
 import re
 
 import converter.solid_figures as solid_figures
-from converter.common import Parser, convert_beam_energy
+from converter.common import Parser, convert_beam_energy, extract_atomic_number, extract_mass_number, is_heavy_ion
 from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
                                       ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
 from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
@@ -136,11 +136,6 @@ PARTICLE_DICT: dict[int, dict] = {
         'allowed_units': ['MeV', 'MeV/nucl'],
         'target_unit': 'MeV/nucl'
     },
-    # 25: {
-    #     'name': 'HEAVYION',
-    #     'allowed_units': ['MeV', 'MeV/nucl'],
-    #     'target_unit': 'MeV/nucl'
-    # }
 }
 
 
@@ -151,9 +146,15 @@ def parse_scoring_filter(scoring_filter: dict) -> ScoringFilter:
     """
     if scoring_filter.get("particle"):
         # If the filter is a particle filter, we want to map it to format used by SHIELD-HIT12A
-        return ScoringFilter(uuid=scoring_filter["uuid"],
-                             name=scoring_filter["name"],
-                             rules=PARTICLE_DICT[scoring_filter["particle"]["pdg"]]['filter'])
+        pdg = scoring_filter["particle"]["pdg"]
+        if pdg in PARTICLE_DICT:
+            rules = PARTICLE_DICT[pdg]['filter']
+        elif is_heavy_ion(pdg):
+            rules = [('Z', '==', extract_atomic_number(pdg)), ('A', '==', extract_mass_number(pdg))]
+        else:
+            raise ValueError(f"Unsupported particle pdg: {pdg}")
+
+        return ScoringFilter(uuid=scoring_filter["uuid"], name=scoring_filter["name"], rules=rules)
 
     return ScoringFilter(uuid=scoring_filter["uuid"],
                          name=scoring_filter["name"],
@@ -215,9 +216,9 @@ class ShieldhitParser(Parser):
             self.beam_config.heavy_ion_z = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("z")
 
         pdg = json["beam"]["particle"]["pdg"]
-        if pdg>= 1000000000:  
-            self.beam_config.heavy_ion_a = pdg % 10000 // 10
-            self.beam_config.heavy_ion_z = pdg % 10000000 // 10000
+        if is_heavy_ion(pdg):
+            self.beam_config.heavy_ion_a = extract_mass_number(pdg)
+            self.beam_config.heavy_ion_z = extract_atomic_number(pdg)
 
         self._parse_beam_energy(json)
 
@@ -266,12 +267,11 @@ class ShieldhitParser(Parser):
         particle_id = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("particle", 25)
         input_energy = json["beam"]["energy"]
         input_energy_unit = json["beam"].get("energyUnit", "MeV")
-        a = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("a", 1)
         pdg = json["beam"]["particle"]["pdg"]
-        if pdg >= 1000000000: 
-            a = (int(pdg) // 10) % 1000
+        if is_heavy_ion(pdg):
             particle_parser_metadata = {
                 'name': 'HEAVYION',
+                'a': extract_mass_number(pdg),
                 'allowed_units': ['MeV', 'MeV/nucl'],
                 'target_unit': 'MeV/nucl'
             }
