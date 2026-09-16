@@ -1,6 +1,6 @@
 import converter.geant4.utils as utils
 from typing import Dict, Any, List
-from converter.common import convert_beam_energy
+from converter.common import convert_beam_energy, extract_atomic_number, extract_mass_number, is_heavy_ion
 
 # skipcq: PYL-W0511
 # TODO geantino names needs better mapping or handling
@@ -15,8 +15,8 @@ GEANT4_PARTICLE_MAP = {
         "allowed_units": ["MeV", "MeV/nucl"],
         "target_unit": "MeV"
     },
-    22: {                              # what is geantino and why it is twice in the list?
-        "name": "geantino",
+    22: {                        
+        "name": "gamma",
         "allowed_units": ["MeV"],
         "target_unit": "MeV"
     },
@@ -30,7 +30,7 @@ GEANT4_PARTICLE_MAP = {
         "allowed_units": ["MeV"],
         "target_unit": "MeV"
     },
-    1000020040: {    # alpha is handled as ion, maybe it is not necessary here
+    1000020040: {
         "name": "alpha",
         "allowed_units": ["MeV", "MeV/nucl"],
         "target_unit": "MeV"
@@ -40,12 +40,12 @@ GEANT4_PARTICLE_MAP = {
         "allowed_units": ["MeV"],
         "target_unit": "MeV"
     },
-    14: {
+    -13: {
         "name": "mu+",
         "allowed_units": ["MeV"],
         "target_unit": "MeV"
     },
-    111: {
+    -211: {
         "name": "pi-",
         "allowed_units": ["MeV"],
         "target_unit": "MeV"
@@ -55,14 +55,9 @@ GEANT4_PARTICLE_MAP = {
         "allowed_units": ["MeV"],
         "target_unit": "MeV"
     },
-    # 11: {
+    # 1000060120: {
     #     "name": "geantino",
     #     "allowed_units": ["MeV"],
-    #     "target_unit": "MeV"
-    # },
-    # 25: {  # equivalent of HEAVYION in other simulators
-    #     "name": "ion",
-    #     "allowed_units": ["MeV", "MeV/nucl"],
     #     "target_unit": "MeV"
     # }
 }
@@ -98,7 +93,7 @@ class Geant4MacroGenerator:
         """Append particle source and run initialization."""
         beam = self.data.get("beam", {})
         particle = beam.get("particle", {})
-        particle_pdg = beam.get("particle", {}).get("pdg", 2)
+        particle_pdg = beam.get("particle", {}).get("pdg", 2212)
         pos = beam.get("position", [0, 0, 0])
         direction = beam.get("direction", [0, 0, 1])
         
@@ -114,11 +109,12 @@ class Geant4MacroGenerator:
             "/gps/verbose 0",
             f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm"
         ])
-        if particle_pdg > 1000000000:  # heavy ions
-            a = particle_pdg % 10000 // 10
-            z = particle_pdg % 10000000 // 10000
+        if is_heavy_ion(particle_pdg):
+            a = extract_mass_number(particle_pdg)
+            z = extract_atomic_number(particle_pdg)
             particle_parser_metadata = {
                 "name": "ion",
+                "a": a,
                 "allowed_units": ["MeV", "MeV/nucl"],
                 "target_unit": "MeV"
                 }

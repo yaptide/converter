@@ -93,21 +93,31 @@ requested length: {n}')
     return result
 
 
+def is_heavy_ion(pdg: int) -> bool:
+    """Check if particle is a heavy ion based on its PDG code."""
+    return pdg >= 1000000000
+
+
+def extract_mass_number(pdg: int) -> int:
+    """Extract mass number A from PDG code."""
+    return pdg % 10000 // 10
+
+
+def extract_atomic_number(pdg: int) -> int:
+    """Extract atomic number Z from PDG code."""
+    return pdg // 10000 % 1000
+
+
 def convert_beam_energy(particle_parser_metadata, energy, energy_unit) -> (
         float, Literal["MeV", "MeV/nucl"], float):
     """
-    Validates that energy_unit is listed in `particles_dict.allowed_units`
-    and converts it to `particles_dict.target_unit` if necessary.
+    Validates that energy_unit is listed in `particle_parser_metadata['allowed_units']`
+    and converts it to `particle_parser_metadata['target_unit']` if necessary.
 
     :returns: tuple `(energy, energy unit, scale factor)` after conversion
     """
-    # if particle_id not in particles_dict and particle_id < 1000000000:
-    #     raise ValueError(f"Unsupported particle_id: {particle_id}")
-
-
-    # particle_parser_metadata = particles_dict[particle_id]
     allowed_units = particle_parser_metadata["allowed_units"]
-    a=particle_parser_metadata.get('a', 1)
+    a = particle_parser_metadata.get('a', 1)
     # Check if unit is allowed (i.e. MeV/nucl doesn't make sense for kaons, muons, etc.)
     if energy_unit not in allowed_units:
         particle_name = particle_parser_metadata["name"]

@@ -1,7 +1,7 @@
 from math import cos, atan, pi
 from dataclasses import dataclass
 from enum import Enum
-from converter.common import convert_beam_energy
+from converter.common import convert_beam_energy, extract_atomic_number, extract_mass_number, is_heavy_ion
 
 
 class BeamShape(Enum):
@@ -50,7 +50,7 @@ PARTICLE_DICT = {
         'allowed_units': ['MeV', 'MeV/nucl'],
         'target_unit': 'MeV'
     },
-    -211: {          # to check
+    -211: {
         'name': 'PION-',
         'a': 1,
         'allowed_units': ['MeV'],
@@ -62,7 +62,7 @@ PARTICLE_DICT = {
         'allowed_units': ['MeV'],
         'target_unit': 'MeV'
     },
-    111: {              # to check
+    111: {
         'name': 'PIZERO',
         'a': 1,
         'allowed_units': ['MeV'],
@@ -99,7 +99,7 @@ PARTICLE_DICT = {
         'target_unit': 'MeV'
     },
     130: {
-        'name': 'KAONLONG',         # is it K~?
+        'name': 'KAONLONG',
         'a': 1,
         'allowed_units': ['MeV'],
         'target_unit': 'MeV'
@@ -146,12 +146,6 @@ PARTICLE_DICT = {
         'allowed_units': ['MeV', 'MeV/nucl'],
         'target_unit': 'MeV'
     },
-    # 25: {  # HEAVYION is the only type of particle that is expected to have energy in 'MeV/nucl'
-    #     'name': 'HEAVYION',
-    #     'a': 1,
-    #     'allowed_units': ['MeV', 'MeV/nucl'],
-    #     'target_unit': 'MeV/nucl'
-    # },
     11: {
         'name': 'ELECTRON',
         'a': 1,
@@ -159,7 +153,6 @@ PARTICLE_DICT = {
         'target_unit': 'MeV'
     }
 }
-
 
 def convert_energy(beam_json: dict) -> float:
     """
@@ -172,15 +165,14 @@ def convert_energy(beam_json: dict) -> float:
     particle_pdg = beam_json['particle']['pdg']
     input_energy_unit = beam_json['energyUnit']
     input_energy = beam_json['energy']
-    # a = beam_json['particle'].get('a', 1)
     if particle_pdg in PARTICLE_DICT:
         particle_parser_metadata = PARTICLE_DICT[particle_pdg]
-    elif particle_pdg >= 1000000000:  
+    elif is_heavy_ion(particle_pdg):  
         particle_parser_metadata = {
             'name': 'HEAVYION',
-            'a': particle_pdg % 10000 // 10,  # extract mass number A from pdg code
+            'a': extract_mass_number(particle_pdg),
             'allowed_units': ['MeV', 'MeV/nucl'],
-            'target_unit': 'MeV'
+            'target_unit': 'MeV/nucl'
         }
     else:
         raise ValueError(f"Unsupported particle pdg: {particle_pdg}")
@@ -196,7 +188,7 @@ def parse_particle_name(particle_json: dict):
     if particle_pdg in PARTICLE_DICT:
         particle = PARTICLE_DICT[particle_pdg]
         return particle['name']
-    elif particle_pdg >= 1000000000: 
+    elif is_heavy_ion(particle_pdg): 
         return 'HEAVYION'
     raise ValueError('Particle PDG not supported by FLUKA')
 
@@ -236,8 +228,8 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     pdg=int(beam_json['particle']['pdg'])
     if fluka_beam.particle_name == 'HEAVYION':
         pdg=int(beam_json['particle']['pdg'])
-        fluka_beam.heavy_ion_a = (pdg // 10) % 1000
-        fluka_beam.heavy_ion_z = (pdg // 10000) % 1000
+        fluka_beam.heavy_ion_a = extract_mass_number(pdg)
+        fluka_beam.heavy_ion_z = extract_atomic_number(pdg)
     fluka_beam.beam_pos = tuple(beam_json['position'])
     shape, shape_x, shape_y = parse_shape_params(beam_json['sigma'])
     fluka_beam.shape = shape
