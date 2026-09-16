@@ -566,8 +566,7 @@
                 "name": "Protons",
                 "type": "Filter",
                 "particle": {
-                    "id": 2,
-                    "name": "Proton"
+                    "pdg": 2212
                 }
             },
             {
@@ -653,10 +652,7 @@
             "y": 0
         },
         "particle": {
-            "id": 2,
-            "a": 1,
-            "z": 1,
-            "name": "Proton"
+            "pdg": 2212
         },
         "colorHex": 16776960,
         "numberOfParticles": 10000,

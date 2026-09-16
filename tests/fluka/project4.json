@@ -358,8 +358,7 @@
 				"name": "Protons",
 				"type": "Filter",
 				"particle": {
-					"id": 2,
-					"name": "Proton"
+					"pdg": 2212
 				}
 			},
 			{
@@ -367,8 +366,7 @@
 				"name": "Neutrons",
 				"type": "Filter",
 				"particle": {
-					"id": 1,
-					"name": "Neutron"
+					"pdg": 2112
 				}
 			},
 			{
@@ -376,8 +374,7 @@
 				"name": "PionPlus",
 				"type": "Filter",
 				"particle": {
-					"id": 4,
-					"name": "Pion π+"
+					"pdg": 211
 				}
 			},
 			{
@@ -439,8 +436,7 @@
 				"name": "Helium3",
 				"type": "Filter",
 				"particle": {
-					"id": 23,
-					"name": "Helium-3"
+					"pdg": 1000020030
 				}
 			},
 			{
@@ -494,10 +490,7 @@
 			"distanceToFocal": 0
 		},
 		"particle": {
-			"id": 25,
-			"name": "Heavy ions",
-			"a": 12,
-			"z": 6
+			"pdg": 1000060120
 		},
 		"colorHex": 16776960,
 		"numberOfParticles": 10000,

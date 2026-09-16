@@ -359,8 +359,7 @@
 				"data": {
 					"particleTypes": [
 						{
-							"id": 2,
-							"name": "Proton"
+							"pdg": 2212
 						}],
 					"kineticEnergyLow": 1,
 					"kineticEnergyHigh": 10,
@@ -400,10 +399,7 @@
 			"distanceToFocal": 0
 		},
 		"particle": {
-			"id": 2,
-			"name": "Proton",
-			"a": 1,
-			"z": 1
+			"pdg": 2212
 		},
 		"colorHex": 16776960,
 		"numberOfParticles": 10000,

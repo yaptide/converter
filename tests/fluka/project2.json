@@ -462,8 +462,7 @@
 				"name": "FilterNeutrons",
 				"type": "Filter",
 				"particle": {
-					"id": 1,
-					"name": "Neutron"
+					"pdg": 2112
 				}
 			}],
 		"metadata": {
@@ -499,9 +498,7 @@
 			"distanceToFocal": 0
 		},
 		"particle": {
-			"id": 2,
-			"a": 1,
-			"z": 1
+			"pdg": 2212
 		},
 		"colorHex": 16776960,
 		"numberOfParticles": 10000,
