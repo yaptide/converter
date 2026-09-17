@@ -60,9 +60,7 @@ PARTICLE_DICT: dict[int, dict] = {
     -2212: {
         'particle': 7,
         'name': 'APROTON',
-        'a': 1,
-        'z': 1,
-        'filter': [('Z', '==', -1), ('A', '==', 3)],
+        'filter': [('Z', '==', -1), ('A', '==', 1)],
         'allowed_units': ['MeV', 'MeV/nucl'],
         'target_unit': 'MeV'
     },
@@ -208,8 +206,8 @@ class ShieldhitParser(Parser):
 
     def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
-        self.beam_config.particle = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("particle")
-        self.beam_config.particle_name = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("name", 'HEAVYION' )
+        self.beam_config.particle = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("particle", 25)
+        self.beam_config.particle_name = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("name", 'HEAVYION')
         if PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("a") is not None:
             self.beam_config.heavy_ion_a = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("a")
         if PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("z") is not None:

@@ -225,9 +225,8 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     fluka_beam = FlukaBeam()
     fluka_beam.energy_MeV = convert_energy(beam_json)
     fluka_beam.particle_name = parse_particle_name(beam_json['particle'])
-    pdg=int(beam_json['particle']['pdg'])
     if fluka_beam.particle_name == 'HEAVYION':
-        pdg=int(beam_json['particle']['pdg'])
+        pdg = int(beam_json['particle']['pdg'])
         fluka_beam.heavy_ion_a = extract_mass_number(pdg)
         fluka_beam.heavy_ion_z = extract_atomic_number(pdg)
     fluka_beam.beam_pos = tuple(beam_json['position'])
