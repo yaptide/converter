@@ -13,26 +13,26 @@ class BeamShape(Enum):
 
     def __str__(self):
         if self == BeamShape.GAUSSIAN:
-            return 'gaussian'
+            return "gaussian"
         if self == BeamShape.SQUARE:
-            return 'flat square'
+            return "flat square"
         if self == BeamShape.CIRCULAR:
-            return 'flat circular'
-        return ''
+            return "flat circular"
+        return ""
 
 
 @dataclass(frozen=False)
 class FlukaBeam:
     """Class representing beam config in a FLUKA input file."""
 
-    energy_MeV: float = 150.
+    energy_MeV: float = 150.0
     beam_pos: tuple[float, float, float] = (0, 0, 0)  # [cm]
     beam_dir: tuple[float, float] = (0, 0)  # cosines respective to x and y axes
     z_negative: bool = False
     shape: BeamShape = BeamShape.GAUSSIAN
     shape_x: float = 0
     shape_y: float = 0
-    particle_name: str = 'PROTON'
+    particle_name: str = "PROTON"
     heavy_ion_a: int = 1
     heavy_ion_z: int = 1
 
@@ -195,14 +195,14 @@ def parse_particle_name(particle_json: dict):
 
 def parse_shape_params(shape_params_json: dict) -> tuple[BeamShape, float, float]:
     """Parse shape params from JSON to FLUKA shape params."""
-    shape = shape_params_json['type']
-    if shape == 'Flat circular':
-        return BeamShape.CIRCULAR, shape_params_json['x'], shape_params_json['y']
-    if shape == 'Flat square':
-        return BeamShape.SQUARE, shape_params_json['x'], shape_params_json['y']
-    if shape == 'Gaussian':
-        return BeamShape.GAUSSIAN, shape_params_json['x'], shape_params_json['y']
-    raise ValueError('Shape type not supported by FLUKA')
+    shape = shape_params_json["type"]
+    if shape == "Flat circular":
+        return BeamShape.CIRCULAR, shape_params_json["x"], shape_params_json["y"]
+    if shape == "Flat square":
+        return BeamShape.SQUARE, shape_params_json["x"], shape_params_json["y"]
+    if shape == "Gaussian":
+        return BeamShape.GAUSSIAN, shape_params_json["x"], shape_params_json["y"]
+    raise ValueError("Shape type not supported by FLUKA")
 
 
 def cartesian_to_spherical(coords: tuple[float, float, float]):
@@ -216,7 +216,7 @@ def cartesian_to_spherical(coords: tuple[float, float, float]):
         theta = atan(z / x)
     phi = pi / 2
     if y != 0:
-        phi = atan((x**2 + z**2)**0.5 / y)
+        phi = atan((x**2 + z**2) ** 0.5 / y)
     return cos(theta), cos(phi)
 
 
@@ -234,8 +234,8 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     fluka_beam.shape = shape
     fluka_beam.shape_x = shape_x
     fluka_beam.shape_y = shape_y
-    theta, phi = cartesian_to_spherical(beam_json['direction'])
+    theta, phi = cartesian_to_spherical(beam_json["direction"])
     fluka_beam.beam_dir = (theta, phi)
-    if beam_json['direction'][2] < 0:
+    if beam_json["direction"][2] < 0:
         fluka_beam.z_negative = True
     return fluka_beam

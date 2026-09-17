@@ -21,7 +21,7 @@ def handle_scoring_cards(output_unit: int, scoring: Scoring, counter: ScoringCar
     for quantity in scoring.quantities:
         usrbin_card = handle_usrbin_scoring(scoring.detector, quantity, output_unit, counter)
         output.append(usrbin_card)
-    return '\n'.join(output).strip()
+    return "\n".join(output).strip()
 
 
 def short_name(name: str) -> str:
@@ -29,29 +29,30 @@ def short_name(name: str) -> str:
     return name[:10]
 
 
-def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_unit,
-                          counter: ScoringCardIndexCounter) -> str:
+def handle_usrbin_scoring(
+    detector: _DetectorType, quantity: Quantity, output_unit, counter: ScoringCardIndexCounter
+) -> str:
     """Creates USRBIN card"""
     output: list[Card] = []
     # temporary assumption
     # DOSE according to:
     # https://flukafiles.web.cern.ch/manual/chapters/particle_and_material_codes/particles_codes.html
-    quantity_to_score = ''
+    quantity_to_score = ""
     try_auxscore = False
-    if quantity.keyword == 'Dose':
-        quantity_to_score = 'DOSE'
+    if quantity.keyword == "Dose":
+        quantity_to_score = "DOSE"
         try_auxscore = True
-    elif quantity.keyword == 'Fluence':
+    elif quantity.keyword == "Fluence":
         if isinstance(quantity.scoring_filter, ParticleFilter):
             # Apply particle from filter if fluency is used
             quantity_to_score = quantity.scoring_filter.particle
         else:
-            quantity_to_score = 'ALL-PART'
+            quantity_to_score = "ALL-PART"
             if isinstance(quantity.scoring_filter, CustomFilter):
                 try_auxscore = True
 
     if not quantity_to_score:
-        return f'* unable to create USRBIN card for {quantity.name[:20]}'
+        return f"* unable to create USRBIN card for {quantity.name[:20]}"
 
     output_unit_in_fluka_convention = str(output_unit * -1)
 
@@ -63,11 +64,11 @@ def handle_usrbin_scoring(detector: _DetectorType, quantity: Quantity, output_un
     counter.usrbin_counter += 1
     if try_auxscore and quantity.scoring_filter:
         # Add AUXSCORE card for custom filter
-        auxscore_card = handle_auxscore_filter(quantity, counter.usrbin_counter, 'USRBIN')
+        auxscore_card = handle_auxscore_filter(quantity, counter.usrbin_counter, "USRBIN")
         if auxscore_card:
             output.append(auxscore_card)
 
-    return '\n'.join([f'{card!s}' for card in output])
+    return "\n".join([f"{card!s}" for card in output])
 
 
 def parse_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention) -> list[Card]:
@@ -77,16 +78,22 @@ def parse_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_c
     return _parse_mesh_detector(detector, quantity, quantity_to_score, output_unit_in_fluka_convention)
 
 
-def _parse_mesh_detector(detector: MeshDetector, quantity: Quantity, quantity_to_score: str,
-                         output_unit_in_fluka_convention: str) -> list[Card]:
+def _parse_mesh_detector(
+    detector: MeshDetector, quantity: Quantity, quantity_to_score: str, output_unit_in_fluka_convention: str
+) -> list[Card]:
     """Creates USRBIN card for mesh detector"""
-    first_card = Card(codewd='USRBIN')
+    first_card = Card(codewd="USRBIN")
     first_card.what = [
-        '10.0', quantity_to_score, output_unit_in_fluka_convention, detector.x_max, detector.y_max, detector.z_max
+        "10.0",
+        quantity_to_score,
+        output_unit_in_fluka_convention,
+        detector.x_max,
+        detector.y_max,
+        detector.z_max,
     ]
     first_card.sdum = short_name(quantity.name_string())
 
-    second_card = Card(codewd='USRBIN')
+    second_card = Card(codewd="USRBIN")
     second_card.what = [
         detector.x_min,
         detector.y_min,
@@ -95,21 +102,27 @@ def _parse_mesh_detector(detector: MeshDetector, quantity: Quantity, quantity_to
         detector.y_bins,
         detector.z_bins,
     ]
-    second_card.sdum = '&'
+    second_card.sdum = "&"
 
     return [first_card, second_card]
 
 
-def _parse_cylinder_detector(detector: CylinderDetector, quantity: Quantity, quantity_to_score: str,
-                             output_unit_in_fluka_convention: str) -> list[Card]:
+def _parse_cylinder_detector(
+    detector: CylinderDetector, quantity: Quantity, quantity_to_score: str, output_unit_in_fluka_convention: str
+) -> list[Card]:
     """Creates USRBIN card for cylinder detector"""
-    first_card = Card(codewd='USRBIN')
+    first_card = Card(codewd="USRBIN")
     first_card.what = [
-        '11.0', quantity_to_score, output_unit_in_fluka_convention, detector.r_max, detector.y, detector.z_max
+        "11.0",
+        quantity_to_score,
+        output_unit_in_fluka_convention,
+        detector.r_max,
+        detector.y,
+        detector.z_max,
     ]
     first_card.sdum = short_name(quantity.name_string())
 
-    second_card = Card(codewd='USRBIN')
+    second_card = Card(codewd="USRBIN")
     second_card.what = [
         detector.r_min,
         detector.x,
@@ -118,28 +131,28 @@ def _parse_cylinder_detector(detector: CylinderDetector, quantity: Quantity, qua
         detector.phi_bins,
         detector.z_bins,
     ]
-    second_card.sdum = '&'
+    second_card.sdum = "&"
 
     return [first_card, second_card]
 
 
-def handle_auxscore_filter(quantity: Quantity, score_index: int, score_card_type: str = 'USRBIN') -> str:
+def handle_auxscore_filter(quantity: Quantity, score_index: int, score_card_type: str = "USRBIN") -> str:
     """Creates AUXSCORE card for previously created card"""
     filter_value: Optional[Union[int, str]] = parse_filter_value(quantity.scoring_filter)
     if filter_value is None:
-        return ''
-    auxscore = Card(codewd='AUXSCORE')
+        return ""
+    auxscore = Card(codewd="AUXSCORE")
     auxscore.what = [
         score_card_type,
         filter_value,
-        '',
+        "",
         score_index,
         score_index,
         1,
     ]
-    auxscore.sdum = ''
+    auxscore.sdum = ""
 
-    return f'{auxscore!s}'
+    return f"{auxscore!s}"
 
 
 def parse_filter_value(scoring_filter: Union[CustomFilter, ParticleFilter]) -> Optional[Union[int, str]]:
@@ -176,4 +189,4 @@ class ScoringsCard:
             if scoring_cards:
                 result.append(scoring_cards)
             default_output_unit += 1
-        return '\n'.join(result).strip()
+        return "\n".join(result).strip()

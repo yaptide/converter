@@ -8,16 +8,16 @@ from converter.common import rotate
 class FlukaFigure:
     """Abstract class representing Fluka figure"""
 
-    figure_type: str = ''
-    name: str = ''
-    uuid: str = ''
+    figure_type: str = ""
+    name: str = ""
+    uuid: str = ""
 
 
 @dataclass(frozen=False)
 class FlukaBox(FlukaFigure):
     """Class representing Fluka box"""
 
-    figure_type: str = 'RPP'
+    figure_type: str = "RPP"
     x_min: float = 0
     x_max: float = 0
     y_min: float = 0
@@ -30,7 +30,7 @@ class FlukaBox(FlukaFigure):
 class FlukaCylinder(FlukaFigure):
     """Class representing Fluka cylinder"""
 
-    figure_type: str = 'RCC'
+    figure_type: str = "RCC"
     coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
     height_vector: list[float] = field(default_factory=lambda: (0, 0, 0))
     radius: float = 0
@@ -42,7 +42,7 @@ class FlukaCylinder(FlukaFigure):
 class FlukaSphere(FlukaFigure):
     """Class representing Fluka sphere"""
 
-    figure_type: str = 'SPH'
+    figure_type: str = "SPH"
     coordinates: list[float] = field(default_factory=lambda: (0, 0, 0))
     radius: float = 0
 
@@ -53,8 +53,8 @@ def parse_box(box: BoxFigure) -> FlukaBox:
     RPP is a parallelepiped with sides parallel to the coordinate axes.
     In case the box to parse has rotation applied, we throw an error.
     """
-    if (box.rotation[0] != 0 or box.rotation[1] != 0 or box.rotation[2] != 0):
-        raise ValueError('Rotation of box is not supported for Fluka')
+    if box.rotation[0] != 0 or box.rotation[1] != 0 or box.rotation[2] != 0:
+        raise ValueError("Rotation of box is not supported for Fluka")
 
     fluka_box = FlukaBox()
     fluka_box.uuid = box.uuid
@@ -105,7 +105,7 @@ def parse_fluka_figure(figure: SolidFigure) -> FlukaFigure:
     elif type(figure) is SphereFigure:
         fluka_figure = parse_sphere(figure)
     else:
-        raise ValueError(f'Unexpected solid figure type: {figure}')
+        raise ValueError(f"Unexpected solid figure type: {figure}")
 
     return fluka_figure
 
@@ -115,7 +115,7 @@ def parse_figures(figures_json) -> list[FlukaFigure]:
     raw_figures = [solid_figures.parse_figure(figure_dict) for figure_dict in figures_json]
 
     fluka_figures = []
-    figure_name = 'fig{}'
+    figure_name = "fig{}"
 
     for idx, figure in enumerate(raw_figures):
         fluka_figure = parse_fluka_figure(figure)

@@ -1,3 +1,10 @@
+exclude: |
+  (?x)^(
+      tests/shieldhit/resources/expected_shieldhit_output/.*\.dat$|
+      tests/shieldhit/resources/expected_shieldhit_output_with_sobp_dat/.*\.dat$|
+      tests/shieldhit/test_shieldhit_config_mappings\.py$
+  )
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -5,12 +12,13 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
       - id: check-case-conflict
-      - id: check-docstring-first
-      - id: double-quote-string-fixer
       - id: detect-private-key
 
-  - repo: https://github.com/google/yapf
-    rev: v0.40.2
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.7
     hooks:
-      - id: yapf
-        name: YAPF formatting
+      - id: ruff
+        name: ruff check
+        args: [ --fix ]
+      - id: ruff-format
+        name: ruff format

@@ -66,23 +66,23 @@ sv:Ph/Default/Modules = 1 "g4em-standard_opt0"
 """
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def topas_parser() -> Parser:
     """Just a parser fixture."""
-    return get_parser_from_str('topas')
+    return get_parser_from_str("topas")
 
 
 def test_if_parser_created(topas_parser: Parser) -> None:
     """Check if parser created."""
     assert topas_parser is not None
-    assert topas_parser.info['simulator'] == 'topas'
-    assert topas_parser.info['version'] == ''
-    assert topas_parser.info['label'] == ''
+    assert topas_parser.info["simulator"] == "topas"
+    assert topas_parser.info["version"] == ""
+    assert topas_parser.info["label"] == ""
 
 
 def test_if_config_created(topas_parser: Parser, project_topas_json: dict, tmp_path: Path) -> None:
     """Check if topas_config.txt file created"""
-    output_file = tmp_path / 'topas_config.txt'
+    output_file = tmp_path / "topas_config.txt"
     run_parser(topas_parser, project_topas_json, tmp_path)
-    with output_file.open(mode='r') as f:
+    with output_file.open(mode="r") as f:
         assert f.read() == _expected_topas_input_content

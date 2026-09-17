@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
 class Config:
     """Class mapping of the beam.dat config file."""
 
-    energy: float = 150.  # [MeV]
+    energy: float = 150.0  # [MeV]
     num_histories: int = 100
 
     config_template: str = """s:Ge/MyBox/Type     = "TsBox"
@@ -76,7 +75,7 @@ sv:Ph/Default/Modules = 1 "g4em-standard_opt0"
         result = self.config_template.format(
             energy=float(self.energy),
             num_histories=self.num_histories,
-            histories_interval=max(1, self.num_histories//100)
+            histories_interval=max(1, self.num_histories // 100),
         )
 
         return result

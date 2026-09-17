@@ -7,7 +7,7 @@ class TopasParser(Parser):
 
     def __init__(self) -> None:
         super().__init__()
-        self.info['simulator'] = 'topas'
+        self.info["simulator"] = "topas"
         self.config = Config()
 
     def parse_configs(self, json: dict) -> None:

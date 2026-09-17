@@ -1,10 +1,11 @@
 from converter.common import Parser
 import converter.geant4.utils as utils
 from converter.geant4.Geant4MacroGenerator import Geant4MacroGenerator
+
 # skipcq: BAN-B405
 import xml.etree.ElementTree as ET
 from defusedxml.minidom import parseString
-from typing import Dict, Tuple, Optional, Set
+from typing import Dict, Tuple, Set
 
 
 class Geant4Parser(Parser):
@@ -36,10 +37,12 @@ class Geant4Parser(Parser):
     def get_configs_json(self) -> dict:
         """Return dictionary from gdml content"""
         configs_json = super().get_configs_json()
-        configs_json.update({
-            "geometry.gdml": self._gdml_content,
-            "run.mac": self._macro_content,
-        })
+        configs_json.update(
+            {
+                "geometry.gdml": self._gdml_content,
+                "run.mac": self._macro_content,
+            }
+        )
         return configs_json
 
     @staticmethod
@@ -52,10 +55,13 @@ class Geant4Parser(Parser):
 
     def _generate_gdml(self, world: dict) -> str:
         """Generate GDML from gemetry node"""
-        gdml_root = ET.Element("gdml", {
-            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-            "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
-        })
+        gdml_root = ET.Element(
+            "gdml",
+            {
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
+            },
+        )
 
         ET.SubElement(gdml_root, "define")
         used_materials: Set[str] = set()
@@ -83,20 +89,27 @@ class Geant4Parser(Parser):
 
     def _generate_empty_gdml(self) -> str:
         """Generate empty GDML from gemetry node"""
-        root = ET.Element("gdml", {
-            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-            "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
-        })
+        root = ET.Element(
+            "gdml",
+            {
+                "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+                "xsi:noNamespaceSchemaLocation": "http://cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd",
+            },
+        )
         ET.SubElement(root, "define")
         ET.SubElement(root, "materials")
         solids = ET.SubElement(root, "solids")
-        ET.SubElement(solids, "box", {
-            "name": "solidWorld",
-            "x": utils.to_mm_str(100),
-            "y": utils.to_mm_str(100),
-            "z": utils.to_mm_str(100),
-            "lunit": "mm"
-        })
+        ET.SubElement(
+            solids,
+            "box",
+            {
+                "name": "solidWorld",
+                "x": utils.to_mm_str(100),
+                "y": utils.to_mm_str(100),
+                "z": utils.to_mm_str(100),
+                "lunit": "mm",
+            },
+        )
         structure = ET.SubElement(root, "structure")
         vol = ET.SubElement(structure, "volume", {"name": "logicWorld"})
         ET.SubElement(vol, "materialref", {"ref": "G4_Galactic"})
@@ -132,39 +145,53 @@ class Geant4Parser(Parser):
             children_info.append((ch, ch_logic_name, ch.get("geometryData", {}).get("position", [0, 0, 0])))
 
         solid_name = utils.choose_solid_name(node, name_counters)
-        if geom_type in ("HollowCylinderGeometry", "CylinderGeometry") :
+        if geom_type in ("HollowCylinderGeometry", "CylinderGeometry"):
             rmin_cm = float(params.get("innerRadius", 0))
             rmax_cm = float(params.get("radius", 0))
             z_cm = float(params.get("depth", 0))
-            ET.SubElement(solids_xml, "tube", {
-                "name": solid_name,
-                "rmin": utils.to_mm_str(rmin_cm),
-                "rmax": utils.to_mm_str(rmax_cm),
-                "z": utils.to_mm_str(z_cm),
-                "startphi": "0", "deltaphi": "360",
-                "aunit": "deg", "lunit": "mm"
-            })
+            ET.SubElement(
+                solids_xml,
+                "tube",
+                {
+                    "name": solid_name,
+                    "rmin": utils.to_mm_str(rmin_cm),
+                    "rmax": utils.to_mm_str(rmax_cm),
+                    "z": utils.to_mm_str(z_cm),
+                    "startphi": "0",
+                    "deltaphi": "360",
+                    "aunit": "deg",
+                    "lunit": "mm",
+                },
+            )
         elif geom_type == "SphereGeometry":
             r_cm = float(params.get("radius", 0))
-            ET.SubElement(solids_xml, "sphere", {
-                "name": solid_name,
-                "rmin": "0",
-                "rmax": utils.to_mm_str(r_cm),
-                "startphi": "0",
-                "deltaphi": "360",
-                "starttheta": "0",
-                "deltatheta": "180",
-                "aunit": "deg",
-                "lunit": "mm"
-            })
+            ET.SubElement(
+                solids_xml,
+                "sphere",
+                {
+                    "name": solid_name,
+                    "rmin": "0",
+                    "rmax": utils.to_mm_str(r_cm),
+                    "startphi": "0",
+                    "deltaphi": "360",
+                    "starttheta": "0",
+                    "deltatheta": "180",
+                    "aunit": "deg",
+                    "lunit": "mm",
+                },
+            )
         elif geom_type == "BoxGeometry":
-            ET.SubElement(solids_xml, "box", {
-                "name": solid_name,
-                "x": utils.to_mm_str(float(params.get("width", 0))),
-                "y": utils.to_mm_str(float(params.get("height", 0))),
-                "z": utils.to_mm_str(float(params.get("depth", 0))),
-                "lunit": "mm"
-            })
+            ET.SubElement(
+                solids_xml,
+                "box",
+                {
+                    "name": solid_name,
+                    "x": utils.to_mm_str(float(params.get("width", 0))),
+                    "y": utils.to_mm_str(float(params.get("height", 0))),
+                    "z": utils.to_mm_str(float(params.get("depth", 0))),
+                    "lunit": "mm",
+                },
+            )
 
         logic_name = utils.choose_logic_name(node, name_counters)
         vol = ET.SubElement(structure_xml, "volume", {"name": logic_name})
@@ -172,18 +199,22 @@ class Geant4Parser(Parser):
         ET.SubElement(vol, "materialref", {"ref": material_name})
         ET.SubElement(vol, "solidref", {"ref": solid_name})
 
-        for (child_node, child_logic_name, child_pos_cm) in children_info:
+        for child_node, child_logic_name, child_pos_cm in children_info:
             phys_name = utils.choose_phys_name(child_node, name_counters)
             phys = ET.SubElement(vol, "physvol", {"copynumber": "1", "name": phys_name})
             ET.SubElement(phys, "volumeref", {"ref": child_logic_name})
             x_cm, y_cm, z_cm = map(float, child_pos_cm)
             if abs(x_cm) > utils.EPS or abs(y_cm) > utils.EPS or abs(z_cm) > utils.EPS:
-                ET.SubElement(phys, "position", {
-                    "name": f"{phys_name}_pos",
-                    "unit": "mm",
-                    "x": utils.to_mm_str(x_cm),
-                    "y": utils.to_mm_str(y_cm),
-                    "z": utils.to_mm_str(z_cm),
-                })
+                ET.SubElement(
+                    phys,
+                    "position",
+                    {
+                        "name": f"{phys_name}_pos",
+                        "unit": "mm",
+                        "x": utils.to_mm_str(x_cm),
+                        "y": utils.to_mm_str(y_cm),
+                        "z": utils.to_mm_str(z_cm),
+                    },
+                )
 
         return logic_name, solid_name

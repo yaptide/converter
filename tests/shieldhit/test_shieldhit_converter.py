@@ -12,9 +12,9 @@ from converter.shieldhit.parser import Parser
 def test_parser(sh12a_parser: Parser) -> None:
     """Check if parser is created correctly"""
     assert sh12a_parser
-    assert sh12a_parser.info['version'] == ''
-    assert sh12a_parser.info['simulator'] == 'shieldhit'
-    assert sh12a_parser.info['label'] == ''
+    assert sh12a_parser.info["version"] == ""
+    assert sh12a_parser.info["simulator"] == "shieldhit"
+    assert sh12a_parser.info["label"] == ""
 
 
 def test_project_json(project_shieldhit_json: dict) -> None:
@@ -30,11 +30,16 @@ def test_project_json(project_shieldhit_json: dict) -> None:
     assert "multipleScattering" in project_shieldhit_json["physic"]
 
 
-@pytest.mark.parametrize('filename', ['beam.dat', 'mat.dat', 'detect.dat'])
-def test_if_expected_files_created(sh12a_parser: Parser, project_shieldhit_json: dict, tmp_path: Path,
-                                   path_to_dir_with_expected_output: Path, filename: str) -> None:
+@pytest.mark.parametrize("filename", ["beam.dat", "mat.dat", "detect.dat"])
+def test_if_expected_files_created(
+    sh12a_parser: Parser,
+    project_shieldhit_json: dict,
+    tmp_path: Path,
+    path_to_dir_with_expected_output: Path,
+    filename: str,
+) -> None:
     """Check if all output files are created"""
-    logging.info('Checking %s file', filename)
+    logging.info("Checking %s file", filename)
     run_parser(sh12a_parser, project_shieldhit_json, tmp_path)
     assert (tmp_path / filename).exists()
     assert (path_to_dir_with_expected_output / filename).exists()
@@ -50,17 +55,22 @@ def test_if_expected_files_created(sh12a_parser: Parser, project_shieldhit_json:
     assert expected_equal_to_generated
 
 
-@pytest.mark.parametrize('filename', ['beam.dat', 'mat.dat', 'detect.dat', 'sobp.dat'])
-def test_if_expected_files_created_with_sobp_dat(sh12a_parser: Parser, project_shieldhit_json_with_sobp_dat: dict,
-                                                 tmp_path: Path, path_to_dir_with_expected_output_with_sobp_dat: Path,
-                                                 filename: str) -> None:
+@pytest.mark.parametrize("filename", ["beam.dat", "mat.dat", "detect.dat", "sobp.dat"])
+def test_if_expected_files_created_with_sobp_dat(
+    sh12a_parser: Parser,
+    project_shieldhit_json_with_sobp_dat: dict,
+    tmp_path: Path,
+    path_to_dir_with_expected_output_with_sobp_dat: Path,
+    filename: str,
+) -> None:
     """Check if all output files are created"""
-    logging.info('Checking %s file', filename)
+    logging.info("Checking %s file", filename)
     run_parser(sh12a_parser, project_shieldhit_json_with_sobp_dat, tmp_path)
     assert (tmp_path / filename).exists()
     assert (path_to_dir_with_expected_output_with_sobp_dat / filename).exists()
     expected_equal_to_generated = filecmp.cmp(
-        tmp_path / filename, path_to_dir_with_expected_output_with_sobp_dat / filename)
+        tmp_path / filename, path_to_dir_with_expected_output_with_sobp_dat / filename
+    )
     if not expected_equal_to_generated:
         logging.info("Expected file at %s", path_to_dir_with_expected_output_with_sobp_dat / filename)
         logging.info("Generated file at %s", tmp_path / filename)
@@ -73,13 +83,13 @@ def test_if_expected_files_created_with_sobp_dat(sh12a_parser: Parser, project_s
     assert expected_equal_to_generated
 
 
-@pytest.mark.parametrize('filename', ['geo.dat'])
+@pytest.mark.parametrize("filename", ["geo.dat"])
 @pytest.mark.skip(reason="Something is wrong with geo.dat file.")
 def test_to_be_fixed(parser: Parser, default_json: dict, tmp_path: Path, filename: str) -> None:
     """Check if all output files are created"""
-    logging.info('Checking %s file', filename)
+    logging.info("Checking %s file", filename)
     run_parser(parser, default_json, tmp_path)
-    dir_with_expected_files = Path(__file__).parent.parent / 'input_examples' / 'expected_shieldhit_output'
+    dir_with_expected_files = Path(__file__).parent.parent / "input_examples" / "expected_shieldhit_output"
     assert (tmp_path / filename).exists()
     assert (dir_with_expected_files / filename).exists()
     expected_equal_to_generated = filecmp.cmp(tmp_path / filename, dir_with_expected_files / filename)

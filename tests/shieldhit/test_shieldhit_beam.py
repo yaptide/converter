@@ -6,7 +6,7 @@ def test_generated_beam_dat(project_shieldhit_json, sh12a_parser, tmpdir) -> Non
     """Check if beam.dat file created properly"""
     output_dir = Path(tmpdir)
     run_parser(sh12a_parser, project_shieldhit_json, output_dir)
-    with open(output_dir / 'beam.dat') as f:
+    with open(output_dir / "beam.dat") as f:
         input_text = f.read()
         assert input_text
         assert "JPART0       	2" in input_text

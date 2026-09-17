@@ -30,7 +30,7 @@ def parse_figure(figure: SolidFigure, number: int) -> str:
     if type(figure) is SphereFigure:
         return _parse_sphere(figure, number)
 
-    raise ValueError(f'Unexpected solid figure type: {figure}')
+    raise ValueError(f"Unexpected solid figure type: {figure}")
 
 
 def _parse_box(box: BoxFigure, number: int) -> str:
@@ -153,15 +153,15 @@ class Material:
     property_template_name = """{name}\n"""
 
     def __str__(self) -> str:
-        result = self.property_template.format(name='MEDIUM', value=self.idx)
-        result += self.property_template.format(name='ICRU', value=self.icru)
+        result = self.property_template.format(name="MEDIUM", value=self.idx)
+        result += self.property_template.format(name="ICRU", value=self.icru)
         if self.density is not None:
-            result += self.property_template.format(name='RHO', value=format_float(self.density, 10))
+            result += self.property_template.format(name="RHO", value=format_float(self.density, 10))
 
         if self.custom_stopping_power:
-            result += self.property_template_name.format(name='LOADDEDX')
+            result += self.property_template_name.format(name="LOADDEDX")
 
-        result += 'END\n'
+        result += "END\n"
         return result
 
 
@@ -182,8 +182,9 @@ class Zone:
     def __str__(self) -> str:
         return self.zone_template.format(
             id=self.id,
-            operators='OR'.join(['  '.join([f'{id:+5}' for id in figure_set])
-                                 for figure_set in self.figures_operators]),
+            operators="OR".join(
+                ["  ".join([f"{id:+5}" for id in figure_set]) for figure_set in self.figures_operators]
+            ),
         )
 
 
@@ -200,37 +201,49 @@ class StoppingPowerFile:
 class GeoMatConfig:
     """Class mapping of the geo.dat config file."""
 
-    figures: list[SolidFigure] = field(default_factory=lambda: [
-        CylinderFigure(position=(0., 0., 10.), radius_top=10., radius_bottom=10., height=20., rotation=(90., 0., 0.)),
-        CylinderFigure(position=(0., 0., 7.5), radius_top=15., radius_bottom=15., height=25., rotation=(90., 0., 0.)),
-        CylinderFigure(position=(0., 0., 5.), radius_top=20., radius_bottom=20., height=30., rotation=(90., 0., 0.)),
-    ])
-    zones: list[Zone] = field(default_factory=lambda: [
-        Zone(
-            uuid='',
-            id=1,
-            figures_operators=[{
-                1,
-            }],
-            material=1,
-        ),
-        Zone(
-            uuid='',
-            id=2,
-            figures_operators=[{-1, 2}],
-            material=1000,
-        ),
-        Zone(
-            uuid='',
-            id=3,
-            figures_operators=[{-2, 3}],
-            material=0,
-        ),
-    ])
-    materials: list[Material] = field(default_factory=lambda: [Material('', '', '', 276)])
+    figures: list[SolidFigure] = field(
+        default_factory=lambda: [
+            CylinderFigure(
+                position=(0.0, 0.0, 10.0), radius_top=10.0, radius_bottom=10.0, height=20.0, rotation=(90.0, 0.0, 0.0)
+            ),
+            CylinderFigure(
+                position=(0.0, 0.0, 7.5), radius_top=15.0, radius_bottom=15.0, height=25.0, rotation=(90.0, 0.0, 0.0)
+            ),
+            CylinderFigure(
+                position=(0.0, 0.0, 5.0), radius_top=20.0, radius_bottom=20.0, height=30.0, rotation=(90.0, 0.0, 0.0)
+            ),
+        ]
+    )
+    zones: list[Zone] = field(
+        default_factory=lambda: [
+            Zone(
+                uuid="",
+                id=1,
+                figures_operators=[
+                    {
+                        1,
+                    }
+                ],
+                material=1,
+            ),
+            Zone(
+                uuid="",
+                id=2,
+                figures_operators=[{-1, 2}],
+                material=1000,
+            ),
+            Zone(
+                uuid="",
+                id=3,
+                figures_operators=[{-2, 3}],
+                material=0,
+            ),
+        ]
+    )
+    materials: list[Material] = field(default_factory=lambda: [Material("", "", "", 276)])
     jdbg1: int = 0
     jdbg2: int = 0
-    title: str = 'Unnamed geometry'
+    title: str = "Unnamed geometry"
     available_custom_stopping_power_files: dict[int, StoppingPowerFile] = field(default_factory=lambda: {})
 
     geo_template: str = """
@@ -245,20 +258,20 @@ class GeoMatConfig:
     @staticmethod
     def _split_zones_to_rows(zones: list[int], max_size=14) -> list[list[int]]:
         """Split list of Zones into rows of not more than 14 elements"""
-        return [zones[i:min(i + max_size, len(zones))] for i in range(0, len(zones), max_size)]
+        return [zones[i : min(i + max_size, len(zones))] for i in range(0, len(zones), max_size)]
 
     def _get_zone_material_string(self) -> str:
         """Generate material_id, zone_id pairs string (for geo.dat)."""
         # Cut lists into chunks of max size 14
         zone_ids = [
-            ''.join([f'{id:>5}' for id in row])
+            "".join([f"{id:>5}" for id in row])
             for row in GeoMatConfig._split_zones_to_rows([zone.id for zone in self.zones])
         ]
         material_ids = [
-            ''.join([f'{mat:>5}' for mat in row])
+            "".join([f"{mat:>5}" for mat in row])
             for row in GeoMatConfig._split_zones_to_rows([zone.material for zone in self.zones])
         ]
-        return '\n'.join([*zone_ids, *material_ids])
+        return "\n".join([*zone_ids, *material_ids])
 
     def get_geo_string(self) -> str:
         """Generate geo.dat config."""
@@ -267,8 +280,8 @@ class GeoMatConfig:
             jdbg2=self.jdbg2,
             title=self.title,
             # we increment idx because shieldhit indexes from 1 while python indexes lists from 0
-            figures=''.join([parse_figure(figure, idx + 1) for idx, figure in enumerate(self.figures)])[1:],
-            zones_geometries=''.join([str(zone) for zone in self.zones])[1:],
+            figures="".join([parse_figure(figure, idx + 1) for idx, figure in enumerate(self.figures)])[1:],
+            zones_geometries="".join([str(zone) for zone in self.zones])[1:],
             zones_materials=self._get_zone_material_string(),
         )
 
@@ -281,4 +294,4 @@ class GeoMatConfig:
             material.idx = idx + 1
             material_strings.append(str(material))
 
-        return ''.join(material_strings)
+        return "".join(material_strings)

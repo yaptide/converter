@@ -74,7 +74,7 @@ class MultipleScatteringMode(LabelledEnum):
 
 
 @dataclass(frozen=True)
-class BeamModulator():
+class BeamModulator:
     """Beam modulator card dataclass used in BeamConfig."""
 
     filename: str
@@ -89,10 +89,8 @@ class BeamModulator():
 BMODMC          {simulation}            ! Simulation method for beam modulator (0-Modulus, 1-Monte Carlo sampling)
 BMODTRANS       {mode}            ! Interpretation of thicknesses data in the config file (0-Material, 1-Vacuum)"""
         return modulator_template.format(
-            zone=self.zone_id,
-            filename=self.filename,
-            simulation=self.simulation,
-            mode=self.mode)
+            zone=self.zone_id, filename=self.filename, simulation=self.simulation, mode=self.mode
+        )
 
 
 @dataclass
@@ -103,8 +101,8 @@ class BeamConfig:
     particle_name: Optional[str] = None
     heavy_ion_a: int = 1
     heavy_ion_z: int = 1
-    energy_unit: str = 'MeV'
-    energy: float = 150.
+    energy_unit: str = "MeV"
+    energy: float = 150.0
     energy_spread: float = 1.5
     energy_low_cutoff: Optional[float] = None
     energy_high_cutoff: Optional[float] = None
@@ -163,8 +161,8 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
         # atan2 returns the angle in radians between -pi and pi
         phi = m.degrees(m.atan2(y, x))
         # lets ensure the angle in degrees is always between 0 and 360, as SHIELD-HIT12A requires
-        if phi < 0.:
-            phi += 360.
+        if phi < 0.0:
+            phi += 360.0
         return theta, phi, r
 
     def __str__(self) -> str:
@@ -187,19 +185,17 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
             cutoff_line = BeamConfig.energy_cutoff_template.format(
                 energy_unit=self.energy_unit,
                 energy_low_cutoff=self.energy_low_cutoff,
-                energy_high_cutoff=self.energy_high_cutoff
+                energy_high_cutoff=self.energy_high_cutoff,
             )
 
         # if sad was defined, add it to the template
         sad_line = "! no BEAMSAD value"
         if self.sad_x is not None or self.sad_y is not None:
             sad_y_value = self.sad_y if self.sad_y is not None else ""
-            sad_line = BeamConfig.sad_template.format(
-                sad_x=self.sad_x,
-                sad_y=sad_y_value)
+            sad_line = BeamConfig.sad_template.format(sad_x=self.sad_x, sad_y=sad_y_value)
 
         # if beam modulator was defined, add it to the template
-        mod_lines = str(self.modulator) if self.modulator is not None else '! no beam modulator'
+        mod_lines = str(self.modulator) if self.modulator is not None else "! no beam modulator"
 
         # prepare main template
         result = self.beam_dat_template.format(
@@ -223,7 +219,7 @@ DELTAE          {delta_e}   ! relative mean energy loss per transportation step
             delta_e=self.delta_e,
             nuclear_reactions=1 if self.nuclear_reactions else 0,
             straggling=self.straggling.value,
-            multiple_scattering=self.multiple_scattering.value
+            multiple_scattering=self.multiple_scattering.value,
         )
 
         # if beam source type is file, add the file name to the template
