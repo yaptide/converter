@@ -94,7 +94,7 @@ def parse_particle_name(particle_json: dict):
     if particle_pdg in PARTICLE_DICT:
         particle = PARTICLE_DICT[particle_pdg]
         return particle["name"]
-    elif is_heavy_ion(particle_pdg):
+    if is_heavy_ion(particle_pdg):
         return "HEAVYION"
     raise ValueError("Particle PDG not supported by FLUKA")
 
