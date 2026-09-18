@@ -5,56 +5,16 @@ from converter.common import convert_beam_energy, extract_atomic_number, extract
 # skipcq: PYL-W0511
 # TODO geantino names needs better mapping or handling
 GEANT4_PARTICLE_MAP = {
-    2112: {
-        "name": "neutron",
-        "allowed_units": ["MeV", "MeV/nucl"],
-        "target_unit": "MeV"
-    },
-    2212: {
-        "name": "proton",
-        "allowed_units": ["MeV", "MeV/nucl"],
-        "target_unit": "MeV"
-    },
-    22: {                        
-        "name": "gamma",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    11: {
-        "name": "e-",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    -11: {
-        "name": "e+",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    1000020040: {
-        "name": "alpha",
-        "allowed_units": ["MeV", "MeV/nucl"],
-        "target_unit": "MeV"
-    },
-    13: {
-        "name": "mu-",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    -13: {
-        "name": "mu+",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    -211: {
-        "name": "pi-",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
-    211: {
-        "name": "pi+",
-        "allowed_units": ["MeV"],
-        "target_unit": "MeV"
-    },
+    2112: {"name": "neutron", "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    2212: {"name": "proton", "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    22: {"name": "gamma", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    11: {"name": "e-", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    -11: {"name": "e+", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    1000020040: {"name": "alpha", "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    13: {"name": "mu-", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    -13: {"name": "mu+", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    -211: {"name": "pi-", "allowed_units": ["MeV"], "target_unit": "MeV"},
+    211: {"name": "pi+", "allowed_units": ["MeV"], "target_unit": "MeV"},
     # 1000060120: {
     #     "name": "geantino",
     #     "allowed_units": ["MeV"],
@@ -92,23 +52,23 @@ class Geant4MacroGenerator:
     def _append_initialization(self) -> None:
         """Append particle source and run initialization."""
         beam = self.data.get("beam", {})
-        particle = beam.get("particle", {})
         particle_pdg = beam.get("particle", {}).get("pdg", 2212)
         pos = beam.get("position", [0, 0, 0])
         direction = beam.get("direction", [0, 0, 1])
-        
+
         a = GEANT4_PARTICLE_MAP.get(particle_pdg, {}).get("a", 1)
         z = GEANT4_PARTICLE_MAP.get(particle_pdg, {}).get("z", a)
 
-
-        self.lines.extend([
-            "/run/initialize\n",
-            "##########################################",
-            "####### Particle Source definition #######",
-            "##########################################\n",
-            "/gps/verbose 0",
-            f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm"
-        ])
+        self.lines.extend(
+            [
+                "/run/initialize\n",
+                "##########################################",
+                "####### Particle Source definition #######",
+                "##########################################\n",
+                "/gps/verbose 0",
+                f"/gps/position {pos[0]} {pos[1]} {pos[2]} cm",
+            ]
+        )
         if is_heavy_ion(particle_pdg):
             a = extract_mass_number(particle_pdg)
             z = extract_atomic_number(particle_pdg)
@@ -116,12 +76,9 @@ class Geant4MacroGenerator:
                 "name": "ion",
                 "a": a,
                 "allowed_units": ["MeV", "MeV/nucl"],
-                "target_unit": "MeV"
-                }
-            self.lines.extend([
-                "/gps/particle ion",
-                f"/gps/ion {z} {a} 0 0"
-            ])
+                "target_unit": "MeV",
+            }
+            self.lines.extend(["/gps/particle ion", f"/gps/ion {z} {a} 0 0"])
         else:
             if particle_pdg not in GEANT4_PARTICLE_MAP or "name" not in GEANT4_PARTICLE_MAP[particle_pdg]:
                 raise ValueError(f"Invalid particle pdg={particle_pdg}")

@@ -22,10 +22,10 @@ def test_parse_fluka_beam(project_fluka_json):
 
 def test_parse_fluka_beam_MeV_nucl(project_fluka_json):
     """Test if Fluka beam is parsed correctly"""
-    beam_json = copy.deepcopy(project_fluka_json['beam'])
-    beam_json['energyUnit'] = 'MeV/nucl'
-    beam_json['energy'] = 100
-    beam_json['particle']['pdg'] = 1000020030  # 3-Helium
+    beam_json = copy.deepcopy(project_fluka_json["beam"])
+    beam_json["energyUnit"] = "MeV/nucl"
+    beam_json["energy"] = 100
+    beam_json["particle"]["pdg"] = 1000020030  # 3-Helium
 
     fluka_beam = parse_beam(beam_json)
 
@@ -35,10 +35,10 @@ def test_parse_fluka_beam_MeV_nucl(project_fluka_json):
 
 def test_parse_heavy_ions_MeV(project_fluka_json):
     """Test if Fluka beam is parsed correctly"""
-    beam_json = copy.deepcopy(project_fluka_json['beam'])
-    beam_json['energy'] = 300
-    beam_json['energyUnit'] = 'MeV'
-    beam_json['particle']['pdg'] = 1000060120  # a=12, z=6
+    beam_json = copy.deepcopy(project_fluka_json["beam"])
+    beam_json["energy"] = 300
+    beam_json["energyUnit"] = "MeV"
+    beam_json["particle"]["pdg"] = 1000060120  # a=12, z=6
 
     fluka_beam = parse_beam(beam_json)
 
@@ -50,10 +50,10 @@ def test_parse_heavy_ions_MeV(project_fluka_json):
 
 def test_parse_heavy_ions_MeV_nucl(project_fluka_json):
     """Test if Fluka beam is parsed correctly"""
-    beam_json = copy.deepcopy(project_fluka_json['beam'])
-    beam_json['energy'] = 300
-    beam_json['energyUnit'] = 'MeV/nucl'
-    beam_json['particle']['pdg'] = 1000120060  # a=6, z=12
+    beam_json = copy.deepcopy(project_fluka_json["beam"])
+    beam_json["energy"] = 300
+    beam_json["energyUnit"] = "MeV/nucl"
+    beam_json["particle"]["pdg"] = 1000120060  # a=6, z=12
 
     fluka_beam = parse_beam(beam_json)
 

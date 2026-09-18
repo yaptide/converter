@@ -110,8 +110,7 @@ def extract_atomic_number(pdg: int) -> int:
     return pdg // 10000 % 1000
 
 
-def convert_beam_energy(particle_parser_metadata, energy, energy_unit) -> (
-        float, Literal["MeV", "MeV/nucl"], float):
+def convert_beam_energy(particle_parser_metadata, energy, energy_unit) -> (float, Literal["MeV", "MeV/nucl"], float):
     """
     Validates that energy_unit is listed in `particle_parser_metadata['allowed_units']`
     and converts it to `particle_parser_metadata['target_unit']` if necessary.
@@ -119,7 +118,7 @@ def convert_beam_energy(particle_parser_metadata, energy, energy_unit) -> (
     :returns: tuple `(energy, energy unit, scale factor)` after conversion
     """
     allowed_units = particle_parser_metadata["allowed_units"]
-    a = particle_parser_metadata.get('a', 1)
+    a = particle_parser_metadata.get("a", 1)
     # Check if unit is allowed (i.e. MeV/nucl doesn't make sense for kaons, muons, etc.)
     if energy_unit not in allowed_units:
         particle_name = particle_parser_metadata["name"]

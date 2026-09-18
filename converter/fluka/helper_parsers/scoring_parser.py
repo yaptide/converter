@@ -3,8 +3,12 @@ from typing import Optional, Union
 import hashlib
 import base64
 
-from converter.fluka.helper_parsers.detector_parser import MeshDetector, parse_mesh_detector, CylinderDetector, \
-    parse_cylinder_detector
+from converter.fluka.helper_parsers.detector_parser import (
+    MeshDetector,
+    parse_mesh_detector,
+    CylinderDetector,
+    parse_cylinder_detector,
+)
 from converter.common import extract_atomic_number, extract_mass_number, is_heavy_ion
 from converter.fluka.helper_parsers.beam_parser import PARTICLE_DICT
 
@@ -61,12 +65,12 @@ def get_particle_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, Cus
 
     Returns None if filter cannot be created for Fluka.
     """
-    particle = filter_dict['particle']
-    pdg = particle.get('pdg')
+    particle = filter_dict["particle"]
+    pdg = particle.get("pdg")
     if pdg in PARTICLE_DICT:
-        return ParticleFilter(name=filter_dict['name'], particle=PARTICLE_DICT[pdg]['name'])
+        return ParticleFilter(name=filter_dict["name"], particle=PARTICLE_DICT[pdg]["name"])
     if is_heavy_ion(pdg):
-        return CustomFilter(name=filter_dict['name'], a=extract_mass_number(pdg), z=extract_atomic_number(pdg))
+        return CustomFilter(name=filter_dict["name"], a=extract_mass_number(pdg), z=extract_atomic_number(pdg))
 
     return None
 

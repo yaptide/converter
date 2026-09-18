@@ -4,135 +4,106 @@ import re
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser, convert_beam_energy, extract_atomic_number, extract_mass_number, is_heavy_ion
-from converter.shieldhit.beam import (BeamConfig, BeamModulator, BeamSourceType, ModulatorInterpretationMode,
-                                      ModulatorSimulationMethod, MultipleScatteringMode, StragglingModel)
-from converter.shieldhit.detect import (DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings)
-from converter.shieldhit.geo import (DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile)
-from converter.shieldhit.detectors import (ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone)
+from converter.shieldhit.beam import (
+    BeamConfig,
+    BeamModulator,
+    BeamSourceType,
+    ModulatorInterpretationMode,
+    ModulatorSimulationMethod,
+    MultipleScatteringMode,
+    StragglingModel,
+)
+from converter.shieldhit.detect import DetectConfig, OutputQuantity, ScoringFilter, ScoringOutput, QuantitySettings
+from converter.shieldhit.geo import DefaultMaterial, GeoMatConfig, Material, Zone, StoppingPowerFile
+from converter.shieldhit.detectors import ScoringCylinder, ScoringDetector, ScoringGlobal, ScoringMesh, ScoringZone
 
 PARTICLE_DICT: dict[int, dict] = {
     2112: {
-        'particle': 1,
-        'name': 'NEUTRON',
-        'a': 1,
-        'z': 0,
-        'filter': [
-            ('Z', '==', 0),
-            ('A', '==', 1),
+        "particle": 1,
+        "name": "NEUTRON",
+        "a": 1,
+        "z": 0,
+        "filter": [
+            ("Z", "==", 0),
+            ("A", "==", 1),
         ],
         "allowed_units": ["MeV"],
         "target_unit": "MeV",
     },
     2212: {
-        'particle': 2,
-        'name': 'PROTON',
-        'a': 1,
-        'z': 1,
-        'filter': [('Z', '==', 1), ('A', '==', 1)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV'
+        "particle": 2,
+        "name": "PROTON",
+        "a": 1,
+        "z": 1,
+        "filter": [("Z", "==", 1), ("A", "==", 1)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV",
     },
-    -211: {
-        'particle': 3,
-        'name': 'PION-',
-        'filter': [('ID', '==', 3)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    211: {
-        'particle': 4,
-        'name': 'PION+',
-        'filter': [('ID', '==', 4)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    111: {
-        'particle': 5,  
-        'name': 'PIZERO',
-        'filter': [('ID', '==', 5)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
+    -211: {"particle": 3, "name": "PION-", "filter": [("ID", "==", 3)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    211: {"particle": 4, "name": "PION+", "filter": [("ID", "==", 4)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    111: {"particle": 5, "name": "PIZERO", "filter": [("ID", "==", 5)], "allowed_units": ["MeV"], "target_unit": "MeV"},
     # 6: {
     #     'name': 'ANEUTRON',
     #     'a': 1
     # },
     -2212: {
-        'particle': 7,
-        'name': 'APROTON',
-        'filter': [('Z', '==', -1), ('A', '==', 1)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV'
+        "particle": 7,
+        "name": "APROTON",
+        "filter": [("Z", "==", -1), ("A", "==", 1)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV",
     },
-    -321: {
-        'particle': 8,
-        'name': 'KAON-',
-        'filter': [('ID', '==', 8)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
-    321: {
-        'particle': 9,
-        'name': 'KAON+',
-        'filter': [('ID', '==', 9)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
+    -321: {"particle": 8, "name": "KAON-", "filter": [("ID", "==", 8)], "allowed_units": ["MeV"], "target_unit": "MeV"},
+    321: {"particle": 9, "name": "KAON+", "filter": [("ID", "==", 9)], "allowed_units": ["MeV"], "target_unit": "MeV"},
     311: {
-        'particle': 10,
-        'name': 'KAONZERO',
-        'filter': [('ID', '==', 10)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
+        "particle": 10,
+        "name": "KAONZERO",
+        "filter": [("ID", "==", 10)],
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV",
     },
     130: {
-        'particle': 11,
-        'name': 'KAONLONG',
-        'filter': [('ID', '==', 11)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
+        "particle": 11,
+        "name": "KAONLONG",
+        "filter": [("ID", "==", 11)],
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV",
     },
-    13: {
-        'particle': 15,
-        'name': 'MUON-',
-        'filter': [('ID', '==', 15)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
-    },
+    13: {"particle": 15, "name": "MUON-", "filter": [("ID", "==", 15)], "allowed_units": ["MeV"], "target_unit": "MeV"},
     -13: {
-        'particle': 16,
-        'name': 'MUON+',
-        'filter': [('ID', '==', 16)],
-        'allowed_units': ['MeV'],
-        'target_unit': 'MeV'
+        "particle": 16,
+        "name": "MUON+",
+        "filter": [("ID", "==", 16)],
+        "allowed_units": ["MeV"],
+        "target_unit": "MeV",
     },
     1000010020: {
-        'particle': 21,
-        'name': 'DEUTERON',
-        'filter': [('Z', '==', 1), ('A', '==', 2)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
+        "particle": 21,
+        "name": "DEUTERON",
+        "filter": [("Z", "==", 1), ("A", "==", 2)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV/nucl",
     },
     1000010030: {
-        'particle': 22,
-        'name': 'TRITON',
-        'filter': [('Z', '==', 1), ('A', '==', 3)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
+        "particle": 22,
+        "name": "TRITON",
+        "filter": [("Z", "==", 1), ("A", "==", 3)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV/nucl",
     },
     1000020030: {
-        'particle': 23,
-        'name': '3-HELIUM',
-        'filter': [('Z', '==', 2), ('A', '==', 3)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
+        "particle": 23,
+        "name": "3-HELIUM",
+        "filter": [("Z", "==", 2), ("A", "==", 3)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV/nucl",
     },
     1000020040: {
-        'particle': 24,
-        'name': '4-HELIUM',
-        'filter': [('Z', '==', 2), ('A', '==', 4)],
-        'allowed_units': ['MeV', 'MeV/nucl'],
-        'target_unit': 'MeV/nucl'
+        "particle": 24,
+        "name": "4-HELIUM",
+        "filter": [("Z", "==", 2), ("A", "==", 4)],
+        "allowed_units": ["MeV", "MeV/nucl"],
+        "target_unit": "MeV/nucl",
     },
 }
 
@@ -146,18 +117,21 @@ def parse_scoring_filter(scoring_filter: dict) -> ScoringFilter:
         # If the filter is a particle filter, we want to map it to format used by SHIELD-HIT12A
         pdg = scoring_filter["particle"]["pdg"]
         if pdg in PARTICLE_DICT:
-            rules = PARTICLE_DICT[pdg]['filter']
+            rules = PARTICLE_DICT[pdg]["filter"]
         elif is_heavy_ion(pdg):
-            rules = [('Z', '==', extract_atomic_number(pdg)), ('A', '==', extract_mass_number(pdg))]
+            rules = [("Z", "==", extract_atomic_number(pdg)), ("A", "==", extract_mass_number(pdg))]
         else:
             raise ValueError(f"Unsupported particle pdg: {pdg}")
 
         return ScoringFilter(uuid=scoring_filter["uuid"], name=scoring_filter["name"], rules=rules)
 
-    return ScoringFilter(uuid=scoring_filter["uuid"],
-                         name=scoring_filter["name"],
-                         rules=[(rule_dict["keyword"], rule_dict["operator"], rule_dict["value"])
-                                for rule_dict in scoring_filter["rules"]])
+    return ScoringFilter(
+        uuid=scoring_filter["uuid"],
+        name=scoring_filter["name"],
+        rules=[
+            (rule_dict["keyword"], rule_dict["operator"], rule_dict["value"]) for rule_dict in scoring_filter["rules"]
+        ],
+    )
 
 
 class ShieldhitParser(Parser):
@@ -211,7 +185,7 @@ class ShieldhitParser(Parser):
     def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
         self.beam_config.particle = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("particle", 25)
-        self.beam_config.particle_name = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("name", 'HEAVYION')
+        self.beam_config.particle_name = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("name", "HEAVYION")
         if PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("a") is not None:
             self.beam_config.heavy_ion_a = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("a")
         if PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("z") is not None:
@@ -272,19 +246,19 @@ class ShieldhitParser(Parser):
         pdg = json["beam"]["particle"]["pdg"]
         if is_heavy_ion(pdg):
             particle_parser_metadata = {
-                'name': 'HEAVYION',
-                'a': extract_mass_number(pdg),
-                'allowed_units': ['MeV', 'MeV/nucl'],
-                'target_unit': 'MeV/nucl'
+                "name": "HEAVYION",
+                "a": extract_mass_number(pdg),
+                "allowed_units": ["MeV", "MeV/nucl"],
+                "target_unit": "MeV/nucl",
             }
         elif particle_id is not None:
             particle_parser_metadata = PARTICLE_DICT[json["beam"]["particle"]["pdg"]]
         else:
             raise ValueError(f"Unsupported particle pdg: {json['beam']['particle']['pdg']}")
-        
 
-        energy, energy_unit, energy_scale_factor = convert_beam_energy(particle_parser_metadata, input_energy,
-                                                                       input_energy_unit)
+        energy, energy_unit, energy_scale_factor = convert_beam_energy(
+            particle_parser_metadata, input_energy, input_energy_unit
+        )
 
         self.beam_config.energy_unit = energy_unit
         self.beam_config.energy = energy
