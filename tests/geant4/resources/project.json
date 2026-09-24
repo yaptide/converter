@@ -357,10 +357,7 @@
 				"name": "protonFilter",
 				"type": "Filter",
 				"data": {
-					"particleTypes": [
-						{
-							"pdg": 2212
-						}],
+					"particle_PDGs": [2212],
 					"kineticEnergyLow": 1,
 					"kineticEnergyHigh": 10,
 					"kineticEnergyUnit": "MeV"
