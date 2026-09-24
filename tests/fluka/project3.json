@@ -207,25 +207,19 @@
 				"uuid": "fc380974-c687-4799-9e93-59a4b357200e",
 				"name": "Protons",
 				"type": "Filter",
-				"particle": {
-					"pdg": 2212
-				}
+				"particle_PDG": 2212
 			},
 			{
 				"uuid": "788a8db4-f4aa-41a5-b72a-212e15f92e07",
 				"name": "Neutrons",
 				"type": "Filter",
-				"particle": {
-					"pdg": 2112
-				}
+				"particle_PDG": 2112
 			},
 			{
 				"uuid": "daf1c871-4eaf-4abc-88de-ef5bec145f39",
 				"name": "PionPlus",
 				"type": "Filter",
-				"particle": {
-					"pdg": 211
-				}
+				"particle_PDG": 211
 			},
 			{
 				"uuid": "6acdd5fb-06a8-43d7-a076-641447bc893d",
@@ -313,9 +307,7 @@
 			"y": 0,
 			"distanceToFocal": 0
 		},
-		"particle": {
-			"pdg": 2212
-		},
+		"particle_PDG": 2212,
 		"colorHex": 16776960,
 		"numberOfParticles": 10000,
 		"sourceFile": {

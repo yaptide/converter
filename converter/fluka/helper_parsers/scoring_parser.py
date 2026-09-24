@@ -65,8 +65,7 @@ def get_particle_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, Cus
 
     Returns None if filter cannot be created for Fluka.
     """
-    particle = filter_dict["particle"]
-    pdg = particle.get("pdg")
+    pdg = filter_dict.get("particle_PDG")
     if pdg in PARTICLE_DICT:
         return ParticleFilter(name=filter_dict["name"], particle=PARTICLE_DICT[pdg]["name"])
     if is_heavy_ion(pdg):
@@ -102,7 +101,7 @@ def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter
 
     Returns None if filter cannot be created for Fluka.
     """
-    if filter_dict.get("particle"):
+    if filter_dict.get("particle_PDG") is not None:
         return get_particle_filter(filter_dict)
     return get_custom_filter(filter_dict)
 

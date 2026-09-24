@@ -68,7 +68,7 @@ def convert_energy(beam_json: dict) -> float:
     For more details see:
     https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam.
     """
-    particle_pdg = beam_json["particle"]["pdg"]
+    particle_pdg = beam_json["particle_PDG"]
     input_energy_unit = beam_json["energyUnit"]
     input_energy = beam_json["energy"]
     if particle_pdg in PARTICLE_DICT:
@@ -88,9 +88,8 @@ def convert_energy(beam_json: dict) -> float:
     return energy
 
 
-def parse_particle_name(particle_json: dict):
+def parse_particle_name(particle_pdg: int):
     """Parse particle PDG to FLUKA particle name."""
-    particle_pdg = particle_json["pdg"]
     if particle_pdg in PARTICLE_DICT:
         particle = PARTICLE_DICT[particle_pdg]
         return particle["name"]
@@ -130,9 +129,9 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""
     fluka_beam = FlukaBeam()
     fluka_beam.energy_MeV = convert_energy(beam_json)
-    fluka_beam.particle_name = parse_particle_name(beam_json["particle"])
+    fluka_beam.particle_name = parse_particle_name(beam_json["particle_PDG"])
     if fluka_beam.particle_name == "HEAVYION":
-        pdg = int(beam_json["particle"]["pdg"])
+        pdg = int(beam_json["particle_PDG"])
         fluka_beam.heavy_ion_a = extract_mass_number(pdg)
         fluka_beam.heavy_ion_z = extract_atomic_number(pdg)
     fluka_beam.beam_pos = tuple(beam_json["position"])

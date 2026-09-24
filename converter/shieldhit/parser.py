@@ -113,9 +113,9 @@ def parse_scoring_filter(scoring_filter: dict) -> ScoringFilter:
 
     Generates a ScoringFilter object from a JSON dictionary.
     """
-    if scoring_filter.get("particle"):
+    if scoring_filter.get("particle_PDG") is not None:
         # If the filter is a particle filter, we want to map it to format used by SHIELD-HIT12A
-        pdg = scoring_filter["particle"]["pdg"]
+        pdg = scoring_filter["particle_PDG"]
         if pdg in PARTICLE_DICT:
             rules = PARTICLE_DICT[pdg]["filter"]
         elif is_heavy_ion(pdg):
@@ -184,14 +184,14 @@ class ShieldhitParser(Parser):
 
     def _parse_beam(self, json: dict) -> None:
         """Parses data from the input json into the beam_config property"""
-        self.beam_config.particle = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("particle", 25)
-        self.beam_config.particle_name = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("name", "HEAVYION")
-        if PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("a") is not None:
-            self.beam_config.heavy_ion_a = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("a")
-        if PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("z") is not None:
-            self.beam_config.heavy_ion_z = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("z")
+        self.beam_config.particle = PARTICLE_DICT.get(json["beam"]["particle_PDG"], {}).get("particle", 25)
+        self.beam_config.particle_name = PARTICLE_DICT.get(json["beam"]["particle_PDG"], {}).get("name", "HEAVYION")
+        if PARTICLE_DICT.get(json["beam"]["particle_PDG"], {}).get("a") is not None:
+            self.beam_config.heavy_ion_a = PARTICLE_DICT.get(json["beam"]["particle_PDG"], {}).get("a")
+        if PARTICLE_DICT.get(json["beam"]["particle_PDG"], {}).get("z") is not None:
+            self.beam_config.heavy_ion_z = PARTICLE_DICT.get(json["beam"]["particle_PDG"], {}).get("z")
 
-        pdg = json["beam"]["particle"]["pdg"]
+        pdg = json["beam"]["particle_PDG"]
         if is_heavy_ion(pdg):
             self.beam_config.heavy_ion_a = extract_mass_number(pdg)
             self.beam_config.heavy_ion_z = extract_atomic_number(pdg)
@@ -240,10 +240,10 @@ class ShieldhitParser(Parser):
 
     def _parse_beam_energy(self, json):
         """Parse beam energy-related fields with correct energy unit"""
-        particle_id = PARTICLE_DICT.get(json["beam"]["particle"]["pdg"], {}).get("particle", 25)
+        particle_id = PARTICLE_DICT.get(json["beam"]["particle_PDG"], {}).get("particle", 25)
         input_energy = json["beam"]["energy"]
         input_energy_unit = json["beam"].get("energyUnit", "MeV")
-        pdg = json["beam"]["particle"]["pdg"]
+        pdg = json["beam"]["particle_PDG"]
         if is_heavy_ion(pdg):
             particle_parser_metadata = {
                 "name": "HEAVYION",
@@ -252,9 +252,9 @@ class ShieldhitParser(Parser):
                 "target_unit": "MeV/nucl",
             }
         elif particle_id is not None:
-            particle_parser_metadata = PARTICLE_DICT[json["beam"]["particle"]["pdg"]]
+            particle_parser_metadata = PARTICLE_DICT[json["beam"]["particle_PDG"]]
         else:
-            raise ValueError(f"Unsupported particle pdg: {json['beam']['particle']['pdg']}")
+            raise ValueError(f"Unsupported particle pdg: {json['beam']['particle_PDG']}")
 
         energy, energy_unit, energy_scale_factor = convert_beam_energy(
             particle_parser_metadata, input_energy, input_energy_unit

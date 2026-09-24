@@ -52,7 +52,7 @@ class Geant4MacroGenerator:
     def _append_initialization(self) -> None:
         """Append particle source and run initialization."""
         beam = self.data.get("beam", {})
-        particle_pdg = beam.get("particle", {}).get("pdg", 2212)
+        particle_pdg = beam.get("particle_PDG", 2212)
         pos = beam.get("position", [0, 0, 0])
         direction = beam.get("direction", [0, 0, 1])
 

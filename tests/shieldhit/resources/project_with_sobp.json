@@ -565,9 +565,7 @@
                 "uuid": "9d0bae09-9ebe-46fe-9e59-bd7888db9442",
                 "name": "Protons",
                 "type": "Filter",
-                "particle": {
-                    "pdg": 2212
-                }
+                "particle_PDG": 2212
             },
             {
                 "uuid": "eacf5223-2411-4529-8abe-2c0fb2daf57f",
@@ -651,9 +649,7 @@
             "x": 0,
             "y": 0
         },
-        "particle": {
-            "pdg": 2212
-        },
+        "particle_PDG": 2212,
         "colorHex": 16776960,
         "numberOfParticles": 10000,
         "sourceFile": {
