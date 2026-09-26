@@ -1,7 +1,7 @@
 from math import cos, atan, pi
 from dataclasses import dataclass
 from enum import Enum
-from converter.common import convert_beam_energy
+from converter.common import convert_beam_energy, extract_atomic_number, extract_mass_number, is_heavy_ion
 
 
 class BeamShape(Enum):
@@ -38,31 +38,25 @@ class FlukaBeam:
 
 
 PARTICLE_DICT = {
-    1: {"name": "NEUTRON", "a": 1, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
-    2: {"name": "PROTON", "a": 1, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
-    3: {"name": "PION-", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    4: {"name": "PION+", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    5: {"name": "PIZERO", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    6: {"name": "ANEUTRON", "a": 1, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
-    7: {"name": "APROTON", "a": 1, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
-    8: {"name": "KAON-", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    9: {"name": "KAON+", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    10: {"name": "KAONZERO", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    11: {"name": "KAONLONG", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    12: {"name": "PHOTON", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    15: {"name": "MUON-", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    16: {"name": "MUON+", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
-    21: {"name": "DEUTERON", "a": 2, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
-    22: {"name": "TRITON", "a": 3, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
-    23: {"name": "3-HELIUM", "a": 3, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
-    24: {"name": "4-HELIUM", "a": 4, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
-    25: {  # HEAVYION is the only type of particle that is expected to have energy in 'MeV/nucl'
-        "name": "HEAVYION",
-        "a": 1,
-        "allowed_units": ["MeV", "MeV/nucl"],
-        "target_unit": "MeV/nucl",
-    },
-    26: {"name": "ELECTRON", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    2112: {"name": "NEUTRON", "a": 1, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    2212: {"name": "PROTON", "a": 1, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    -211: {"name": "PION-", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    211: {"name": "PION+", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    111: {"name": "PIZERO", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    -2112: {"name": "ANEUTRON", "a": 1, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    -2212: {"name": "APROTON", "a": 1, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    -321: {"name": "KAON-", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    321: {"name": "KAON+", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    311: {"name": "KAONZERO", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    130: {"name": "KAONLONG", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    22: {"name": "PHOTON", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    13: {"name": "MUON-", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    -13: {"name": "MUON+", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
+    1000010020: {"name": "DEUTERON", "a": 2, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    1000010030: {"name": "TRITON", "a": 3, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    1000020030: {"name": "3-HELIUM", "a": 3, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    1000020040: {"name": "4-HELIUM", "a": 4, "allowed_units": ["MeV", "MeV/nucl"], "target_unit": "MeV"},
+    11: {"name": "ELECTRON", "a": 1, "allowed_units": ["MeV"], "target_unit": "MeV"},
 }
 
 
@@ -74,23 +68,34 @@ def convert_energy(beam_json: dict) -> float:
     For more details see:
     https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam.
     """
-    particle_id = beam_json["particle"]["id"]
+    particle_pdg = beam_json["particle_PDG"]
     input_energy_unit = beam_json["energyUnit"]
     input_energy = beam_json["energy"]
-    a = beam_json["particle"].get("a", 1)
+    if particle_pdg in PARTICLE_DICT:
+        particle_parser_metadata = PARTICLE_DICT[particle_pdg]
+    elif is_heavy_ion(particle_pdg):
+        particle_parser_metadata = {
+            "name": "HEAVYION",
+            "a": extract_mass_number(particle_pdg),
+            "allowed_units": ["MeV", "MeV/nucl"],
+            "target_unit": "MeV/nucl",
+        }
+    else:
+        raise ValueError(f"Unsupported particle pdg: {particle_pdg}")
 
-    energy, _, _ = convert_beam_energy(PARTICLE_DICT, particle_id, a, input_energy, input_energy_unit)
+    energy, _, _ = convert_beam_energy(particle_parser_metadata, input_energy, input_energy_unit)
 
     return energy
 
 
-def parse_particle_name(particle_json: dict):
-    """Parse particle ID to FLUKA particle name."""
-    particle_id = particle_json["id"]
-    if particle_id in PARTICLE_DICT:
-        particle = PARTICLE_DICT[particle_id]
+def parse_particle_name(particle_pdg: int):
+    """Parse particle PDG to FLUKA particle name."""
+    if particle_pdg in PARTICLE_DICT:
+        particle = PARTICLE_DICT[particle_pdg]
         return particle["name"]
-    raise ValueError("Particle ID not supported by FLUKA")
+    if is_heavy_ion(particle_pdg):
+        return "HEAVYION"
+    raise ValueError("Particle PDG not supported by FLUKA")
 
 
 def parse_shape_params(shape_params_json: dict) -> tuple[BeamShape, float, float]:
@@ -124,10 +129,11 @@ def parse_beam(beam_json: dict) -> FlukaBeam:
     """Parse beam from JSON to FLUKA beam."""
     fluka_beam = FlukaBeam()
     fluka_beam.energy_MeV = convert_energy(beam_json)
-    fluka_beam.particle_name = parse_particle_name(beam_json["particle"])
+    fluka_beam.particle_name = parse_particle_name(beam_json["particle_PDG"])
     if fluka_beam.particle_name == "HEAVYION":
-        fluka_beam.heavy_ion_a = beam_json["particle"]["a"]
-        fluka_beam.heavy_ion_z = beam_json["particle"]["z"]
+        pdg = int(beam_json["particle_PDG"])
+        fluka_beam.heavy_ion_a = extract_mass_number(pdg)
+        fluka_beam.heavy_ion_z = extract_atomic_number(pdg)
     fluka_beam.beam_pos = tuple(beam_json["position"])
     shape, shape_x, shape_y = parse_shape_params(beam_json["sigma"])
     fluka_beam.shape = shape
