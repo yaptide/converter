@@ -148,12 +148,7 @@ class Geant4MacroGenerator:
         """
         filters = self.data.get("scoringManager", {}).get("filters", [])
         ion_pdgs = sorted(
-            {
-                pdg
-                for f in filters
-                for pdg in f.get("data", {}).get("particle_PDGs", [])
-                if needs_ion_creation(pdg)
-            }
+            {pdg for f in filters for pdg in f.get("data", {}).get("particle_PDGs", []) if needs_ion_creation(pdg)}
         )
         if not ion_pdgs:
             return
