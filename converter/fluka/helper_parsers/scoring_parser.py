@@ -9,6 +9,7 @@ from converter.fluka.helper_parsers.detector_parser import (
     CylinderDetector,
     parse_cylinder_detector,
 )
+from converter.common import extract_atomic_number, extract_mass_number, is_heavy_ion
 from converter.fluka.helper_parsers.beam_parser import PARTICLE_DICT
 
 __supported_filter_keywords = ("A", "Z")
@@ -59,16 +60,18 @@ class Scoring:
     output_unit: int = 21
 
 
-def get_particle_filter(filter_dict: dict) -> Optional[ParticleFilter]:
-    """Creates ParticleFilter from dictionary.
+def get_particle_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter]]:
+    """Creates ParticleFilter (or CustomFilter for heavy ions) from dictionary.
 
     Returns None if filter cannot be created for Fluka.
     """
-    particle = filter_dict["particle"]
-    if particle.get("id") not in PARTICLE_DICT:
-        return None
+    pdg = filter_dict.get("particle_PDG")
+    if pdg in PARTICLE_DICT:
+        return ParticleFilter(name=filter_dict["name"], particle=PARTICLE_DICT[pdg]["name"])
+    if is_heavy_ion(pdg):
+        return CustomFilter(name=filter_dict["name"], a=extract_mass_number(pdg), z=extract_atomic_number(pdg))
 
-    return ParticleFilter(name=filter_dict["name"], particle=PARTICLE_DICT[particle["id"]]["name"])
+    return None
 
 
 def get_custom_filter(filter_dict: dict) -> Optional[CustomFilter]:
@@ -98,7 +101,7 @@ def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter
 
     Returns None if filter cannot be created for Fluka.
     """
-    if filter_dict.get("particle"):
+    if filter_dict.get("particle_PDG") is not None:
         return get_particle_filter(filter_dict)
     return get_custom_filter(filter_dict)
 
