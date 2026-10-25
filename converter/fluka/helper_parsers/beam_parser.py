@@ -69,7 +69,7 @@ def convert_energy(beam_json: dict) -> float:
     https://flukafiles.web.cern.ch/manual/chapters/description_input/description_options/beam.html#beam.
     """
     particle_pdg = beam_json["particle_PDG"]
-    input_energy_unit = beam_json["energyUnit"]
+    input_energy_unit = beam_json.get("energyUnit", "MeV")
     input_energy = beam_json["energy"]
     if particle_pdg in PARTICLE_DICT:
         particle_parser_metadata = PARTICLE_DICT[particle_pdg]
