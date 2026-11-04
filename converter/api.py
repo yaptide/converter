@@ -5,6 +5,9 @@ from converter.topas.parser import TopasParser
 from converter.common import Parser
 from converter.fluka.parser import FlukaParser
 from converter.geant4.parser import Geant4Parser
+from converter.simulator_detection import REQUIRED_INPUT_FILES, detect_simulators, get_empty_template
+
+__all__ = ["REQUIRED_INPUT_FILES", "detect_simulators", "get_empty_template", "get_parser_from_str", "run_parser"]
 
 
 def get_parser_from_str(parser_type: str) -> Parser:
