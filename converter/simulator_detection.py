@@ -17,7 +17,6 @@ def name_without_copy_suffix(name: str) -> Optional[str]:
     when the same file is downloaded twice (e.g. `fl_sim (1).inp`, `fl_sim-2.inp`), otherwise None.
     Used only to suggest renaming the file; a copy is never treated as the required file.
     """
-
     after_extension = COPY_SUFFIX_AFTER_EXTENSION.fullmatch(name)
     if after_extension:
         return after_extension.group(1)
@@ -30,10 +29,12 @@ def name_without_copy_suffix(name: str) -> Optional[str]:
 
 
 def required_by(name: str) -> Optional[str]:
+    """Return the simulator that requires a file with this exact name, or None."""
     return next((simulator for simulator, names in REQUIRED_INPUT_FILES.items() if name in names), None)
 
 
 def _inspect_file(name: str) -> dict:
+    """Return the simulator that requires the file and the issues found in its name."""
     original_name = name_without_copy_suffix(name)
     issues = []
     if original_name:
@@ -49,6 +50,7 @@ def _inspect_file(name: str) -> dict:
 
 
 def _inspect_simulator(simulator: str, files: dict) -> dict:
+    """Return whether the simulator can run with these files and which required files are missing."""
     missing = [name for name in REQUIRED_INPUT_FILES[simulator] if name not in files]
     if missing:
         return {"possible": False, "reason": f"Missing {', '.join(missing)}", "missing": missing}
@@ -56,6 +58,7 @@ def _inspect_simulator(simulator: str, files: dict) -> dict:
 
 
 def detect_simulators(files: dict) -> dict:
+    """Check which simulators can run with the given files (file name -> content); content is not checked."""
     return {
         "files": {name: _inspect_file(name) for name in files},
         "simulators": {simulator: _inspect_simulator(simulator, files) for simulator in REQUIRED_INPUT_FILES},
@@ -63,6 +66,7 @@ def detect_simulators(files: dict) -> dict:
 
 
 def get_empty_template(simulator: str) -> dict:
+    """Return the required files of the simulator, each with empty content."""
     if simulator not in REQUIRED_INPUT_FILES:
         raise ValueError(f"Simulator must be one of: {', '.join(REQUIRED_INPUT_FILES)}.")
     return {name: "" for name in REQUIRED_INPUT_FILES[simulator]}
