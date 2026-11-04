@@ -8,7 +8,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 readme = "README.md"
-requires-python = ">=3.9,<3.14"
+requires-python = ">=3.10,<3.14"
 
 [project.urls]
 "Homepage" = "https://github.com/yaptide/converter" # Renamed from repository
@@ -29,11 +29,7 @@ optional = true # Mark as optional so it's not installed by default
 pytest = "8.4.2"
 pre-commit = "4.3.0"
 # scipy is needed in unit tests to cross check if rotation method works properly
-# Use conditional dependencies based on Python version
-scipy = [
-    { version = "1.13.1", python = "3.9" },
-    { version = "1.15.1", python = ">=3.10,<3.14" } # For Python 3.10 and up, within project's range
-]
+scipy = "1.15.1"
 numpy = "^2.0.0"
 
 
