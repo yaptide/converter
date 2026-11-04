@@ -413,11 +413,7 @@
 			"y": 0,
 			"distanceToFocal": 0
 		},
-		"particle": {
-			"id": 2,
-			"a": 1,
-			"z": 1
-		},
+		"particle_PDG": 2212,
 		"colorHex": 16776960,
 		"numberOfParticles": 10000,
 		"sourceFile": {

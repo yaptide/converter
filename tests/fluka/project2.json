@@ -461,10 +461,7 @@
 				"uuid": "0e247ce2-dbb8-4c7a-9b99-7aa1f1adaa7b",
 				"name": "FilterNeutrons",
 				"type": "Filter",
-				"particle": {
-					"id": 1,
-					"name": "Neutron"
-				}
+				"particle_PDG": 2112
 			}],
 		"metadata": {
 			"version": "0.11",
@@ -498,11 +495,7 @@
 			"y": 0,
 			"distanceToFocal": 0
 		},
-		"particle": {
-			"id": 2,
-			"a": 1,
-			"z": 1
-		},
+		"particle_PDG": 2212,
 		"colorHex": 16776960,
 		"numberOfParticles": 10000,
 		"sourceFile": {

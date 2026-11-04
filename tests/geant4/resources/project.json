@@ -357,11 +357,7 @@
 				"name": "protonFilter",
 				"type": "Filter",
 				"data": {
-					"particleTypes": [
-						{
-							"id": 2,
-							"name": "Proton"
-						}],
+					"particle_PDGs": [2212],
 					"kineticEnergyLow": 1,
 					"kineticEnergyHigh": 10,
 					"kineticEnergyUnit": "MeV"
@@ -399,12 +395,7 @@
 			"y": 0,
 			"distanceToFocal": 0
 		},
-		"particle": {
-			"id": 2,
-			"name": "Proton",
-			"a": 1,
-			"z": 1
-		},
+		"particle_PDG": 2212,
 		"colorHex": 16776960,
 		"numberOfParticles": 10000,
 		"sourceFile": {
