@@ -35,7 +35,7 @@ COPY_SUFFIX_BEFORE_EXTENSION = re.compile(
 def name_without_copy_suffix(name: str) -> Optional[str]:
     """
     Return the original file name if `name` looks like a copy made by the browser
-    when the same file is downloaded twice, otherwise None. 
+    when the same file is downloaded twice, otherwise None.
     Uses regexes written above to detect the copy suffixes added to the file name.
     Used only to suggest renaming the file; a copy is never treated as the required file.
     """
