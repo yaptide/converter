@@ -7,14 +7,36 @@ REQUIRED_INPUT_FILES = {
     "geant4": ["geometry.gdml", "run.mac"],
 }
 
-COPY_SUFFIX_AFTER_EXTENSION = re.compile(r"(.+\.(?:dat|inp|gdml|mac|json))[0-9]+")
-COPY_SUFFIX_BEFORE_EXTENSION = re.compile(r"(.+?)(?: ?\([0-9]+\)|-[0-9]+| [0-9]+)(\.[A-Za-z0-9]+)")
+
+# Number after the extension.
+#   Matches: fl_sim.inp2, run.mac12
+#   Does not match: notes.txt2 (not an input file), beam.dat.1
+COPY_SUFFIX_AFTER_EXTENSION = re.compile(
+    r"""
+    (.+\.(?:dat|inp|gdml|mac|json))  # original name
+    [0-9]+                           # number
+    """,
+    re.VERBOSE,
+)
+
+# Number before the extension.
+#   Matches: fl_sim (1).inp, fl_sim(1).inp, fl_sim-2.inp, fl_sim 2.inp
+#   Does not match: sim_2.inp, my-beam.dat, fl_sim (a).inp, fl_sim (1)
+COPY_SUFFIX_BEFORE_EXTENSION = re.compile(
+    r"""
+    (.+?)                                   # name
+    (?:\ ?\([0-9]+\)|-[0-9]+|\ [0-9]+)      # " (1)", "(1)", "-1" or " 1"
+    (\.[A-Za-z0-9]+)                        # extension
+    """,
+    re.VERBOSE,
+)
 
 
 def name_without_copy_suffix(name: str) -> Optional[str]:
     """
     Return the original file name if `name` looks like a copy made by the browser
-    when the same file is downloaded twice (e.g. `fl_sim (1).inp`, `fl_sim-2.inp`), otherwise None.
+    when the same file is downloaded twice, otherwise None. 
+    Uses regexes written above to detect the copy suffixes added to the file name.
     Used only to suggest renaming the file; a copy is never treated as the required file.
     """
     after_extension = COPY_SUFFIX_AFTER_EXTENSION.fullmatch(name)

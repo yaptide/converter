@@ -139,7 +139,20 @@ def test_copy_suffix(name: str, original_name: str) -> None:
     assert detect_simulators({name: "x"})["files"][name]["issues"][0]["suggested_name"] == original_name
 
 
-@pytest.mark.parametrize("name", ["fl_sim.inp", "beam.dat", "sim_2.inp", "my-beam.dat", "geometry.gdml"])
+@pytest.mark.parametrize(
+    "name",
+    [
+        "fl_sim.inp",
+        "beam.dat",
+        "sim_2.inp",
+        "my-beam.dat",
+        "geometry.gdml",
+        "notes.txt2",
+        "beam.dat.1",
+        "fl_sim (a).inp",
+        "fl_sim (1)",
+    ],
+)
 def test_no_copy_suffix(name: str) -> None:
     """Ordinary names do not get a rename suggestion."""
     assert detect_simulators({name: "x"})["files"][name]["issues"] == []
