@@ -50,14 +50,16 @@ def name_without_copy_suffix(name: str) -> Optional[str]:
     return None
 
 
-REQUIRED_NAMES_BY_LOWERCASE = {name.lower(): name for names in REQUIRED_INPUT_FILES.values() for name in names} # e.g. "BEAM.DAT" -> "beam.dat", used to find required files written in other letter case
+# e.g. "BEAM.DAT" -> "beam.dat", used to find required files written in other letter case
+REQUIRED_NAMES_BY_LOWERCASE = {name.lower(): name for names in REQUIRED_INPUT_FILES.values() for name in names}
 
 # Browser copy of any file.
 #   Matches: sobp (1).dat, notes(2).txt
 #   Does not match: sobp-2.dat, layer 3.dat
 BROWSER_COPY_NAME = re.compile(r".+ ?\([0-9]+\)\.[A-Za-z0-9]+")
 
-TEXT_EXTENSION = ".txt" # e.g. fl_sim.inp.txt
+# e.g. fl_sim.inp.txt saved from Notepad
+TEXT_EXTENSION = ".txt"
 
 
 def required_by(name: str) -> Optional[str]:
