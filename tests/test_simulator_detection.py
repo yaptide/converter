@@ -140,6 +140,39 @@ def test_copy_suffix(name: str, original_name: str) -> None:
 
 
 @pytest.mark.parametrize(
+    "name,suggested_name",
+    [
+        ("beam (1).DAT", "beam.dat"),
+        ("FL_SIM-2.inp", "fl_sim.inp"),
+        ("sobp (1).dat", "sobp.dat"),
+        ("notes(2).txt", "notes.txt"),
+    ],
+)
+def test_copy_suffix_suggests_name(name: str, suggested_name: str) -> None:
+    """A copy of a required file gets its exact required name; other files only for browser copies like (1)."""
+    issue = detect_simulators({name: "x"})["files"][name]["issues"][0]
+
+    assert (issue["code"], issue["suggested_name"]) == ("copy_suffix", suggested_name)
+
+
+@pytest.mark.parametrize(
+    "name,code,suggested_name",
+    [
+        ("BEAM.DAT", "wrong_case", "beam.dat"),
+        ("Fl_Sim.inp", "wrong_case", "fl_sim.inp"),
+        ("fl_sim.inp.txt", "extra_extension", "fl_sim.inp"),
+        ("Run.mac.TXT", "extra_extension", "run.mac"),
+    ],
+)
+def test_misnamed_required_file(name: str, code: str, suggested_name: str) -> None:
+    """Required files saved with another letter case or an extra .txt extension get a rename suggestion."""
+    file = detect_simulators({name: "x"})["files"][name]
+
+    assert file["simulator"] is None
+    assert (file["issues"][0]["code"], file["issues"][0]["suggested_name"]) == (code, suggested_name)
+
+
+@pytest.mark.parametrize(
     "name",
     [
         "fl_sim.inp",
@@ -151,6 +184,11 @@ def test_copy_suffix(name: str, original_name: str) -> None:
         "beam.dat.1",
         "fl_sim (a).inp",
         "fl_sim (1)",
+        "sobp-2.dat",
+        "layer 3.dat",
+        "sobp.dat2",
+        "notes.txt",
+        "beam.txt",
     ],
 )
 def test_no_copy_suffix(name: str) -> None:

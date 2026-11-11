@@ -50,25 +50,85 @@ def name_without_copy_suffix(name: str) -> Optional[str]:
     return None
 
 
+REQUIRED_NAMES_BY_LOWERCASE = {name.lower(): name for names in REQUIRED_INPUT_FILES.values() for name in names} # e.g. "BEAM.DAT" -> "beam.dat", used to find required files written in other letter case
+
+# Browser copy of any file.
+#   Matches: sobp (1).dat, notes(2).txt
+#   Does not match: sobp-2.dat, layer 3.dat
+BROWSER_COPY_NAME = re.compile(r".+ ?\([0-9]+\)\.[A-Za-z0-9]+")
+
+TEXT_EXTENSION = ".txt" # e.g. fl_sim.inp.txt
+
+
 def required_by(name: str) -> Optional[str]:
     """Return the simulator that requires a file with this exact name, or None."""
     return next((simulator for simulator, names in REQUIRED_INPUT_FILES.items() if name in names), None)
 
 
+def required_name_ignoring_case(name: str) -> Optional[str]:
+    """Return the required file name equal to `name` when letter case is ignored, or None."""
+    return REQUIRED_NAMES_BY_LOWERCASE.get(name.lower())
+
+
+def _rename_warning(code: str, message: str, suggested_name: str) -> dict:
+    """Return a warning that suggests renaming a file to `suggested_name`."""
+    return {"severity": "warning", "code": code, "message": message, "suggested_name": suggested_name}
+
+
+def _downloaded_copy_suggestion(name: str) -> Optional[dict]:
+    """
+    Suggest the original name for a downloaded copy of a required file (`fl_sim (1).inp`, `beam-2.dat`)
+    or for a browser copy of any other file (`sobp (1).dat`), otherwise return None.
+    """
+    original_name = name_without_copy_suffix(name)
+    if not original_name:
+        return None
+
+    required_name = required_name_ignoring_case(original_name)
+    if required_name:
+        return _rename_warning("copy_suffix", f"Looks like a downloaded copy of {required_name}", required_name)
+
+    if BROWSER_COPY_NAME.fullmatch(name):
+        return _rename_warning("copy_suffix", f"Looks like a downloaded copy of {original_name}", original_name)
+
+    return None
+
+
+def _text_extension_suggestion(name: str) -> Optional[dict]:
+    """Suggest the required name for a required file saved with an extra .txt extension (`fl_sim.inp.txt`)."""
+    if not name.lower().endswith(TEXT_EXTENSION):
+        return None
+
+    required_name = required_name_ignoring_case(name[: -len(TEXT_EXTENSION)])
+    if not required_name:
+        return None
+
+    return _rename_warning(
+        "extra_extension", f"Looks like {required_name} saved with an extra .txt extension", required_name
+    )
+
+
+def _letter_case_suggestion(name: str) -> Optional[dict]:
+    """Suggest the required name for a required file written in other letter case (`BEAM.DAT`)."""
+    required_name = required_name_ignoring_case(name)
+    if not required_name:
+        return None
+
+    return _rename_warning("wrong_case", f"File names are case-sensitive, did you mean {required_name}?", required_name)
+
+
+def _rename_suggestion(name: str) -> Optional[dict]:
+    """Return a warning suggesting a new name for a file that looks like a misnamed required file, or None."""
+    if required_by(name):
+        return None
+
+    return _downloaded_copy_suggestion(name) or _text_extension_suggestion(name) or _letter_case_suggestion(name)
+
+
 def _inspect_file(name: str) -> dict:
     """Return the simulator that requires the file and the issues found in its name."""
-    original_name = name_without_copy_suffix(name)
-    issues = []
-    if original_name:
-        issues.append(
-            {
-                "severity": "warning",
-                "code": "copy_suffix",
-                "message": f"Looks like a downloaded copy of {original_name}",
-                "suggested_name": original_name,
-            }
-        )
-    return {"simulator": required_by(name), "issues": issues}
+    suggestion = _rename_suggestion(name)
+    return {"simulator": required_by(name), "issues": [suggestion] if suggestion else []}
 
 
 def _inspect_simulator(simulator: str, files: dict) -> dict:
