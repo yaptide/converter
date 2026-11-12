@@ -3,7 +3,13 @@ from pathlib import Path
 
 import pytest
 
-from converter.api import detect_simulators, get_empty_template, get_parser_from_str, run_parser
+from converter.api import (
+    REQUIRED_INPUT_FILES,
+    detect_simulators,
+    get_empty_template,
+    get_parser_from_str,
+    run_parser,
+)
 
 TESTS_DIR = Path(__file__).parent
 
@@ -83,7 +89,7 @@ def test_required_files_belong_to_their_simulator() -> None:
 
 
 def test_mixed_files_with_downloaded_copy() -> None:
-    """A downloaded copy gets a rename suggestion and does not count as the required file."""
+    """A downloaded copy does not count as the required file and gets no suggestion while the original is there."""
     files = {
         "beam.dat": "NSTAT 1000 0",
         "geo.dat": "0 0 geometry",
@@ -98,17 +104,7 @@ def test_mixed_files_with_downloaded_copy() -> None:
             "geo.dat": {"simulator": "shieldhit", "issues": []},
             "detect.dat": {"simulator": "shieldhit", "issues": []},
             "fl_sim.inp": {"simulator": "fluka", "issues": []},
-            "fl_sim (1).inp": {
-                "simulator": None,
-                "issues": [
-                    {
-                        "severity": "warning",
-                        "code": "copy_suffix",
-                        "message": "Looks like a downloaded copy of fl_sim.inp",
-                        "suggested_name": "fl_sim.inp",
-                    }
-                ],
-            },
+            "fl_sim (1).inp": {"simulator": None, "issues": []},
         },
         "simulators": {
             "shieldhit": {"possible": False, "reason": "Missing mat.dat", "missing": ["mat.dat"]},
@@ -189,11 +185,35 @@ def test_misnamed_required_file(name: str, code: str, suggested_name: str) -> No
         "sobp.dat2",
         "notes.txt",
         "beam.txt",
+        "beam 2024.dat",
+        "beam-123.dat",
+        "fl_sim.inp123",
     ],
 )
 def test_no_copy_suffix(name: str) -> None:
     """Ordinary names do not get a rename suggestion."""
     assert detect_simulators({name: "x"})["files"][name]["issues"] == []
+
+
+@pytest.mark.parametrize(
+    "existing_name,name",
+    [
+        ("fl_sim.inp", "fl_sim (1).inp"),
+        ("beam.dat", "BEAM.DAT"),
+        ("fl_sim.inp", "fl_sim.inp.txt"),
+        ("sobp.dat", "sobp (1).dat"),
+    ],
+)
+def test_no_suggestion_onto_existing_file(existing_name: str, name: str) -> None:
+    """Renaming onto a file that is already there would overwrite it, so it is not suggested."""
+    assert detect_simulators({existing_name: "x", name: "x"})["files"][name]["issues"] == []
+
+
+def test_required_input_files_cannot_be_changed() -> None:
+    """The required names are tuples, so they cannot be changed by mistake at runtime."""
+    assert all(isinstance(names, tuple) for names in REQUIRED_INPUT_FILES.values())
+    with pytest.raises(AttributeError):
+        REQUIRED_INPUT_FILES["fluka"].append("x.inp")  # type: ignore[attr-defined]
 
 
 def test_file_content_is_never_checked() -> None:
@@ -219,7 +239,7 @@ def test_other_files_do_not_matter() -> None:
         ("geant4", ["geometry.gdml", "run.mac"]),
     ],
 )
-def test_get_empty_template(simulator: str, names: list) -> None:
+def test_get_empty_template(simulator: str, names: list[str]) -> None:
     """The template has the required files with empty content and is a new dict each time."""
     template = get_empty_template(simulator)
 
