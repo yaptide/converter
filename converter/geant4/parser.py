@@ -142,7 +142,10 @@ class Geant4Parser(Parser):
         children_info = []
         for ch in node.get("children", []):
             ch_logic_name, _ = self._emit_node_postorder(ch, solids_xml, structure_xml, name_counters)
-            children_info.append((ch, ch_logic_name, ch.get("geometryData", {}).get("position", [0, 0, 0])))
+            ch_geo = ch.get("geometryData", {})
+            children_info.append(
+                (ch, ch_logic_name, ch_geo.get("position", [0, 0, 0]), ch_geo.get("rotation", [0, 0, 0]))
+            )
 
         solid_name = utils.choose_solid_name(node, name_counters)
         if geom_type in ("HollowCylinderGeometry", "CylinderGeometry"):
@@ -199,7 +202,7 @@ class Geant4Parser(Parser):
         ET.SubElement(vol, "materialref", {"ref": material_name})
         ET.SubElement(vol, "solidref", {"ref": solid_name})
 
-        for child_node, child_logic_name, child_pos_cm in children_info:
+        for child_node, child_logic_name, child_pos_cm, child_rotation_deg in children_info:
             phys_name = utils.choose_phys_name(child_node, name_counters)
             phys = ET.SubElement(vol, "physvol", {"copynumber": "1", "name": phys_name})
             ET.SubElement(phys, "volumeref", {"ref": child_logic_name})
@@ -214,6 +217,21 @@ class Geant4Parser(Parser):
                         "x": utils.to_mm_str(x_cm),
                         "y": utils.to_mm_str(y_cm),
                         "z": utils.to_mm_str(z_cm),
+                    },
+                )
+            if any(abs(float(angle)) > utils.EPS for angle in child_rotation_deg):
+                # Geant4 applies the inverse of the rotation written in GDML, so the editor angles
+                # are written with the opposite sign
+                rot_x, rot_y, rot_z = (-float(angle) for angle in child_rotation_deg)
+                ET.SubElement(
+                    phys,
+                    "rotation",
+                    {
+                        "name": f"{phys_name}_rot",
+                        "unit": "deg",
+                        "x": f"{rot_x:.12g}",
+                        "y": f"{rot_y:.12g}",
+                        "z": f"{rot_z:.12g}",
                     },
                 )
 
