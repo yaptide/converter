@@ -38,7 +38,20 @@ def test_rotate(vector: list[float], angles: list[float], degrees: bool):
     result = rotate(vector, angles, degrees)
 
     # Rotate using SciPy
-    r = Rotation.from_euler("xyz", angles, degrees=degrees)
+    r = Rotation.from_euler("XYZ", angles, degrees=degrees)
     result_scipy = r.apply(vector)
 
     assert pytest.approx(result) == result_scipy
+
+
+@pytest.mark.parametrize(
+    "vector,angles,expected",
+    [
+        # expected values computed with three.js (Euler 'XYZ'), as the editor rotates figures
+        ([0, 0, 1], [30, 40, 50], [0.6428, -0.3830, 0.6634]),
+        ([0.3, -1.2, 2.5], [30, 40, 50], [2.4589, -1.0691, 0.7687]),
+    ],
+)
+def test_rotate_matches_editor(vector: list[float], angles: list[float], expected: list[float]):
+    """The converter must orient figures the same way as the editor (three.js)."""
+    assert rotate(vector, angles) == pytest.approx(expected, abs=1e-4)

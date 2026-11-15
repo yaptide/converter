@@ -132,11 +132,12 @@ def convert_beam_energy(
 
 def rotate(vector: list[float], angles: list[float], degrees: bool = True) -> list[float]:
     """
-    Rotate a vector in 3D by Tait-Bryan angles (x, y, z), the same way as the editor does.
+    Rotate a vector in 3D around XYZ axes, assuming Euler angles.
 
-    The editor uses three.js `Euler` with the default order 'XYZ': rotations about the X, Y and Z axes
-    of the rotated object (intrinsic), i.e. the matrix Rx * Ry * Rz. Applied to a vector this means
-    rotating it about the fixed world axes in the opposite order: first Z, then Y, then X.
+    Proper Euler angles uses z-x-z, x-y-x, y-z-y, z-y-z, x-z-x, y-x-y axis sequences, here we
+    stick to other convention called Tait-Bryan angles, the same as in the editor (three.js Euler
+    with order 'XYZ'). First we rotate vector around Z axis by third angle, then around Y axis
+    and finally around X axis. The individual rotations are usually known as yaw, pitch and roll.
 
     If degrees is True, then the given angle are assumed to be in degrees. Otherwise radians are used.
     """

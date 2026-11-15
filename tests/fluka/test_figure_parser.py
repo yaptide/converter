@@ -18,15 +18,17 @@ def test_parse_cylinder():
 
     fluka_cylinder = parse_cylinder(cylinder)
 
+    # expected values computed with three.js (Euler 'XYZ'), as the editor orients the cylinder
+
     assert fluka_cylinder.figure_type == "RCC"
     assert fluka_cylinder.uuid == "ed1507a5-0489-4dc3-bb87-7b27dcff43e7"
     assert all(
         math.isclose(a, b, abs_tol=1e-8)
-        for a, b in zip(fluka_cylinder.coordinates, (2.0244531744545524, 1.4877257848751275, -0.45663660846935195))
+        for a, b in zip(fluka_cylinder.coordinates, (2.0173463071, 1.4826009822, -0.4566366085))
     )
     assert all(
         math.isclose(a, b, abs_tol=1e-8)
-        for a, b in zip(fluka_cylinder.height_vector, (0.23109365, -0.33545157, 0.91327322))
+        for a, b in zip(fluka_cylinder.height_vector, (0.2453073859, -0.3252019644, 0.9132732169))
     )
     assert fluka_cylinder.radius == 1
 
