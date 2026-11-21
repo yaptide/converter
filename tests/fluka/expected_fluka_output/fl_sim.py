@@ -9,6 +9,7 @@ BEAM           -0.07       0.0       0.0       3.0       0.0      -1.0PROTON
 * beam direction cosines in respect to x: 0.0, y: 0.0
 * beam direction is positive in respect to z axis
 BEAMPOS          0.0       0.0      -1.5       0.0       0.0       0.0
+
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME
     0    0
