@@ -1,5 +1,4 @@
 import math
-import pytest
 from converter import solid_figures
 from converter.fluka.helper_parsers.figure_parser import parse_box, parse_cylinder, parse_sphere
 
@@ -72,21 +71,23 @@ def test_parse_box():
 
 
 def test_rotated_box():
-    """
-    Test if trying to parse rotated box throws an error
-    (as we use RPP for Fluka)
-    """
+    """A rotated box is written around the origin and keeps its rotation and position for ROT-DEFI"""
     figure = solid_figures.BoxFigure(
         uuid="ed1507a5-0489-4dc3-bb87-7b27dcff43e7",
         name="Box",
         position=(2.14, 1.32, 0),
         rotation=(1, 56, 76),
         x_edge_length=1,
-        y_edge_length=1,
-        z_edge_length=1,
+        y_edge_length=2,
+        z_edge_length=3,
     )
 
-    with pytest.raises(ValueError) as err:
-        parse_box(figure)
+    fluka_box = parse_box(figure)
 
-    assert "Rotation of box is not supported for Fluka" in str(err.value)
+    assert fluka_box.figure_type == "RPP"
+    assert fluka_box.is_rotated
+    assert (fluka_box.x_min, fluka_box.x_max) == (-0.5, 0.5)
+    assert (fluka_box.y_min, fluka_box.y_max) == (-1.0, 1.0)
+    assert (fluka_box.z_min, fluka_box.z_max) == (-1.5, 1.5)
+    assert fluka_box.rotation == (1, 56, 76)
+    assert fluka_box.position == (2.14, 1.32, 0)
