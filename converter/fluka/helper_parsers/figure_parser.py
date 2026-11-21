@@ -15,7 +15,11 @@ class FlukaFigure:
 
 @dataclass(frozen=False)
 class FlukaBox(FlukaFigure):
-    """Class representing Fluka box"""
+    """
+    Class representing Fluka box (RPP, sides parallel to the coordinate axes).
+    A rotated box is described in its own frame (centered at the origin) and placed
+    with a ROT-DEFI transformation: rotation by `rotation` angles and translation to `position`.
+    """
 
     figure_type: str = "RPP"
     x_min: float = 0
@@ -24,6 +28,16 @@ class FlukaBox(FlukaFigure):
     y_max: float = 0
     z_min: float = 0
     z_max: float = 0
+    rotation: tuple[float, float, float] = (0, 0, 0)
+    position: tuple[float, float, float] = (0, 0, 0)
+
+    @property
+    def is_rotated(self) -> bool:
+        return any(angle != 0 for angle in self.rotation)
+
+    @property
+    def transformation_name(self) -> str:
+        return f"rot{self.name}"
 
 
 @dataclass(frozen=False)
@@ -50,20 +64,17 @@ class FlukaSphere(FlukaFigure):
 def parse_box(box: BoxFigure) -> FlukaBox:
     """
     Parse box to Fluka RPP.
-    RPP is a parallelepiped with sides parallel to the coordinate axes.
-    In case the box to parse has rotation applied, we throw an error.
+    RPP is a parallelepiped with sides parallel to the coordinate axes. A rotated box is written
+    as RPP centered at the origin and placed with a ROT-DEFI transformation.
     """
-    if box.rotation[0] != 0 or box.rotation[1] != 0 or box.rotation[2] != 0:
-        raise ValueError("Rotation of box is not supported for Fluka")
-
-    fluka_box = FlukaBox()
-    fluka_box.uuid = box.uuid
-    fluka_box.x_min = box.position[0] - box.x_edge_length / 2
-    fluka_box.x_max = box.position[0] + box.x_edge_length / 2
-    fluka_box.y_min = box.position[1] - box.y_edge_length / 2
-    fluka_box.y_max = box.position[1] + box.y_edge_length / 2
-    fluka_box.z_min = box.position[2] - box.z_edge_length / 2
-    fluka_box.z_max = box.position[2] + box.z_edge_length / 2
+    fluka_box = FlukaBox(uuid=box.uuid, rotation=tuple(box.rotation), position=tuple(box.position))
+    center = (0, 0, 0) if fluka_box.is_rotated else box.position
+    fluka_box.x_min = center[0] - box.x_edge_length / 2
+    fluka_box.x_max = center[0] + box.x_edge_length / 2
+    fluka_box.y_min = center[1] - box.y_edge_length / 2
+    fluka_box.y_max = center[1] + box.y_edge_length / 2
+    fluka_box.z_min = center[2] - box.z_edge_length / 2
+    fluka_box.z_max = center[2] + box.z_edge_length / 2
 
     return fluka_box
 
