@@ -18,10 +18,12 @@ def gdml_rotations(water_rotation: list[float]) -> list[ET.Element]:
 
 
 def test_unrotated_figure_has_no_rotation():
+    """Test if a figure without rotation gets no <rotation> in GDML"""
     assert gdml_rotations([0, 0, 0]) == []
 
 
 def test_rotation_is_written_with_negated_angles():
+    """Test if rotation is written to GDML with negated angles (Geant4 applies its inverse)"""
     rotations = gdml_rotations([30, 40, 50])
     assert len(rotations) == 1
     assert [float(rotations[0].get(axis)) for axis in "xyz"] == [-30, -40, -50]

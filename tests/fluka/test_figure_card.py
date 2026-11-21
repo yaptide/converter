@@ -5,6 +5,7 @@ from converter.fluka.helper_parsers.figure_parser import parse_box
 
 
 def rotated_box():
+    """Return a rotated box parsed for Fluka, named fig0"""
     box = parse_box(
         solid_figures.BoxFigure(
             position=(3.0, -2.0, 1.0), rotation=(30, 40, 50), x_edge_length=10, y_edge_length=1, z_edge_length=1
@@ -15,6 +16,7 @@ def rotated_box():
 
 
 def test_rotated_box_is_placed_by_transformation():
+    """Test if a rotated box is written as RPP centered at the origin"""
     lines = str(FiguresCard(data=[rotated_box()])).splitlines()
     i = lines.index("$Start_transform -rotfig0")
     assert lines[i + 1].startswith("RPP fig0 -5.0 +5.0 -0.5 +0.5 -0.5 +0.5")
@@ -22,7 +24,7 @@ def test_rotated_box_is_placed_by_transformation():
 
 
 def test_rot_defi_cards():
-    # rotations about X, Y, Z (WHAT(1) = 101, 201, 301); the first card translates by minus the position
+    """Test if ROT-DEFI cards rotate about X, Y, Z and translate by minus the position"""
     assert str(TransformationsCard(data=[rotated_box()])).splitlines() == [
         "* rotation and position of box fig0",
         "ROT-DEFI       101.0       0.0      30.0      -3.0       2.0      -1.0rotfig0",
@@ -32,6 +34,7 @@ def test_rot_defi_cards():
 
 
 def test_unrotated_box_has_no_transformation():
+    """Test if a box without rotation gets no transformation"""
     box = parse_box(solid_figures.BoxFigure(position=(1.0, 2.0, 3.0), x_edge_length=2))
     box.name = "fig0"
     assert str(TransformationsCard(data=[box])) == ""
