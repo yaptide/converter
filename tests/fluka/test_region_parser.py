@@ -38,7 +38,6 @@ def test_parse_regions(zones_json, project_fluka_json):
             (BoolOperation.SUBTRACTION, "fig1"),
             (BoolOperation.SUBTRACTION, "fig2"),
             (BoolOperation.SUBTRACTION, "fig3"),
-            (BoolOperation.SUBTRACTION, "fig4"),
         ]
     ]
 

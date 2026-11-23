@@ -58,7 +58,7 @@ region0 5 +fig0 -fig1 -fig2
 region1 5 +fig1
 region2 5 +fig2 -fig3
 region3 5 +fig3
-world 5 +figworld -fig0 -fig1 -fig2 -fig3 -fig4
+world 5 +figworld -fig0 -fig1 -fig2 -fig3
 boundary 5 +figbound -figworld
 END
 GEOEND

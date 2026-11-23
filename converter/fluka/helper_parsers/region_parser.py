@@ -41,14 +41,16 @@ def parse_regions(zones_json: dict, figures: list[FlukaFigure]) -> (list[FlukaRe
             figures_operators=parse_csg_operations(zone["unionOperations"], figures),
         )
     if "worldZone" in zones_json:
-        world_region, boundary_region, world_figure, world_boundary = parse_world_zone(zones_json, figures)
+        world_region, boundary_region, world_figure, world_boundary = parse_world_zone(
+            zones_json, list(regions.values())
+        )
         regions[zones_json["worldZone"]["uuid"]] = world_region
         regions[zones_json["worldZone"]["uuid"] + "boundary"] = boundary_region
 
     return regions, [world_figure, world_boundary]
 
 
-def parse_world_zone(zones_json: dict, figures: list[FlukaFigure]) -> (FlukaRegion, FlukaFigure, FlukaFigure):
+def parse_world_zone(zones_json: dict, regions: list[FlukaRegion]) -> (FlukaRegion, FlukaFigure, FlukaFigure):
     """
     Parse the world zone.
     Returns tuple consisting of world region, boundary region and the two figures of which they consist.
@@ -76,18 +78,38 @@ def parse_world_zone(zones_json: dict, figures: list[FlukaFigure]) -> (FlukaRegi
         ],
     )
 
-    # Subtract all other figures from world region
-    world_operations = [(BoolOperation.INTERSECTION, fluka_world_figure.name)]
-    for figure in figures:
-        world_operations.append((BoolOperation.SUBTRACTION, figure.name))
-
-    # The world region consists of world figure with all other figures subtracted
+    # The world region consists of world figure with all other regions subtracted
     world_region = FlukaRegion(
         name="world",
-        figures_operators=[world_operations],
+        figures_operators=subtract_regions([(BoolOperation.INTERSECTION, fluka_world_figure.name)], regions),
     )
 
     return world_region, boundary_region, fluka_world_figure, fluka_world_boundary
+
+
+def subtract_regions(
+    zone: list[tuple[BoolOperation, str]], regions: list[FlukaRegion]
+) -> list[list[tuple[BoolOperation, str]]]:
+    """Return the zone without the given regions, as a list of zones joined by union."""
+    reverse = {
+        BoolOperation.INTERSECTION: BoolOperation.SUBTRACTION,
+        BoolOperation.SUBTRACTION: BoolOperation.INTERSECTION,
+    }
+    result = [zone]
+    for region in regions:
+        for region_zone in region.figures_operators:
+            new_result = []
+            for result_zone in result:
+                for operation, figure_name in region_zone:
+                    reversed_operation = (reverse[operation], figure_name)
+                    if (operation, figure_name) in result_zone:
+                        continue  # empty zone: figure both intersected and subtracted
+                    if reversed_operation in result_zone:
+                        new_result.append(result_zone)
+                    else:
+                        new_result.append([*result_zone, reversed_operation])
+            result = new_result
+    return result
 
 
 def parse_csg_operations(operations: list[list[dict]], figures: list[FlukaFigure]) -> list[tuple[BoolOperation, str]]:
