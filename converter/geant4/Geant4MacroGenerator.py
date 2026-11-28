@@ -141,7 +141,7 @@ class Geant4MacroGenerator:
         detector_quantities: Dict[str, List[Dict[str, Any]]] = {}
         for output in outputs:
             detector_uuid = output.get("detectorUuid")
-            if detector_uuid and detector_uuid not in detectors:
+            if detector_uuid not in detectors:
                 raise output_detector_error(output.get("name", ""), detector_uuid)
             for quantity in output.get("quantities", []):
                 if "filter" in quantity and quantity["filter"] not in filters:
@@ -149,10 +149,7 @@ class Geant4MacroGenerator:
             detector_quantities.setdefault(detector_uuid, []).extend(output.get("quantities", []))
 
         for detector_uuid, quantities in detector_quantities.items():
-            detector = detectors.get(detector_uuid)
-            if not detector:
-                continue
-            self._append_detector_scoring(detector, quantities, filters)
+            self._append_detector_scoring(detectors[detector_uuid], quantities, filters)
 
     def _append_detector_scoring(
         self, detector: Dict[str, Any], quantities: List[Dict[str, Any]], filters: Dict[str, Any]

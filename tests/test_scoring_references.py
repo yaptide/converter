@@ -84,10 +84,11 @@ def test_filter_checked_but_not_selected(simulator: str, filter_uuid) -> None:
         convert(simulator, project)
 
 
+@pytest.mark.parametrize("simulator", PROJECTS)
 @pytest.mark.parametrize("detector_uuid", ["absent", None, ""])
-def test_shieldhit_output_without_detector(detector_uuid) -> None:
-    """Test that a SHIELD-HIT12A output without a detector names the output."""
-    project = load_project("shieldhit")
+def test_output_without_detector(simulator: str, detector_uuid) -> None:
+    """Test that an output without a detector names the output."""
+    project = load_project(simulator)
     output = project["scoringManager"]["outputs"][0]
     if detector_uuid == "absent":
         del output["detectorUuid"]
@@ -95,25 +96,20 @@ def test_shieldhit_output_without_detector(detector_uuid) -> None:
         output["detectorUuid"] = detector_uuid
 
     with pytest.raises(ValueError, match=rf'^Output "{output["name"]}" has no detector selected\.$'):
-        convert("shieldhit", project)
+        convert(simulator, project)
 
 
-def test_shieldhit_zone_output() -> None:
-    """Test that a SHIELD-HIT12A zone output explains that zone scoring is not supported."""
-    project = load_project("shieldhit")
+@pytest.mark.parametrize("simulator, simulator_name", [("shieldhit", "SHIELD-HIT12A"), ("fluka", "FLUKA")])
+def test_zone_output(simulator: str, simulator_name: str) -> None:
+    """Test that a zone output explains that zone scoring is not supported."""
+    project = load_project(simulator)
     output = project["scoringManager"]["outputs"][0]
     output["scoringType"] = "ZONE"
-    output["detectorUuid"] = None
+    del output["detectorUuid"]
     output["zoneUuid"] = project["zoneManager"]["zones"][0]["uuid"]
 
-    with pytest.raises(ValueError, match=rf'^Output "{output["name"]}" scores in a zone'):
-        convert("shieldhit", project)
-
-
-@pytest.mark.parametrize("simulator", ["fluka", "geant4"])
-def test_output_without_detector_is_skipped(simulator: str) -> None:
-    """Test that FLUKA and Geant4 still skip outputs without a detector, e.g. zone outputs."""
-    project = load_project(simulator)
-    project["scoringManager"]["outputs"][0]["detectorUuid"] = None
-
-    assert convert(simulator, project)
+    with pytest.raises(
+        ValueError,
+        match=rf'^Output "{output["name"]}" scores in a zone, which {simulator_name} conversion does not support\.',
+    ):
+        convert(simulator, project)

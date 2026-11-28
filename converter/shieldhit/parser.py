@@ -3,7 +3,7 @@ import re
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser, convert_beam_energy
-from converter.scoring_errors import output_detector_error, quantity_filter_error
+from converter.scoring_errors import output_detector_error, output_zone_error, quantity_filter_error
 from converter.shieldhit.beam import (
     BeamConfig,
     BeamModulator,
@@ -320,10 +320,7 @@ class ShieldhitParser(Parser):
     def _get_output_detector_name(self, output_dict: dict) -> str:
         """Finds the detector of the output and returns its simulation name."""
         if output_dict.get("scoringType") == "ZONE":
-            raise ValueError(
-                f'Output "{output_dict["name"]}" scores in a zone, which SHIELD-HIT12A conversion does not support. '
-                "Choose a detector instead."
-            )
+            raise output_zone_error(output_dict["name"], "SHIELD-HIT12A")
 
         detector_uuid = output_dict.get("detectorUuid")
         for detector in self.detect_config.detectors:

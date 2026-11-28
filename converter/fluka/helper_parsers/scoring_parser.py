@@ -3,7 +3,7 @@ from typing import Optional, Union
 import hashlib
 import base64
 
-from converter.scoring_errors import output_detector_error, quantity_filter_error
+from converter.scoring_errors import output_detector_error, output_zone_error, quantity_filter_error
 from converter.fluka.helper_parsers.detector_parser import (
     MeshDetector,
     parse_mesh_detector,
@@ -116,11 +116,17 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
 
     scorings: list[Scoring] = []
     for output in scorings_json["outputs"]:
+        if output.get("scoringType") == "ZONE":
+            raise output_zone_error(output["name"], "FLUKA")
+
         detector_uuid = output.get("detectorUuid")
-        if not detector_uuid:
-            continue
         detector = next(
-            (detector for detector in detectors_json["detectors"] if detector["uuid"] == detector_uuid), None
+            (
+                detector
+                for detector in detectors_json["detectors"]
+                if detector_uuid and detector["uuid"] == detector_uuid
+            ),
+            None,
         )
         if detector is None:
             raise output_detector_error(output["name"], detector_uuid)
