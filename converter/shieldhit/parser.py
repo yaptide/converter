@@ -324,13 +324,13 @@ class ShieldhitParser(Parser):
 
         raise ValueError(f"No detector with uuid {detect_uuid}")
 
-    def _parse_quantity_settings(self, quantity_dict: dict) -> dict or None:
+    def _parse_quantity_settings(self, quantity_dict: dict) -> Optional[QuantitySettings]:
         """Parses settings from the input json into the quantity settings property"""
 
         def create_name_from_settings() -> str:
             """Create a name for the quantity from its settings."""
             # If the quantity has generic name in format [Quantity_XYZ], we want to use more descriptive name
-            # New name will be in format [Rescaled]_[Quantity_XYZ]_[QuantityKeyword]_[to_Medium/to_Material]
+            # New name will be in format [Rescaled]_[QuantityKeyword]_[Quantity_XYZ]_[to_Medium/to_Material]
             # Specific elements of the name will be added only if they are present in the settings
             if re.search(r"^Quantity(_\d*)?$", quantity_dict["name"]):
                 prefix = ""
