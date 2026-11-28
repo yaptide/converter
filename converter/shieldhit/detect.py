@@ -31,7 +31,6 @@ class QuantitySettings:
     name: str
     rescale: Optional[float] = None
     offset: Optional[float] = None
-    primaries: Optional[int] = None
     material: Optional[int] = None
     medium: Optional[str] = None
 
@@ -39,7 +38,6 @@ class QuantitySettings:
         "name": "\n    Name {name}",
         "rescale": "\n    Rescale {rescale}",
         "offset": "\n    Offset {offset}",
-        "primaries": "\n    Primaries {primaries}",
         "material": "\n    Medium {material}",
         "medium": "\n    NKMedium {medium}",
     }

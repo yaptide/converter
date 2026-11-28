@@ -324,20 +324,18 @@ class ShieldhitParser(Parser):
 
         raise ValueError(f"No detector with uuid {detect_uuid}")
 
-    def _parse_quantity_settings(self, quantity_dict: dict) -> dict or None:
+    def _parse_quantity_settings(self, quantity_dict: dict) -> Optional[QuantitySettings]:
         """Parses settings from the input json into the quantity settings property"""
 
         def create_name_from_settings() -> str:
             """Create a name for the quantity from its settings."""
             # If the quantity has generic name in format [Quantity_XYZ], we want to use more descriptive name
-            # New name will be in format [Absolute/Rescaled]_[Quantity_XYZ]_[QuantityKeyword]_[to_Medium/to_Material]
+            # New name will be in format [Rescaled]_[QuantityKeyword]_[Quantity_XYZ]_[to_Medium/to_Material]
             # Specific elements of the name will be added only if they are present in the settings
             if re.search(r"^Quantity(_\d*)?$", quantity_dict["name"]):
                 prefix = ""
                 suffix = ""
-                if "primaries" in quantity_dict:
-                    prefix = "Absolute_"
-                elif "rescale" in quantity_dict:
+                if "rescale" in quantity_dict:
                     prefix = "Rescaled_"
                 if "medium" in quantity_dict:
                     suffix = f"_to_{quantity_dict['medium']}"
@@ -350,14 +348,13 @@ class ShieldhitParser(Parser):
             return re.sub(r"\W+", "", quantity_dict["name"])
 
         # We want to skip parsing settings if there are no parameters to put in the settings
-        if all(map(lambda el: el not in quantity_dict, ["medium", "offset", "primaries", "materialUuid", "rescale"])):
+        if all(map(lambda el: el not in quantity_dict, ["medium", "offset", "materialUuid", "rescale"])):
             return None
 
         return QuantitySettings(
             name=create_name_from_settings(),
             medium=quantity_dict.get("medium", None),
             offset=quantity_dict.get("offset", None),
-            primaries=quantity_dict.get("primaries", None),
             rescale=quantity_dict.get("rescale", None),
             material=self._get_material_id(quantity_dict["materialUuid"]) if "materialUuid" in quantity_dict else None,
         )
