@@ -25,7 +25,14 @@ class Card:
         for w in self.what:
             try:
                 num = float(w)
-                line += f"{num:>10.3E}" if len(str(w)) > 10 else f"{num:>10}"
+                if len(str(w)) > 10:
+                    # input string too long for 10-character field - use scientific notation
+                    line += f"{num:>10.3E}"
+                elif num.is_integer() and len(str(num)) > 10:
+                    # 9+ digit integers (e.g. heavy ion codes) don't fit in 10 chars with ".0" - print as int
+                    line += f"{int(num):>10}"
+                else:
+                    line += f"{num:>10}"
             except ValueError:
                 line += f"{w:>10}"
         line += f"{self.sdum:<10}"
