@@ -3,6 +3,7 @@ from typing import Optional, Union
 import hashlib
 import base64
 
+from converter.scoring_errors import output_detector_error, quantity_filter_error
 from converter.fluka.helper_parsers.detector_parser import (
     MeshDetector,
     parse_mesh_detector,
@@ -106,6 +107,7 @@ def get_filter(filter_dict: dict) -> Optional[Union[ParticleFilter, CustomFilter
 def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
     """Creates list of Scorings from dictionaries"""
     filters: dict[str, Union[ParticleFilter, CustomFilter]] = {}
+    filter_uuids = {filter_dict["uuid"] for filter_dict in scorings_json["filters"]}
     for filter_dict in scorings_json["filters"]:
         # Check if supported filter, ignore otherwise
         scoring_filter = get_filter(filter_dict)
@@ -114,13 +116,14 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
 
     scorings: list[Scoring] = []
     for output in scorings_json["outputs"]:
+        detector_uuid = output.get("detectorUuid")
+        if not detector_uuid:
+            continue
         detector = next(
-            (detector for detector in detectors_json["detectors"] if detector["uuid"] == output["detectorUuid"]), None
+            (detector for detector in detectors_json["detectors"] if detector["uuid"] == detector_uuid), None
         )
         if detector is None:
-            # Skip for not existing detector
-            # This should not happen
-            continue
+            raise output_detector_error(output["name"], detector_uuid)
 
         parsed_detector = parse_detector(detector)
         if not parsed_detector:
@@ -131,9 +134,11 @@ def parse_scorings(detectors_json: dict, scorings_json: dict) -> list[Scoring]:
         for quantity in output["quantities"]:
             scoring_filter = None
             if "filter" in quantity:
+                if quantity["filter"] not in filter_uuids:
+                    raise quantity_filter_error(quantity["name"], output["name"], quantity["filter"])
                 scoring_filter = filters.get(quantity["filter"])
                 if scoring_filter is None:
-                    # Skip for not existing filter or not supported filter
+                    # Skip not supported filter
                     continue
 
             quantities.append(

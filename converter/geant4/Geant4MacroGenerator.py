@@ -1,6 +1,7 @@
 import converter.geant4.utils as utils
 from typing import Dict, Any, List
 from converter.common import convert_beam_energy
+from converter.scoring_errors import output_detector_error, quantity_filter_error
 
 # skipcq: PYL-W0511
 # TODO geantino names needs better mapping or handling
@@ -140,6 +141,11 @@ class Geant4MacroGenerator:
         detector_quantities: Dict[str, List[Dict[str, Any]]] = {}
         for output in outputs:
             detector_uuid = output.get("detectorUuid")
+            if detector_uuid and detector_uuid not in detectors:
+                raise output_detector_error(output.get("name", ""), detector_uuid)
+            for quantity in output.get("quantities", []):
+                if "filter" in quantity and quantity["filter"] not in filters:
+                    raise quantity_filter_error(quantity.get("name", ""), output.get("name", ""), quantity["filter"])
             detector_quantities.setdefault(detector_uuid, []).extend(output.get("quantities", []))
 
         for detector_uuid, quantities in detector_quantities.items():

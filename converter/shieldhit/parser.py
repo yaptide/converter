@@ -1,9 +1,9 @@
 import itertools
-from typing import Optional
 import re
 
 import converter.solid_figures as solid_figures
 from converter.common import Parser, convert_beam_energy
+from converter.scoring_errors import output_detector_error, quantity_filter_error
 from converter.shieldhit.beam import (
     BeamConfig,
     BeamModulator,
@@ -306,23 +306,31 @@ class ShieldhitParser(Parser):
             ScoringOutput(
                 filename=output_dict["name"] + ".bdo",
                 fileformat=output_dict["fileFormat"] if "fileFormat" in output_dict else "",
-                geometry=self._get_detector_by_uuid(output_dict["detectorUuid"])
-                if "detectorUuid" in output_dict
-                else None,
-                quantities=[self._parse_output_quantity(quantity) for quantity in output_dict.get("quantities", [])],
+                geometry=self._get_output_detector_name(output_dict),
+                quantities=[
+                    self._parse_output_quantity(quantity, output_dict["name"])
+                    for quantity in output_dict.get("quantities", [])
+                ],
             )
             for output_dict in json["scoringManager"]["outputs"]
         ]
 
         return outputs
 
-    def _get_detector_by_uuid(self, detect_uuid: str) -> Optional[str]:
-        """Finds detector in the detect_config object by its uuid and returns its simulation name."""
+    def _get_output_detector_name(self, output_dict: dict) -> str:
+        """Finds the detector of the output and returns its simulation name."""
+        if output_dict.get("scoringType") == "ZONE":
+            raise ValueError(
+                f'Output "{output_dict["name"]}" scores in a zone, which SHIELD-HIT12A conversion does not support. '
+                "Choose a detector instead."
+            )
+
+        detector_uuid = output_dict.get("detectorUuid")
         for detector in self.detect_config.detectors:
-            if detector.uuid == detect_uuid:
+            if detector_uuid and detector.uuid == detector_uuid:
                 return detector.name
 
-        raise ValueError(f"No detector with uuid {detect_uuid}")
+        raise output_detector_error(output_dict["name"], detector_uuid)
 
     def _parse_quantity_settings(self, quantity_dict: dict) -> dict or None:
         """Parses settings from the input json into the quantity settings property"""
@@ -362,7 +370,7 @@ class ShieldhitParser(Parser):
             material=self._get_material_id(quantity_dict["materialUuid"]) if "materialUuid" in quantity_dict else None,
         )
 
-    def _parse_output_quantity(self, quantity_dict: dict) -> OutputQuantity:
+    def _parse_output_quantity(self, quantity_dict: dict, output_name: str) -> OutputQuantity:
         """Parse a single output quantity."""
         self._parse_custom_material(quantity_dict)
         diff1 = None
@@ -391,7 +399,7 @@ class ShieldhitParser(Parser):
         return OutputQuantity(
             name=quantity_dict["name"],
             detector_type=quantity_dict["keyword"],
-            filter_name=self._get_scoring_filter_by_uuid(quantity_dict["filter"]) if "filter" in quantity_dict else "",
+            filter_name=self._get_quantity_filter_name(quantity_dict, output_name),
             diff1=diff1,
             diff1_t=diff1_t,
             diff2=diff2,
@@ -399,13 +407,17 @@ class ShieldhitParser(Parser):
             settings=self._parse_quantity_settings(quantity_dict),
         )
 
-    def _get_scoring_filter_by_uuid(self, filter_uuid: str) -> str:
-        """Finds scoring filter in the detect_config object by its uuid and returns its simulation name."""
+    def _get_quantity_filter_name(self, quantity_dict: dict, output_name: str) -> str:
+        """Finds the filter of the quantity and returns its simulation name, or an empty string without a filter."""
+        if "filter" not in quantity_dict:
+            return ""
+
+        filter_uuid = quantity_dict["filter"]
         for scoring_filter in self.detect_config.filters:
-            if scoring_filter.uuid == filter_uuid:
+            if filter_uuid and scoring_filter.uuid == filter_uuid:
                 return scoring_filter.name
 
-        raise ValueError(f"No scoring filter with uuid {filter_uuid} in {self.detect_config.filters}.")
+        raise quantity_filter_error(quantity_dict["name"], output_name, filter_uuid)
 
     def _parse_geo_mat(self, json: dict) -> None:
         """Parses data from the input json into the geo_mat_config property"""
