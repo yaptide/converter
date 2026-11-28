@@ -12,6 +12,7 @@ class Parser:
             "label": "",
             "simulator": "",
         }
+        self.human_readable = True
 
     def parse_configs(self, json: dict) -> None:
         """Convert the json dict to the 4 config dataclasses."""
