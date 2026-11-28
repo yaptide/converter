@@ -49,17 +49,26 @@ def _parse_box(box: BoxFigure, number: int) -> str:
         box.position[2] - diagonal_vec[2] / 2,
     )
 
+    ranges, rotation = "", ""
+    if any(angle != 0 for angle in box.rotation):
+        angle_x, angle_y, angle_z = box.rotation
+        rotation = f"\n* rotation angles: {angle_x}*, {angle_y}*, {angle_z}*, center {box.position}"
+    else:
+        for axis, name in enumerate("XYZ"):
+            axis_min = format_float(start_position[axis], 10)
+            axis_max = format_float(start_position[axis] + diagonal_vec[axis], 10)
+            ranges += f"* {name} range {axis_min:+#}, {axis_max:+#}\n"
+
     box_template = """
 * box {name}
-* X range {p1:+#}, {p4:+#}
-* Y range {p2:+#}, {p5:+#}
-* Z range {p3:+#}, {p6:+#}
-* X, Y, Z side lengths: {x_edge_length:+#}, {y_edge_length:+#}, {z_edge_length:+#}
+{ranges}* X, Y, Z side lengths: {x_edge_length:+#}, {y_edge_length:+#}, {z_edge_length:+#}{rotation}
   BOX {number:>4}{p1:>10}{p2:>10}{p3:>10}{p4:>10}{p5:>10}{p6:>10}
           {p7:>10}{p8:>10}{p9:>10}{p10:>10}{p11:>10}{p12:>10}"""
 
     return box_template.format(
         name=box.name,
+        ranges=ranges,
+        rotation=rotation,
         x_edge_length=format_float(box.x_edge_length, 16),
         y_edge_length=format_float(box.y_edge_length, 16),
         z_edge_length=format_float(box.z_edge_length, 16),
@@ -247,7 +256,7 @@ class GeoMatConfig:
     available_custom_stopping_power_files: dict[int, StoppingPowerFile] = field(default_factory=lambda: {})
 
     geo_template: str = """
-{jdbg1:>5}{jdbg1:>5}          {title}
+{jdbg1:>5}{jdbg2:>5}          {title}
 {figures}
   END
 {zones_geometries}

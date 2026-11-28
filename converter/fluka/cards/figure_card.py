@@ -28,13 +28,7 @@ class FiguresCard:
                 x_length = format_float(figure.x_max - figure.x_min, n=16)
                 y_length = format_float(figure.y_max - figure.y_min, n=16)
                 z_length = format_float(figure.z_max - figure.z_min, n=16)
-                line += (
-                    f"* box {figure.name}\n"
-                    f"* X range {x_min:+#}, {x_max:+#}\n"
-                    f"* Y range {y_min:+#}, {y_max:+#}\n"
-                    f"* Z range {z_min:+#}, {z_max:+#}\n"
-                    f"* X, Y, Z side lengths:"
-                    f" {x_length:+#}, {y_length:+#}, {z_length:+#}\n"
+                body = (
                     f"{figure.figure_type} {figure.name}"
                     f" {x_min:+#}"
                     f" {x_max:+#}"
@@ -43,6 +37,28 @@ class FiguresCard:
                     f" {z_min:+#}"
                     f" {z_max:+#}"
                 )
+                if figure.is_rotated:
+                    # the box is defined around the origin and placed by its ROT-DEFI transformation
+                    line += (
+                        f"* box {figure.name}\n"
+                        f"* X, Y, Z side lengths:"
+                        f" {x_length:+#}, {y_length:+#}, {z_length:+#}\n"
+                        f"* rotation angles: {figure.rotation[0]}*, {figure.rotation[1]}*, {figure.rotation[2]}*,"
+                        f" center ({figure.position[0]}, {figure.position[1]}, {figure.position[2]})\n"
+                        f"$Start_transform -{figure.transformation_name}\n"
+                        f"{body}\n"
+                        f"$End_transform"
+                    )
+                else:
+                    line += (
+                        f"* box {figure.name}\n"
+                        f"* X range {x_min:+#}, {x_max:+#}\n"
+                        f"* Y range {y_min:+#}, {y_max:+#}\n"
+                        f"* Z range {z_min:+#}, {z_max:+#}\n"
+                        f"* X, Y, Z side lengths:"
+                        f" {x_length:+#}, {y_length:+#}, {z_length:+#}\n"
+                        f"{body}"
+                    )
             elif type(figure) is FlukaCylinder:
                 x = format_float(figure.coordinates[0], n=16)
                 y = format_float(figure.coordinates[1], n=16)

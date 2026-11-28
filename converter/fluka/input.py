@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from converter.fluka.cards.beam_card import BeamCard
 from converter.fluka.cards.card import Card
 from converter.fluka.cards.figure_card import FiguresCard
+from converter.fluka.cards.transformation_card import TransformationsCard
 from converter.fluka.cards.region_card import RegionsCard
 from converter.fluka.cards.material_card import MaterialsCard
 from converter.fluka.cards.compound_card import CompoundsCard
@@ -34,6 +35,7 @@ proton beam simulation
 * default physics settings for hadron therapy
 DEFAULTS                                                              HADROTHE
 {BEAM}
+{TRANSFORMATIONS}
 * geometry description starts here
 GEOBEGIN                                                              COMBNAME
     0    0
@@ -61,6 +63,7 @@ STOP
         return self.template.format(
             START=Card(codewd="START", what=[str(self.number_of_particles)]),
             BEAM=BeamCard(data=self.beam),
+            TRANSFORMATIONS=TransformationsCard(data=self.figures),
             FIGURES=FiguresCard(data=self.figures),
             REGIONS=RegionsCard(data=self.regions),
             SCORINGS=ScoringsCard(data=self.scorings),

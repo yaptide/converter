@@ -135,32 +135,23 @@ def rotate(vector: list[float], angles: list[float], degrees: bool = True) -> li
     Rotate a vector in 3D around XYZ axes, assuming Euler angles.
 
     Proper Euler angles uses z-x-z, x-y-x, y-z-y, z-y-z, x-z-x, y-x-y axis sequences, here we
-    stick to other convention called Tait-Bryan angles. First we rotate vector around X axis by first
-    angle, then around Y axis and finally around Z axis, The individual rotations are
-    usually known as yaw, pitch and roll.
+    stick to other convention called Tait-Bryan angles, the same as in the editor (three.js Euler
+    with order 'XYZ'). First we rotate vector around Z axis by third angle, then around Y axis
+    and finally around X axis. The individual rotations are usually known as yaw, pitch and roll.
 
     If degrees is True, then the given angle are assumed to be in degrees. Otherwise radians are used.
     """
-    # Convert angles to radians if degrees is True
-
-    rad_angles = [radians(angle) for angle in angles] if degrees else angles
+    rad_x, rad_y, rad_z = [radians(angle) for angle in angles] if degrees else angles
 
     x, y, z = vector
-    new_x, new_y, new_z = 0, 0, 0
-
-    # Rotation around x-axis
-    new_x = x
-    new_y = y * cos(rad_angles[0]) - z * sin(rad_angles[0])
-    new_z = y * sin(rad_angles[0]) + z * cos(rad_angles[0])
-
-    # Rotation around y-axis
-    new_x2 = new_x * cos(rad_angles[1]) + new_z * sin(rad_angles[1])
-    new_y2 = new_y
-    new_z2 = -new_x * sin(rad_angles[1]) + new_z * cos(rad_angles[1])
 
     # Rotation around z-axis
-    new_x3 = new_x2 * cos(rad_angles[2]) - new_y2 * sin(rad_angles[2])
-    new_y3 = new_x2 * sin(rad_angles[2]) + new_y2 * cos(rad_angles[2])
-    new_z3 = new_z2
+    x, y = x * cos(rad_z) - y * sin(rad_z), x * sin(rad_z) + y * cos(rad_z)
 
-    return [new_x3, new_y3, new_z3]
+    # Rotation around y-axis
+    x, z = x * cos(rad_y) + z * sin(rad_y), -x * sin(rad_y) + z * cos(rad_y)
+
+    # Rotation around x-axis
+    y, z = y * cos(rad_x) - z * sin(rad_x), y * sin(rad_x) + z * cos(rad_x)
+
+    return [x, y, z]
